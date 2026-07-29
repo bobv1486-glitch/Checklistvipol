@@ -894,7 +894,6 @@
     let listaFotosBase64 = [];
     let listaFotosOficinaBase64 = [];
 
-    // Variáveis para Assinatura em Canvas
     let canvasAssinatura, ctxAssinatura, desenhandoAssinatura = false, assinaturaFeita = false;
 
     const itensChecklist = [
@@ -1031,7 +1030,6 @@
 
             document.getElementById("tela-login").style.display = "none";
 
-            // Se for controlador/escalante, exibe os campos de edição de escala
             if (usuarioCargoAtivo === 'controlador') {
                 document.getElementById("bloco-cadastro-escala").style.display = "block";
                 document.getElementById("bloco-todas-escalas").style.display = "block";
@@ -1094,12 +1092,10 @@
         db.collection("escalas_motoristas").get()
         .then((snapshot) => {
             let escalaEncontrada = null;
-            let dataMaisProxima = "";
 
             snapshot.forEach((doc) => {
                 let e = doc.data();
                 if (String(e.chapa) === String(usuarioChapaAtivo)) {
-                    // Procura a escala para a data de hoje ou futura
                     if (!escalaEncontrada || e.data >= escalaEncontrada.data) {
                         escalaEncontrada = e;
                     }
@@ -1710,8 +1706,3 @@
 </script>
 </body>
 </html>
-
-
-
-
-Quero esse código com esse estilo da foto
