@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="color-scheme" content="dark">
+    <title>Check-list de Frota - Vipol</title>
+    
+    <!-- Scripts do Firebase (SDK v9 via compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+    <style>
+        :root { color-scheme: dark; }
+        
+        html, body {
+            background-color: #121214 !important;
+            color: #e2e8f0 !important;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            padding-bottom: 120px;
+            box-sizing: border-box;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        .barra-navegacao-sistema {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: #18181c;
+            border-bottom: 1px solid #2d2d34;
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px;
+            z-index: 10000;
+            overflow-x: auto;
+        }
+
+        .btn-navegacao {
+            background: #27272a;
+            color: #a1a1aa;
+            border: 1px solid #3f3f46;
+            padding: 6px 10px;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .btn-navegacao.ativo {
+            background: #3b82f6;
+            color: #ffffff;
+            border-color: #60a5fa;
+        }
+
+        body { padding-top: 50px; }
+
+        .tela-login, .painel-geral-container, .painel-oficina-container, .area-escala-container {
+            display: none;
+        }
+
+        .ativo-tela {
+            display: flex !important;
+        }
+
+        .tela-login {
+            position: fixed;
+            top: 50px; left: 0; right: 0; bottom: 0;
+            background: #121214;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 9999;
+        }
+
+        .box-login {
+            background: #18181c;
+            border: 1px solid #2d2d34;
+            border-radius: 12px;
+            padding: 24px;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .box-login h2 {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            color: #dae5f0;
+        }
+
+        .box-login p {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+
+        .campo-login {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: left;
+            margin-bottom: 14px;
+            width: 100%;
+        }
+
+        .campo-login label {
+            font-size: 11px;
+            font-weight: bold;
+            color: #71717a;
+            text-transform: uppercase;
+        }
+
+        .campo-login input, .campo-login select {
+            padding: 12px;
+            background: #121214;
+            border: 1px solid #2d2d34;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: bold;
+            outline: none;
+            width: 100%;
+        }
+
+        .btn-acessar {
+            width: 100%;
+            background: #1a365d;
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .topo {
+            text-align: center;
+            margin: 10px auto;
+            max-width: 480px;
+        }
+
+        .titulo {
+            font-size: 20px;
+            font-weight: 800;
+            color: #dae5f0 !important;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .subtitulo {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+
+        .info-colaborador {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: #18181c !important;
+            border: 1px solid #2d2d34;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        .info-campo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #94a3b8 !important;
+        }
+
+        .info-campo span {
+            width: 115px;
+            min-width: 115px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .info-campo input, .info-campo select {
+            flex: 1;
+            min-width: 0;
+            background: #121214 !important;
+            border: 1px solid #2d2d34;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #ffffff !important;
+            outline: none;
+            padding: 6px;
+        }
+
+        .grupo-input-btn {
+            display: flex;
+            flex: 1;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .grupo-input-btn input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .btn-logout {
+            background: transparent;
+            color: #f87171;
+            border: 1px solid #7f1d1d;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .alerta-turno-anterior {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto 15px auto;
+            background: #18181c;
+            border: 1px solid #d97706;
+            border-radius: 10px;
+            padding: 12px;
+            display: none;
+        }
+
+        .secao-checklist {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto 15px auto;
+        }
+
+        .titulo-secao {
+            font-size: 13px;
+            font-weight: 800;
+            color: #3b82f6;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            padding-left: 4px;
+        }
+
+        .lista-itens {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .card-item {
+            background: #18181c !important;
+            border-radius: 10px;
+            padding: 10px 12px;
+            border: 1px solid #2d2d34;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nome-item {
+            font-size: 13px;
+            font-weight: bold;
+            color: #e2e8f0;
+            flex: 1;
+            padding-right: 10px;
+        }
+
+        .grupo-status {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-status {
+            background: #121214;
+            border: 1px solid #2d2d34;
+            color: #71717a;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn-status.ativo-ok {
+            background: #065f46;
+            border-color: #059669;
+            color: #ffffff;
+        }
+
+        .btn-status.ativo-defeito {
+            background: #7f1d1d;
+            border-color: #dc2626;
+            color: #ffffff;
+        }
+
+        .box-obs {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto 15px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .box-obs textarea {
+            width: 100%;
+            background: #18181c;
+            border: 1px solid #2d2d34;
+            border-radius: 10px;
+            padding: 10px;
+            color: #ffffff;
+            font-size: 13px;
+            outline: none;
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .container-upload-foto {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: #18181c;
+            border: 1px solid #2d2d34;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .btn-foto {
+            background: #1d4ed8;
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            text-align: center;
+            display: block;
+            width: 100%;
+        }
+
+        .preview-fotos {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        .miniatura-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .miniatura-foto {
+            width: 65px;
+            height: 65px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid #3b82f6;
+        }
+
+        .btn-remover-foto {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Caixa de Assinatura Digital */
+        .box-assinatura {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto 15px auto;
+            background: #18181c;
+            border: 1px solid #2d2d34;
+            border-radius: 10px;
+            padding: 12px;
+        }
+        
+        .canvas-assinatura {
+            width: 100%;
+            height: 120px;
+            background: #121214;
+            border: 1px dashed #4b5563;
+            border-radius: 8px;
+            cursor: crosshair;
+            touch-action: none;
+            display: block;
+        }
+
+        .box-oficina {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto 15px auto;
+            background: #18181c;
+            border: 1px solid #7f1d1d;
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .btn-enviar-oficina {
+            width: 100%;
+            background-color: #dc2626;
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-top: 8px;
+        }
+
+        .painel-resumo {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #161619 !important;
+            border-top: 2px solid #2d2d34;
+            padding: 10px;
+            z-index: 999;
+        }
+
+        .resumo-conteudo {
+            max-width: 480px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .status-nuvem {
+            font-size: 10px;
+            text-align: center;
+            color: #94a3b8;
+            font-weight: bold;
+        }
+
+        .btn-enviar {
+            width: 100%;
+            background-color: #10b981 !important;
+            color: #ffffff !important;
+            border: none;
+            padding: 12px;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .painel-geral-container, .painel-oficina-container, .area-escala-container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            flex-direction: column;
+            gap: 12px;
+            padding: 0 4px;
+        }
+
+        .card-painel {
+            background: #18181c;
+            border: 1px solid #2d2d34;
+            border-radius: 10px;
+            padding: 12px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .grupo-inputs-duplos {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .grupo-inputs-duplos .campo-login {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .painel-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .painel-tabela {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+
+        .painel-tabela th, .painel-tabela td {
+            text-align: left;
+            padding: 6px 8px;
+            border-bottom: 1px solid #2d2d34;
+        }
+
+        .painel-tabela th {
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-size: 9px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra Superior para alternar a Visão -->
+    <div class="barra-navegacao-sistema">
+        <button class="btn-navegacao ativo" id="tab-escala" onclick="mudarVisao('escala')">📅 Escala</button>
+        <button class="btn-navegacao" id="tab-motorista" onclick="mudarVisao('motorista')">📱 Check-list</button>
+        <button class="btn-navegacao" id="tab-oficina" onclick="mudarVisao('oficina')">🔧 Oficina</button>
+        <button class="btn-navegacao" id="tab-controlador" onclick="mudarVisao('controlador')">📊 Painel</button>
+    </div>
+
+    <!-- TELA DE LOGIN UNIFICADA COM CARGO -->
+    <div id="tela-login" class="tela-login">
+        <div class="box-login">
+            <h2>Check-list de Frota</h2>
+            <p>Identifique-se para acessar o sistema</p>
+            <div class="campo-login">
+                <label>Nome Completo</label>
+                <input type="text" id="login-nome" placeholder="Ex: Sergio Silva">
+            </div>
+            <div class="campo-login">
+                <label>Matrícula / Chapa (Registro)</label>
+                <input type="number" id="login-chapa" placeholder="Ex: 12345">
+            </div>
+            <div class="campo-login">
+                <label>WhatsApp (Opcional)</label>
+                <input type="text" id="login-whatsapp" placeholder="Ex: 11999999999">
+            </div>
+            <div class="campo-login">
+                <label>Cargo / Função</label>
+                <select id="login-cargo">
+                    <option value="motorista">Motorista</option>
+                    <option value="oficina">Mecânico / Oficina</option>
+                    <option value="controlador">Controlador / Gestor / Escalante</option>
+                </select>
+            </div>
+            <button class="btn-acessar" onclick="realizarLogin()">Acessar Sistema</button>
+        </div>
+    </div>
+
+    <!-- TELA 0: ESCALA / PRÓXIMA PEGADA (PRIMEIRA TELA DO MOTORISTA) -->
+    <div id="area-escala" class="area-escala-container ativo-tela">
+        <div style="text-align: right; padding-top: 5px;">
+            <button class="btn-logout" onclick="fazerLogout()">Trocar Usuário</button>
+        </div>
+        <div class="topo" style="margin-top: 2px;">
+            <div class="titulo">Minha Escala / Próxima Pegada</div>
+            <div class="subtitulo">Consulte sua linha e horário de amanhã</div>
+        </div>
+
+        <div class="card-painel" style="border-color: #3b82f6;">
+            <div class="titulo-secao" style="color: #60a5fa;">📋 Informações da Próxima Escala</div>
+            <div id="dados-minha-escala" style="font-size: 13px; color: #e2e8f0; margin-top: 10px; line-height: 1.6;">
+                Carregando sua escala...
+            </div>
+        </div>
+
+        <!-- Bloco exclusivo para o Escalante / Controlador cadastrar a pegada de um motorista -->
+        <div class="card-painel" id="bloco-cadastro-escala" style="display:none; border-color: #059669; margin-top: 10px;">
+            <div class="titulo-secao" style="color: #34d399;">✏️ Lançar / Atualizar Escala (Escalante)</div>
+            
+            <div class="campo-login" style="margin-top: 10px;">
+                <label>Matrícula / Chapa do Motorista</label>
+                <input type="text" id="escala-chapa-motorista" placeholder="Ex: 12345">
+            </div>
+
+            <div class="campo-login">
+                <label>Nome do Motorista</label>
+                <input type="text" id="escala-nome-motorista" placeholder="Ex: Sergio Silva">
+            </div>
+
+            <div class="campo-login">
+                <label>Número da Linha / Pegada</label>
+                <input type="text" id="escala-linha" placeholder="Ex: 073, 596">
+            </div>
+
+            <div class="grupo-inputs-duplos">
+                <div class="campo-login">
+                    <label>Data da Escala</label>
+                    <input type="date" id="escala-data">
+                </div>
+                <div class="campo-login">
+                    <label>Horário de Apresentação</label>
+                    <input type="text" id="escala-horario" placeholder="Ex: 04:30">
+                </div>
+            </div>
+
+            <div class="campo-login">
+                <label>Observações / Itinerário</label>
+                <textarea id="escala-obs" placeholder="Ex: Carro reserva, render no terminal..." style="width:100%; background:#121214; border:1px solid #2d2d34; border-radius:8px; padding:10px; color:#fff; font-size:13px; outline:none; resize:vertical; min-height:60px;"></textarea>
+            </div>
+
+            <button class="btn-acessar" style="background:#059669;" onclick="salvarEscalaMotorista()">Salvar Escala do Motorista</button>
+        </div>
+
+        <div class="card-painel" id="bloco-todas-escalas" style="display:none; margin-top: 10px;">
+            <div class="titulo-secao">📅 Escalas Cadastradas Recentes</div>
+            <div id="lista-todas-escalas" style="margin-top: 8px; max-height: 250px; overflow-y: auto;">Carregando escalas...</div>
+        </div>
+    </div>
+
+    <!-- TELA 1: FORMULÁRIO DO MOTORISTA (CHECK-LIST) -->
+    <div id="area-motorista" style="display:none;">
+        <div class="topo">
+            <div class="titulo">Check-list Diário de Ônibus</div>
+            <div class="subtitulo">Vistoria de Saída e Segurança</div>
+            
+            <div class="info-colaborador">
+                <div class="info-campo"><span>Motorista:</span><input type="text" id="txt-nome-motorista" readonly></div>
+                
+                <div class="info-campo">
+                    <span>Matrícula:</span>
+                    <div class="grupo-input-btn">
+                        <input type="text" id="txt-chapa-motorista" readonly>
+                        <button class="btn-logout" onclick="fazerLogout()">Trocar</button>
+                    </div>
+                </div>
+                
+                <div class="info-campo">
+                    <span>Prefixo do Carro:</span>
+                    <input type="text" id="txt-prefixo" placeholder="Ex: 36.159" oninput="verificarHistoricoCarro(); salvarChecklist();">
+                </div>
+                <div class="info-campo">
+                    <span>Número da Linha:</span>
+                    <input type="text" id="txt-linha" placeholder="Ex: 073, 596" oninput="salvarChecklist()">
+                </div>
+                <div class="info-campo">
+                    <span>Km Inicial:</span>
+                    <input type="number" id="txt-km-inicial" placeholder="Ex: 45200" oninput="salvarChecklist()">
+                </div>
+                <div class="info-campo">
+                    <span>Turno:</span>
+                    <select id="sel-turno" onchange="salvarChecklist()">
+                        <option value="" disabled selected>Selecione...</option>
+                        <option value="Manhã">Manhã</option>
+                        <option value="Tarde">Tarde</option>
+                        <option value="Noite">Noite</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerta de Passagem de Turno -->
+        <div id="alerta-turno-anterior" class="alerta-turno-anterior">
+            <div style="font-size:11px; font-weight:bold; color:#fbbf24; text-transform:uppercase; margin-bottom:4px;">⚠️ Relato do Turno Anterior</div>
+            <div id="texto-relato-anterior" style="font-size:12px; color:#e2e8f0;">Nenhum relato recente.</div>
+        </div>
+
+        <div id="container-checklist"></div>
+
+        <div class="box-obs">
+            <div class="titulo-secao">Observações / Defeitos Encontrados</div>
+            <textarea id="txt-observacoes" placeholder="Descreva falhas mecânicas, avarias na lataria ou itens ausentes..." oninput="salvarChecklist()"></textarea>
+            
+            <div class="container-upload-foto">
+                <label for="input-foto" class="btn-foto">📸 Tirar Foto da Avaria</label>
+                <input type="file" id="input-foto" accept="image/*" capture="environment" style="display: none;" onchange="processarFoto(this)">
+                <div class="preview-fotos" id="preview-fotos"></div>
+            </div>
+        </div>
+
+        <!-- Caixa de Assinatura Digital do Motorista -->
+        <div class="box-assinatura">
+            <div class="titulo-secao" style="margin-bottom: 4px;">✍️ Assinatura Digital de Conformidade</div>
+            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 8px;">Assine abaixo confirmando a veracidade das vistorias:</div>
+            <canvas id="canvas-assinatura" class="canvas-assinatura"></canvas>
+            <button onclick="limparAssinatura()" style="background: transparent; color: #f87171; border: 1px solid #7f1d1d; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; margin-top: 6px; text-transform: uppercase;">Limpar Assinatura</button>
+        </div>
+
+        <div class="box-oficina">
+            <div class="titulo-secao" style="color: #f87171;">⚠️ Chamado Urgente / Pane na Rua</div>
+            <div class="campo-login" style="margin-bottom: 8px;">
+                <label>Tipo do Problema</label>
+                <select id="sel-tipo-pane" style="width:100%; padding:10px; background:#121214; border:1px solid #2d2d34; border-radius:8px; color:#fff; font-weight:bold;">
+                    <option value="Mecânica">Mecânica (Motor / Câmbio)</option>
+                    <option value="Freios">Sistema de Freios</option>
+                    <option value="Elétrica">Elétrica / Faróis / Painel</option>
+                    <option value="Pneus">Pneu Furado / Danificado</option>
+                    <option value="Outros">Outro Problema</option>
+                </select>
+            </div>
+            <textarea id="txt-obs-oficina" placeholder="Descreva o que aconteceu para a equipe de socorro..." style="width: 100%; background: #121214; border: 1px solid #2d2d34; border-radius: 8px; padding: 10px; color: #ffffff; font-size: 13px; outline: none; resize: vertical; min-height: 60px; margin-bottom: 6px;"></textarea>
+            
+            <div class="container-upload-foto" style="background: #121214;">
+                <label for="input-foto-oficina" class="btn-foto" style="background: #991b1b;">📸 Foto da Pane (Opcional)</label>
+                <input type="file" id="input-foto-oficina" accept="image/*" capture="environment" style="display: none;" onchange="processarFotoOficina(this)">
+                <div class="preview-fotos" id="preview-fotos-oficina"></div>
+            </div>
+
+            <button class="btn-enviar-oficina" onclick="enviarChamadoOficina()">🚨 Enviar Chamado para Oficina</button>
+        </div>
+
+        <div class="painel-resumo">
+            <div class="resumo-conteudo">
+                <div class="status-nuvem" id="txt-status-nuvem">Pronto para iniciar vistoria ☁️</div>
+                <button class="btn-enviar" onclick="finalizarEEnviar()">Finalizar e Enviar Check-list</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA DA OFICINA: REGISTRO DE MANUTENÇÕES E PEÇAS -->
+    <div id="painel-oficina" class="painel-oficina-container">
+        <div style="text-align: right; padding-top: 5px;">
+            <button class="btn-logout" onclick="fazerLogout()">Trocar Usuário</button>
+        </div>
+        <div class="titulo" style="margin-top: 5px; text-align: center;">Módulo da Oficina</div>
+        <div class="subtitulo" style="text-align: center;">Controle Preventivo e Histórico de Trocas</div>
+
+        <!-- Alertas Preventivos Automáticos de Frota -->
+        <div class="card-painel" style="border-color: #d97706;">
+            <div class="titulo-secao" style="color: #fbbf24;">⚠️ Alertas Preventivos Próximos (Km)</div>
+            <div id="lista-alertas-preventivos" style="font-size:12px; color:#e2e8f0; margin-top:6px;">Calculando quilometragens e prazos...</div>
+        </div>
+
+        <div class="card-painel" style="border-color: #2563eb;">
+            <div class="titulo-secao" style="color: #60a5fa;">🔧 Registrar Nova Manutenção / Troca</div>
+            
+            <div class="campo-login" style="margin-top: 10px;">
+                <label>Prefixo do Carro</label>
+                <input type="text" id="oficina-prefixo" placeholder="Ex: 36.159">
+            </div>
+
+            <div class="campo-login">
+                <label>Tipo de Serviço / Peça</label>
+                <select id="oficina-servico">
+                    <optgroup label="Lubrificação e Filtros (Limite: 10.000 km)">
+                        <option value="Troca de Óleo do Motor">Troca de Óleo do Motor</option>
+                        <option value="Filtros (Ar / Óleo / Combustível)">Filtros (Ar / Óleo / Combustível)</option>
+                        <option value="Troca de Óleo do Câmbio / Diferencial">Troca de Óleo do Câmbio / Diferencial</option>
+                    </optgroup>
+                    <optgroup label="Freios e Suspensão (Limite: 25.000 km)">
+                        <option value="Troca de Pastilhas / Lonas de Freio">Troca de Pastilhas / Lonas de Freio</option>
+                        <option value="Retífica / Troca de Disco de Freio">Retífica / Troca de Disco de Freio</option>
+                        <option value="Troca / Manutenção de Amortecedores">Troca / Manutenção de Amortecedores</option>
+                        <option value="Reparo em Cubos / Rolamentos">Reparo em Cubos / Rolamentos</option>
+                    </optgroup>
+                    <optgroup label="Pneus e Rodagem (Limite: 10.000 km)">
+                        <option value="Troca / Reforma de Pneu">Troca / Reforma de Pneu</option>
+                        <option value="Alinhamento e Balanceamento">Alinhamento e Balanceamento</option>
+                    </optgroup>
+                    <optgroup label="Motor, Correias e Elétrica">
+                        <option value="Troca de Correia Dentada / Alternador">Troca de Correia Dentada / Alternador</option>
+                        <option value="Troca de Embreagem (Kit Completo)">Troca de Embreagem (Kit Completo)</option>
+                        <option value="Manutenção do Sistema de Arrefecimento (Água/Radiador)">Manutenção do Sistema de Arrefecimento (Água/Radiador)</option>
+                        <option value="Troca de Bateria / Parte Elétrica">Troca de Bateria / Parte Elétrica</option>
+                    </optgroup>
+                    <optgroup label="Outros">
+                        <option value="Manutenção Corretiva Geral">Manutenção Corretiva Geral</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="campo-login">
+                <label>Quilometragem Atual do Carro (Km)</label>
+                <input type="number" id="oficina-km" placeholder="Ex: 48500">
+            </div>
+
+            <div class="campo-login">
+                <label>Nome do Mecânico / Responsável</label>
+                <input type="text" id="oficina-mecanico" placeholder="Seu Nome">
+            </div>
+
+            <div class="campo-login">
+                <label>Observações da Manutenção</label>
+                <textarea id="oficina-obs" placeholder="Detalhes da peça trocada, marca, eixo do pneu, etc..." style="width:100%; background:#121214; border:1px solid #2d2d34; border-radius:8px; padding:10px; color:#fff; font-size:13px; outline:none; resize:vertical; min-height:60px;"></textarea>
+            </div>
+
+            <button class="btn-acessar" style="background:#2563eb;" onclick="salvarManutencaoOficina()">Salvar Histórico de Manutenção</button>
+        </div>
+
+        <div class="card-painel">
+            <div class="painel-header-flex">
+                <div class="titulo-secao" style="margin-bottom:0;">📋 Histórico de Manutenções por Carro</div>
+                <button onclick="carregarHistoricoOficina()" style="background:transparent; border:1px solid #3f3f46; color:#a1a1aa; padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;">🔄 Atualizar</button>
+            </div>
+            <div class="campo-login" style="margin-top: 8px; margin-bottom: 6px;">
+                <input type="text" id="filtro-busca-oficina" placeholder="Filtrar por Prefixo (Ex: 36.159)" oninput="carregarHistoricoOficina()">
+            </div>
+            <div id="lista-manutencoes-oficina" style="margin-top: 8px; max-height: 280px; overflow-y: auto;">Carregando histórico...</div>
+        </div>
+    </div>
+
+    <!-- TELA 2: PAINEL DO CONTROLADOR / ESCALANTE -->
+    <div id="painel-geral" class="painel-geral-container">
+        <div style="text-align: right; padding-top: 5px;">
+            <button class="btn-logout" onclick="fazerLogout()">Trocar Usuário</button>
+        </div>
+        <div class="titulo" style="margin-top: 5px; text-align: center;">Painel de Controle da Frota</div>
+        <div class="subtitulo" style="text-align: center;">Monitoramento em tempo real e remanejamento</div>
+
+        <!-- Módulo de Remanejamento Rápido (Frota Reserva) -->
+        <div class="card-painel" style="border-color: #059669;">
+            <div class="titulo-secao" style="color: #34d399;">🔄 Remanejamento Rápido</div>
+            <div style="font-size:11px; color:#94a3b8; margin-bottom:10px; line-height: 1.4;">Vincule rapidamente um motorista ou linha a um carro reserva em caso de pane:</div>
+            
+            <div class="campo-login" style="margin-bottom:8px;">
+                <label>Motorista Afetado / Ativo</label>
+                <input type="text" id="remaneja-motorista" placeholder="Nome do Motorista">
+            </div>
+            
+            <div class="grupo-inputs-duplos" style="margin-bottom:8px;">
+                <div class="campo-login">
+                    <label>Carro em Pane</label>
+                    <input type="text" id="remaneja-antigo" placeholder="Ex: 36.159">
+                </div>
+                <div class="campo-login">
+                    <label>Carro Reserva</label>
+                    <input type="text" id="remaneja-novo" placeholder="Ex: 36.999">
+                </div>
+            </div>
+
+            <button class="btn-acessar" style="background:#059669; margin-top:0;" onclick="executarRemanejamento()">Confirmar Remanejamento</button>
+        </div>
+
+        <div class="card-painel" style="border-color: #7f1d1d;">
+            <div class="titulo-secao" style="color: #f87171;">🚨 Chamados Urgentes (Oficina / Pane)</div>
+            <div id="lista-chamados-painel" style="margin-top: 8px; font-size: 12px; color: #cbd5e1;">Carregando chamados...</div>
+        </div>
+
+        <div class="card-painel">
+            <div class="titulo-secao">🔍 Consulta de Quilometragem por Carro / Mês</div>
+            <div style="display: flex; gap: 6px; margin-top: 6px;">
+                <input type="text" id="filtro-busca" placeholder="Digite Nº do Prefixo do Carro" style="flex:1; padding:10px; background:#121214; border:1px solid #2d2d34; border-radius:8px; color:#fff; font-size:12px; outline:none;">
+                <button onclick="buscarHistorico()" style="background:#3b82f6; border:none; color:#fff; padding:0 14px; border-radius:8px; font-weight:bold; cursor:pointer;">Consultar</button>
+            </div>
+            <div id="resultado-busca-historico" style="margin-top: 12px; max-height: 300px; overflow-y: auto;">
+                <span style="font-size: 12px; color: #71717a;">Insira o prefixo do carro acima para calcular a quilometragem rodada no mês.</span>
+            </div>
+        </div>
+
+        <div class="card-painel">
+            <div class="painel-header-flex">
+                <div class="titulo-secao" style="margin-bottom:0;">📋 Check-lists Enviados Hoje</div>
+                <button onclick="carregarDadosPainel()" style="background:transparent; border:1px solid #3f3f46; color:#a1a1aa; padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;">🔄 Atualizar</button>
+            </div>
+            <div id="lista-checklists-hoje" style="margin-top: 8px; max-height: 250px; overflow-y: auto;">Carregando check-lists de hoje...</div>
+        </div>
+    </div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCjVJ_F2h8dMyY91jjo-kvQ",
+        authDomain: "vipolextras.firebaseapp.com",
+        projectId: "vipolextras",
+        storageBucket: "vipolextras.appspot.com",
+        messagingSenderId: "1001511250504",
+        appId: "1:1001511250504:web:ea7bfab1a5f6e3c50979d0"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let timeoutSalvar = null;
+    let usuarioChapaAtivo = "";
+    let usuarioNomeAtivo = "";
+    let usuarioCargoAtivo = "";
+    let listaFotosBase64 = [];
+    let listaFotosOficinaBase64 = [];
+
+    // Variáveis para Assinatura em Canvas
+    let canvasAssinatura, ctxAssinatura, desenhandoAssinatura = false, assinaturaFeita = false;
+
+    const itensChecklist = [
+        {
+            secao: "Parte Externa e Iluminação",
+            itens: [
+                "Faróis (Alto e Baixo) e Lanternas",
+                "Setas, Luz de Freio e Pisca-alerta",
+                "Luz de Ré e Buzina",
+                "Estado dos Pneus e Estepe",
+                "Retrovisores e Limpadores de Para-brisa"
+            ]
+        },
+        {
+            secao: "Mecânica Básica",
+            itens: [
+                "Nível de Óleo do Motor e Água do Radiador",
+                "Freios (Principal e Estacionário / Maneco)",
+                "Ausência de Vazamentos visíveis"
+            ]
+        }
+    ];
+
+    function mudarVisao(modo) {
+        const btnEscala = document.getElementById('tab-escala');
+        const btnMotorista = document.getElementById('tab-motorista');
+        const btnOficina = document.getElementById('tab-oficina');
+        const btnControlador = document.getElementById('tab-controlador');
+        
+        const areaEscala = document.getElementById('area-escala');
+        const areaMotorista = document.getElementById('area-motorista');
+        const painelOficina = document.getElementById('painel-oficina');
+        const painelGeral = document.getElementById('painel-geral');
+        const telaLogin = document.getElementById('tela-login');
+
+        btnEscala.classList.remove('ativo');
+        btnMotorista.classList.remove('ativo');
+        btnOficina.classList.remove('ativo');
+        btnControlador.classList.remove('ativo');
+
+        telaLogin.style.display = 'none';
+        areaEscala.classList.remove('ativo-tela');
+        areaMotorista.style.display = 'none';
+        painelOficina.classList.remove('ativo-tela');
+        painelGeral.classList.remove('ativo-tela');
+
+        if (modo === 'escala') {
+            btnEscala.classList.add('ativo');
+            areaEscala.classList.add('ativo-tela');
+            carregarMinhaEscala();
+        } else if (modo === 'motorista') {
+            btnMotorista.classList.add('ativo');
+            areaMotorista.style.display = 'block';
+            construirInterfaceChecklist();
+            inicializarCanvasAssinatura();
+        } else if (modo === 'oficina') {
+            btnOficina.classList.add('ativo');
+            painelOficina.classList.add('ativo-tela');
+            carregarHistoricoOficina();
+            carregarAlertasPreventivos();
+            const inputMecanico = document.getElementById('oficina-mecanico');
+            if(inputMecanico && !inputMecanico.value) inputMecanico.value = usuarioNomeAtivo;
+        } else if (modo === 'controlador') {
+            btnControlador.classList.add('ativo');
+            painelGeral.classList.add('ativo-tela');
+            carregarDadosPainel();
+        }
+    }
+
+    function inicializarCanvasAssinatura() {
+        if (canvasAssinatura) return;
+        canvasAssinatura = document.getElementById('canvas-assinatura');
+        if (!canvasAssinatura) return;
+        ctxAssinatura = canvasAssinatura.getContext('2d');
+
+        function ajustarTamanhoCanvas() {
+            const rect = canvasAssinatura.getBoundingClientRect();
+            canvasAssinatura.width = rect.width;
+            canvasAssinatura.height = rect.height;
+            ctxAssinatura.strokeStyle = '#ffffff';
+            ctxAssinatura.lineWidth = 2;
+            ctxAssinatura.lineCap = 'round';
+        }
+        ajustarTamanhoCanvas();
+
+        canvasAssinatura.addEventListener('mousedown', iniciarDesenho);
+        canvasAssinatura.addEventListener('mousemove', desenhar);
+        canvasAssinatura.addEventListener('mouseup', pararDesenho);
+        canvasAssinatura.addEventListener('mouseleave', pararDesenho);
+
+        canvasAssinatura.addEventListener('touchstart', (e) => { e.preventDefault(); iniciarDesenho(e.touches[0]); });
+        canvasAssinatura.addEventListener('touchmove', (e) => { e.preventDefault(); desenhar(e.touches[0]); });
+        canvasAssinatura.addEventListener('touchend', (e) => { e.preventDefault(); pararDesenho(); });
+    }
+
+    function iniciarDesenho(e) {
+        desenhandoAssinatura = true;
+        assinaturaFeita = true;
+        const rect = canvasAssinatura.getBoundingClientRect();
+        ctxAssinatura.beginPath();
+        ctxAssinatura.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
+
+    function desenhar(e) {
+        if (!desenhandoAssinatura) return;
+        const rect = canvasAssinatura.getBoundingClientRect();
+        ctxAssinatura.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        ctxAssinatura.stroke();
+    }
+
+    function pararDesenho() {
+        if (desenhandoAssinatura) {
+            desenhandoAssinatura = false;
+            salvarChecklist();
+        }
+    }
+
+    function limparAssinatura() {
+        if (!ctxAssinatura) return;
+        ctxAssinatura.clearRect(0, 0, canvasAssinatura.width, canvasAssinatura.height);
+        assinaturaFeita = false;
+        salvarChecklist();
+    }
+
+    function verificarSessao() {
+        const chapaSalva = localStorage.getItem("vipol_chapa_usuario");
+        const nomeSalvo = localStorage.getItem("vipol_nome_usuario");
+        const cargoSalvo = localStorage.getItem("vipol_cargo_usuario");
+
+        if (chapaSalva && nomeSalvo && cargoSalvo) {
+            usuarioChapaAtivo = chapaSalva;
+            usuarioNomeAtivo = nomeSalvo;
+            usuarioCargoAtivo = cargoSalvo;
+
+            document.getElementById("tela-login").style.display = "none";
+
+            // Se for controlador/escalante, exibe os campos de edição de escala
+            if (usuarioCargoAtivo === 'controlador') {
+                document.getElementById("bloco-cadastro-escala").style.display = "block";
+                document.getElementById("bloco-todas-escalas").style.display = "block";
+                carregarTodasEscalas();
+            } else {
+                document.getElementById("bloco-cadastro-escala").style.display = "none";
+                document.getElementById("bloco-todas-escalas").style.display = "none";
+            }
+
+            if (usuarioCargoAtivo === 'motorista') {
+                document.getElementById("txt-nome-motorista").value = usuarioNomeAtivo;
+                document.getElementById("txt-chapa-motorista").value = usuarioChapaAtivo;
+            }
+
+            mudarVisao('escala');
+        } else {
+            document.getElementById("tela-login").style.display = "flex";
+            document.getElementById("area-escala").classList.remove('ativo-tela');
+            document.getElementById("area-motorista").style.display = "none";
+            document.getElementById("painel-oficina").classList.remove('ativo-tela');
+            document.getElementById("painel-geral").classList.remove('ativo-tela');
+        }
+    }
+
+    function realizarLogin() {
+        const nomeInput = document.getElementById("login-nome").value.trim();
+        const chapaInput = document.getElementById("login-chapa").value.trim();
+        const whatsappInput = document.getElementById("login-whatsapp").value.trim();
+        const cargoInput = document.getElementById("login-cargo").value;
+
+        if (!nomeInput || !chapaInput) {
+            alert("Por favor, preencha o Nome e a Chapa (Registro)!");
+            return;
+        }
+
+        localStorage.setItem("vipol_chapa_usuario", chapaInput);
+        localStorage.setItem("vipol_nome_usuario", nomeInput);
+        localStorage.setItem("vipol_cargo_usuario", cargoInput);
+        if(whatsappInput) {
+            localStorage.setItem("vipol_whatsapp_usuario", whatsappInput);
+        }
+
+        verificarSessao();
+    }
+
+    function fazerLogout() {
+        if(confirm("Deseja trocar de usuário?")) {
+            localStorage.removeItem("vipol_chapa_usuario");
+            localStorage.removeItem("vipol_nome_usuario");
+            localStorage.removeItem("vipol_cargo_usuario");
+            localStorage.removeItem("vipol_whatsapp_usuario");
+            location.reload();
+        }
+    }
+
+    function carregarMinhaEscala() {
+        const container = document.getElementById('dados-minha-escala');
+        container.innerHTML = "Buscando sua escala e próxima pegada... ⏳";
+
+        db.collection("escalas_motoristas").get()
+        .then((snapshot) => {
+            let escalaEncontrada = null;
+            let dataMaisProxima = "";
+
+            snapshot.forEach((doc) => {
+                let e = doc.data();
+                if (String(e.chapa) === String(usuarioChapaAtivo)) {
+                    // Procura a escala para a data de hoje ou futura
+                    if (!escalaEncontrada || e.data >= escalaEncontrada.data) {
+                        escalaEncontrada = e;
+                    }
+                }
+            });
+
+            if (escalaEncontrada) {
+                container.innerHTML = `
+                    <b>Data da Escala:</b> ${escalaEncontrada.data.split('-').reverse().join('/')}<br>
+                    <b>Motorista:</b> ${escalaEncontrada.motorista} (Chapa: ${escalaEncontrada.chapa})<br>
+                    <b>Linha / Pegada:</b> <span style="color:#34d399; font-size:16px; font-weight:bold;">${escalaEncontrada.linha}</span><br>
+                    <b>Horário de Apresentação:</b> ${escalaEncontrada.horario || 'Não especificado'}<br>
+                    <b>Observações:</b> ${escalaEncontrada.obs || 'Nenhuma'}
+                `;
+            } else {
+                container.innerHTML = `<span style="color:#fbbf24;">⚠️ Nenhuma escala cadastrada para você no momento. Consulte o setor de escala.</span>`;
+            }
+        })
+        .catch((err) => {
+            container.innerHTML = `<span style="color:#f87171;">Erro ao carregar escala: ${err.message}</span>`;
+        });
+    }
+
+    function salvarEscalaMotorista() {
+        const chapa = document.getElementById('escala-chapa-motorista').value.trim();
+        const nome = document.getElementById('escala-nome-motorista').value.trim();
+        const linha = document.getElementById('escala-linha').value.trim();
+        const data = document.getElementById('escala-data').value;
+        const horario = document.getElementById('escala-horario').value.trim();
+        const obs = document.getElementById('escala-obs').value.trim();
+
+        if (!chapa || !nome || !linha || !data) {
+            alert("Preencha pelo menos a Chapa, Nome, Linha e Data da Escala!");
+            return;
+        }
+
+        const idDoc = `${chapa}_${data}`;
+        const dadosEscala = {
+            chapa: chapa,
+            motorista: nome,
+            linha: linha,
+            data: data,
+            horario: horario,
+            obs: obs,
+            atualizadoPor: usuarioNomeAtivo,
+            atualizadoEm: new Date().toISOString()
+        };
+
+        db.collection("escalas_motoristas").doc(idDoc).set(dadosEscala)
+        .then(() => {
+            alert("✅ Escala salva com sucesso!");
+            document.getElementById('escala-chapa-motorista').value = "";
+            document.getElementById('escala-nome-motorista').value = "";
+            document.getElementById('escala-linha').value = "";
+            document.getElementById('escala-data').value = "";
+            document.getElementById('escala-horario').value = "";
+            document.getElementById('escala-obs').value = "";
+            carregarTodasEscalas();
+        })
+        .catch((err) => {
+            alert("Erro ao salvar escala: " + err.message);
+        });
+    }
+
+    function carregarTodasEscalas() {
+        const container = document.getElementById('lista-todas-escalas');
+        db.collection("escalas_motoristas").orderBy("data", "desc").limit(10).get()
+        .then((snapshot) => {
+            let html = '<table class="painel-tabela"><tr><th>Data</th><th>Motorista</th><th>Linha</th><th>Horário</th></tr>';
+            let count = 0;
+
+            snapshot.forEach((doc) => {
+                let e = doc.data();
+                count++;
+                html += `<tr><td>${e.data.split('-').reverse().join('/')}</td><td>${e.motorista}</td><td><b>${e.linha}</b></td><td>${e.horario || '-'}</td></tr>`;
+            });
+
+            if (count === 0) {
+                html = '<span style="font-size:12px; color:#71717a;">Nenhuma escala cadastrada.</span>';
+            } else {
+                html += '</table>';
+            }
+            container.innerHTML = html;
+        });
+    }
+
+    function construirInterfaceChecklist() {
+        const container = document.getElementById('container-checklist');
+        if (container.innerHTML.trim() !== '') return;
+        let htmlGeral = '';
+
+        itensChecklist.forEach((secaoObj, sIndex) => {
+            htmlGeral += `
+            <div class="secao-checklist">
+                <div class="titulo-secao">${secaoObj.secao}</div>
+                <div class="lista-itens">`;
+            
+            secaoObj.itens.forEach((nomeItem, iIndex) => {
+                const idUnico = `item_${sIndex}_${iIndex}`;
+                htmlGeral += `
+                    <div class="card-item">
+                        <span class="nome-item">${nomeItem}</span>
+                        <div class="grupo-status" data-id="${idUnico}">
+                            <button class="btn-status ativo-ok" onclick="mudarStatus(this, 'OK')">OK</button>
+                            <button class="btn-status" onclick="mudarStatus(this, 'DEFEITO')">Defeito</button>
+                        </div>
+                    </div>`;
+            });
+
+            htmlGeral += `</div></div>`;
+        });
+        container.innerHTML = htmlGeral;
+    }
+
+    function mudarStatus(botao, status) {
+        const grupo = botao.parentElement;
+        grupo.querySelectorAll('.btn-status').forEach(b => b.classList.remove('ativo-ok', 'ativo-defeito'));
+        botao.classList.add(status === 'OK' ? 'ativo-ok' : 'ativo-defeito');
+        salvarChecklist();
+    }
+
+    function verificarHistoricoCarro() {
+        const prefixo = document.getElementById('txt-prefixo').value.trim();
+        const boxAlerta = document.getElementById('alerta-turno-anterior');
+        const txtRelato = document.getElementById('texto-relato-anterior');
+
+        if (!prefixo || prefixo.length < 2) {
+            boxAlerta.style.display = 'none';
+            return;
+        }
+
+        db.collection("checklists_onibus").get().then((snapshot) => {
+            let ultimoRegistro = null;
+            let dataMaisRecente = "";
+
+            snapshot.forEach((doc) => {
+                let d = doc.data();
+                if (d.prefixo && d.prefixo.toLowerCase() === prefixo.toLowerCase()) {
+                    if (!dataMaisRecente || d.data > dataMaisRecente) {
+                        dataMaisRecente = d.data;
+                        ultimoRegistro = d;
+                    }
+                }
+            });
+
+            if (ultimoRegistro && (ultimoRegistro.observacoes || ultimoRegistro.respostas)) {
+                let obs = ultimoRegistro.observacoes ? ultimoRegistro.observacoes : "Nenhuma observação descrita.";
+                txtRelato.innerHTML = `<b>Data:</b> ${ultimoRegistro.data} | <b>Motorista:</b> ${ultimoRegistro.motorista} (${ultimoRegistro.turno || 'N/D'})<br><b>Obs:</b> ${obs}`;
+                boxAlerta.style.display = 'block';
+            } else {
+                boxAlerta.style.display = 'none';
+            }
+        });
+    }
+
+    function processarFoto(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const MAX = 800;
+                    let w = img.width, h = img.height;
+                    if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } }
+                    else { if (h > MAX) { w *= MAX / h; h = MAX; } }
+                    canvas.width = w; canvas.height = h;
+                    ctx.drawImage(img, 0, 0, w, h);
+                    
+                    listaFotosBase64.push(canvas.toDataURL('image/jpeg', 0.7));
+                    atualizarPreviewFotos();
+                    salvarChecklist();
+                    input.value = "";
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function atualizarPreviewFotos() {
+        const container = document.getElementById('preview-fotos');
+        container.innerHTML = "";
+        listaFotosBase64.forEach((foto, index) => {
+            container.innerHTML += `
+                <div class="miniatura-container">
+                    <img src="${foto}" class="miniatura-foto">
+                    <button class="btn-remover-foto" onclick="removerFoto(${index})">X</button>
+                </div>`;
+        });
+    }
+
+    function removerFoto(index) {
+        listaFotosBase64.splice(index, 1);
+        atualizarPreviewFotos();
+        salvarChecklist();
+    }
+
+    function processarFotoOficina(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const MAX = 800;
+                    let w = img.width, h = img.height;
+                    if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } }
+                    else { if (h > MAX) { w *= MAX / h; h = MAX; } }
+                    canvas.width = w; canvas.height = h;
+                    ctx.drawImage(img, 0, 0, w, h);
+                    
+                    listaFotosOficinaBase64.push(canvas.toDataURL('image/jpeg', 0.7));
+                    atualizarPreviewFotosOficina();
+                    input.value = "";
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function atualizarPreviewFotosOficina() {
+        const container = document.getElementById('preview-fotos-oficina');
+        container.innerHTML = "";
+        listaFotosOficinaBase64.forEach((foto, index) => {
+            container.innerHTML += `
+                <div class="miniatura-container">
+                    <img src="${foto}" class="miniatura-foto">
+                    <button class="btn-remover-foto" onclick="removerFotoOficina(${index})">X</button>
+                </div>`;
+        });
+    }
+
+    function removerFotoOficina(index) {
+        listaFotosOficinaBase64.splice(index, 1);
+        atualizarPreviewFotosOficina();
+    }
+
+    function salvarChecklist() {
+        if (!usuarioChapaAtivo) return;
+        document.getElementById('txt-status-nuvem').innerText = "Salvando alteração... ⏳";
+        clearTimeout(timeoutSalvar);
+
+        timeoutSalvar = setTimeout(() => {
+            const prefixo = document.getElementById('txt-prefixo').value.trim();
+            const linha = document.getElementById('txt-linha').value.trim();
+            const kmInicial = document.getElementById('txt-km-inicial').value;
+            const turno = document.getElementById('sel-turno').value;
+            const observacoes = document.getElementById('txt-observacoes').value;
+            const dataHoje = new Date().toISOString().split('T')[0];
+
+            let assinaturaBase64 = "";
+            if (assinaturaFeita && canvasAssinatura) {
+                assinaturaBase64 = canvasAssinatura.toDataURL('image/png');
+            }
+
+            let dados = {
+                motorista: usuarioNomeAtivo,
+                chapa: usuarioChapaAtivo,
+                whatsapp: localStorage.getItem("vipol_whatsapp_usuario") || "",
+                prefixo: prefixo,
+                linha: linha,
+                kmInicial: kmInicial || "",
+                turno: turno,
+                data: dataHoje,
+                observacoes: observacoes,
+                fotos: listaFotosBase64,
+                assinatura: assinaturaBase64,
+                respostas: {}
+            };
+
+            document.querySelectorAll('.grupo-status').forEach((grupo) => {
+                dados.respostas[grupo.getAttribute('data-id')] = grupo.querySelector('.ativo-ok') ? "OK" : "DEFEITO";
+            });
+
+            db.collection("checklists_onibus").doc(`${usuarioChapaAtivo}_${dataHoje}`).set(dados)
+            .then(() => { document.getElementById('txt-status-nuvem').innerText = "Salvo na Nuvem com sucesso! ✅"; })
+            .catch(() => { document.getElementById('txt-status-nuvem').innerText = "Erro ao sincronizar ❌"; });
+        }, 800);
+    }
+
+    function enviarChamadoOficina() {
+        const prefixo = document.getElementById('txt-prefixo').value.trim();
+        if (!prefixo) {
+            alert("Digite o Prefixo do Ônibus no topo antes de chamar a oficina!");
+            return;
+        }
+        
+        const tipoPane = document.getElementById('sel-tipo-pane').value;
+        const obsOficina = document.getElementById('txt-obs-oficina').value.trim();
+        
+        if (!obsOficina) {
+            alert("Por favor, descreva o problema no campo de observação da oficina.");
+            return;
+        }
+
+        const dataHoraAtual = new Date().toISOString();
+        const idChamado = `${usuarioChapaAtivo}_${Date.now()}`;
+
+        const dadosChamado = {
+            motorista: usuarioNomeAtivo,
+            chapa: usuarioChapaAtivo,
+            whatsapp: localStorage.getItem("vipol_whatsapp_usuario") || "",
+            prefixo: prefixo,
+            tipo: tipoPane,
+            descricao: obsOficina,
+            fotos: listaFotosOficinaBase64,
+            dataHora: dataHoraAtual,
+            status: "PENDENTE"
+        };
+
+        db.collection("chamados_oficina").doc(idChamado).set(dadosChamado)
+        .then(() => {
+            alert("🚨 Chamado enviado com sucesso para a oficina!");
+            document.getElementById('txt-obs-oficina').value = "";
+            listaFotosOficinaBase64 = [];
+            atualizarPreviewFotosOficina();
+        })
+        .catch((err) => {
+            alert("Erro ao enviar chamado: " + err.message);
+        });
+    }
+
+    function resolverChamado(idChamado) {
+        if(!confirm("Deseja marcar este chamado como resolvido?")) return;
+
+        db.collection("chamados_oficina").doc(idChamado).update({
+            status: "RESOLVIDO"
+        })
+        .then(() => {
+            alert("✅ Chamado marcado como resolvido!");
+            carregarDadosPainel();
+        })
+        .catch((err) => {
+            alert("Erro ao atualizar chamado: " + err.message);
+        });
+    }
+
+    function executarRemanejamento() {
+        const motorista = document.getElementById('remaneja-motorista').value.trim();
+        const antigo = document.getElementById('remaneja-antigo').value.trim();
+        const novo = document.getElementById('remaneja-novo').value.trim();
+
+        if (!motorista || !antigo || !novo) {
+            alert("Preencha todos os campos de remanejamento!");
+            return;
+        }
+
+        const idRemanejamento = `remanej_${Date.now()}`;
+        const dadosReman = {
+            motorista: motorista,
+            carroAntigo: antigo,
+            carroNovo: novo,
+            dataHora: new Date().toISOString(),
+            controlador: usuarioNomeAtivo
+        };
+
+        db.collection("remanejamentos_frota").doc(idRemanejamento).set(dadosReman)
+        .then(() => {
+            alert(`🔄 Remanejamento efetuado! Motorista ${motorista} transferido do carro ${antigo} para o reserva ${novo}.`);
+            document.getElementById('remaneja-motorista').value = "";
+            document.getElementById('remaneja-antigo').value = "";
+            document.getElementById('remaneja-novo').value = "";
+        })
+        .catch((err) => {
+            alert("Erro ao registrar remanejamento: " + err.message);
+        });
+    }
+
+    function finalizarEEnviar() {
+        if (!document.getElementById('txt-prefixo').value.trim()) {
+            alert("Por favor, digite o Prefixo do Ônibus antes de finalizar!");
+            return;
+        }
+        if (!assinaturaFeita) {
+            alert("Por favor, faça sua assinatura digital no campo indicado antes de finalizar!");
+            return;
+        }
+        salvarChecklist();
+        alert("Check-list com assinatura e Km Inicial registrado com sucesso!");
+    }
+
+    function salvarManutencaoOficina() {
+        const prefixo = document.getElementById('oficina-prefixo').value.trim();
+        const servico = document.getElementById('oficina-servico').value;
+        const km = document.getElementById('oficina-km').value.trim();
+        const mecanico = document.getElementById('oficina-mecanico').value.trim();
+        const obs = document.getElementById('oficina-obs').value.trim();
+
+        if (!prefixo || !km || !mecanico) {
+            alert("Preencha o Prefixo do Carro, a Quilometragem e o Nome do Mecânico!");
+            return;
+        }
+
+        const dadosManutencao = {
+            prefixo: prefixo,
+            servico: servico,
+            km: Number(km),
+            mecanico: mecanico,
+            chapaMecanico: usuarioChapaAtivo,
+            observacoes: obs,
+            data: new Date().toISOString()
+        };
+
+        db.collection("manutencoes_frota").add(dadosManutencao)
+        .then(() => {
+            alert("🔧 Manutenção salva com sucesso no histórico do veículo!");
+            document.getElementById('oficina-prefixo').value = "";
+            document.getElementById('oficina-km').value = "";
+            document.getElementById('oficina-obs').value = "";
+            carregarHistoricoOficina();
+            carregarAlertasPreventivos();
+        })
+        .catch((err) => {
+            alert("Erro ao salvar: " + err.message);
+        });
+    }
+
+    function carregarHistoricoOficina() {
+        const filtro = document.getElementById('filtro-busca-oficina').value.trim().toLowerCase();
+
+        db.collection("manutencoes_frota").orderBy("data", "desc").get()
+        .then((querySnapshot) => {
+            let html = '<table class="painel-tabela"><tr><th>Data</th><th>Carro</th><th>Serviço / Peça</th><th>Km</th><th>Mecânico</th></tr>';
+            let contador = 0;
+
+            querySnapshot.forEach((doc) => {
+                let m = doc.data();
+                if (filtro && !m.prefixo.toLowerCase().includes(filtro)) return;
+
+                let dataFormatada = new Date(m.data).toLocaleDateString('pt-BR');
+                contador++;
+                html += `<tr><td>${dataFormatada}</td><td><b>${m.prefixo}</b></td><td>${m.servico}</td><td>${m.km} km</td><td>${m.mecanico}</td></tr>`;
+            });
+
+            if (contador === 0) {
+                html = '<p style="font-size:12px; color:#71717a;">Nenhum registro de manutenção encontrado.</p>';
+            } else {
+                html += '</table>';
+            }
+            document.getElementById('lista-manutencoes-oficina').innerHTML = html;
+        });
+    }
+
+    function carregarAlertasPreventivos() {
+        db.collection("manutencoes_frota").get()
+        .then((snapshot) => {
+            let ultimasManutencoes = {};
+
+            snapshot.forEach((doc) => {
+                let m = doc.data();
+                let chave = `${m.prefixo}_${m.servico}`;
+                if (!ultimasManutencoes[chave] || m.km > ultimasManutencoes[chave].km) {
+                    ultimasManutencoes[chave] = m;
+                }
+            });
+
+            db.collection("checklists_onibus").get().then((checkSnapshot) => {
+                let ultimosKms = {};
+                checkSnapshot.forEach((doc) => {
+                    let d = doc.data();
+                    if (d.prefixo && d.kmInicial) {
+                        let k = Number(d.kmInicial);
+                        if (!ultimosKms[d.prefixo] || k > ultimosKms[d.prefixo]) {
+                            ultimosKms[d.prefixo] = k;
+                        }
+                    }
+                });
+
+                let html = "";
+                let alertasCount = 0;
+
+                for (let chave in ultimasManutencoes) {
+                    let m = ultimasManutencoes[chave];
+                    let kmAtualCarro = ultimosKms[m.prefixo] || m.km;
+                    let kmRodadosDesdeTroca = kmAtualCarro - m.km;
+                    
+                    let limiteAlerta = m.servico.includes('Freio') ? 25000 : 10000;
+                    let restante = limiteAlerta - kmRodadosDesdeTroca;
+
+                    if (restante <= 2000) {
+                        alertasCount++;
+                        let cor = restante <= 0 ? "#f87171" : "#fbbf24";
+                        let textoStatus = restante <= 0 ? "VENCIDO" : `Faltam ${restante} km`;
+                        html += `<div style="padding:4px 0; border-bottom:1px solid #2d2d34; font-size:11px;">Carro <b>${m.prefixo}</b> (${m.servico}): <span style="color:${cor}; font-weight:bold;">${textoStatus}</span> (Rodados: ${kmRodadosDesdeTroca} km)</div>`;
+                    }
+                }
+
+                if (alertasCount === 0) {
+                    html = '<span style="font-size:12px; color:#10b981;">Nenhum veículo próximo ao limite de revisão preventiva.</span>';
+                }
+                document.getElementById('lista-alertas-preventivos').innerHTML = html;
+            });
+        });
+    }
+
+    function carregarDadosPainel() {
+        const dataHoje = new Date().toISOString().split('T')[0];
+        
+        db.collection("checklists_onibus").where("data", "==", dataHoje).get()
+        .then((querySnapshot) => {
+            let html = '<table class="painel-tabela"><tr><th>Carro</th><th>Linha</th><th>Motorista</th><th>Km Inicial</th><th>Turno</th></tr>';
+            if (querySnapshot.empty) {
+                html = '<p style="font-size:12px; color:#71717a;">Nenhum check-list enviado hoje ainda.</p>';
+            } else {
+                querySnapshot.forEach((doc) => {
+                    let d = doc.data();
+                    html += `<tr><td><b>${d.prefixo || 'N/D'}</b></td><td>${d.linha || '-'}</td><td>${d.motorista}</td><td>${d.kmInicial || '-'}</td><td>${d.turno || '-'}</td></tr>`;
+                });
+                html += '</table>';
+            }
+            document.getElementById('lista-checklists-hoje').innerHTML = html;
+        });
+
+        db.collection("chamados_oficina").get()
+        .then((querySnapshot) => {
+            let html = '';
+            let chamadosPendentes = 0;
+
+            querySnapshot.forEach((doc) => {
+                let c = doc.data();
+                if (c.status === "RESOLVIDO") return;
+
+                chamadosPendentes++;
+                let dataFormatada = new Date(c.dataHora).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                let zapInfo = c.whatsapp ? ` - <a href="https://wa.me/55${c.whatsapp}" target="_blank" style="color:#38bdf8;">📱 ${c.whatsapp}</a>` : '';
+                html += `
+                <div style="background:#121214; border:1px solid #7f1d1d; border-radius:6px; padding:8px; margin-bottom:6px;">
+                    <div style="display:flex; justify-content:space-between; font-weight:bold; color:#f87171;">
+                        <span>Carro: ${c.prefixo} (${c.tipo})</span>
+                        <span style="font-size:10px; color:#94a3b8;">${dataFormatada}</span>
+                    </div>
+                    <div style="font-size:11px; margin-top:4px;">Motorista: ${c.motorista} (Chapa: ${c.chapa})${zapInfo}</div>
+                    <div style="font-size:11px; color:#e2e8f0; margin-top:2px;"><b>Relato:</b> ${c.descricao}</div>
+                    <div style="text-align:right; margin-top:6px;">
+                        <button onclick="resolverChamado('${doc.id}')" style="background:#065f46; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer;">Marcar como Resolvido</button>
+                    </div>
+                </div>`;
+            });
+
+            if (chamadosPendentes === 0) {
+                html = '<p style="font-size:12px; color:#71717a;">Nenhum chamado urgente pendente.</p>';
+            }
+            document.getElementById('lista-chamados-painel').innerHTML = html;
+        });
+    }
+
+    function buscarHistorico() {
+        let prefixoBusca = document.getElementById('filtro-busca').value.trim().toLowerCase();
+        if (!prefixoBusca) {
+            alert("Digite o número do prefixo do carro para calcular a quilometragem.");
+            return;
+        }
+
+        document.getElementById('resultado-busca-historico').innerHTML = '<span style="font-size:12px; color:#94a3b8;">Calculando quilometragem do carro...</span>';
+
+        db.collection("checklists_onibus").get()
+        .then((querySnapshot) => {
+            let registrosCarro = [];
+
+            querySnapshot.forEach((doc) => {
+                let d = doc.data();
+                if (d.prefixo && d.prefixo.toLowerCase() === prefixoBusca && d.kmInicial) {
+                    registrosCarro.push({
+                        data: d.data,
+                        km: Number(d.kmInicial),
+                        motorista: d.motorista,
+                        turno: d.turno || 'N/D'
+                    });
+                }
+            });
+
+            registrosCarro.sort((a, b) => new Date(a.data) - new Date(b.data));
+
+            if (registrosCarro.length === 0) {
+                document.getElementById('resultado-busca-historico').innerHTML = '<span style="font-size:12px; color:#f87171;">Nenhum registro de Km Inicial encontrado para este carro.</span>';
+                return;
+            }
+
+            let html = '<table class="painel-tabela"><tr><th>Data</th><th>Motorista</th><th>Turno</th><th>Km Inicial</th><th>Km Rodado</th></tr>';
+            let kmTotalRodado = 0;
+
+            for (let i = 0; i < registrosCarro.length; i++) {
+                let atual = registrosCarro[i];
+                let kmRodadoTurno = 0;
+
+                if (i + 1 < registrosCarro.length) {
+                    let proximo = registrosCarro[i + 1];
+                    if (proximo.km > atual.km) {
+                        kmRodadoTurno = proximo.km - atual.km;
+                        kmTotalRodado += kmRodadoTurno;
+                    }
+                }
+
+                html += `<tr><td>${atual.data}</td><td>${atual.motorista}</td><td>${atual.turno}</td><td>${atual.km}</td><td><b>${kmRodadoTurno > 0 ? kmRodadoTurno + ' km' : 'Em andamento'}</b></td></tr>`;
+            }
+
+            html += '</table>';
+            html += `<div style="margin-top:10px; font-size:12px; color:#38bdf8; text-align:right;"><b>Quilometragem Total do Carro no Mês: ${kmTotalRodado} km</b></div>`;
+            document.getElementById('resultado-busca-historico').innerHTML = html;
+        });
+    }
+
+    window.onload = verificarSessao;
+</script>
+</body>
+</html>
+
+
+
+
+Quero esse código com esse estilo da foto
