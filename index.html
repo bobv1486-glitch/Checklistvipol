@@ -941,6 +941,16 @@
         "499": "499 - Dom Bosco X Cecap"
     };
 
+    // Função auxiliar para formatar a data de AAAA-MM-DD para DD/MM/AAAA
+    function formatarDataBR(dataStr) {
+        if (!dataStr) return "";
+        let partes = dataStr.split('-');
+        if (partes.length === 3) {
+            return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
+        return dataStr;
+    }
+
     function buscarNomeLinhaAutomatico() {
         let inputNum = document.getElementById('escala-linha-num').value.trim();
         let inputNome = document.getElementById('escala-linha-nome');
@@ -1115,7 +1125,6 @@
         location.reload();
     }
 
-    // AUTO-APRENDIZADO: BUSCA OU SALVA O MOTORISTA DIRETAMENTE NA ESCALA
     function buscarMotoristaPorChapaEscala() {
         let chapaInput = document.getElementById('escala-chapa-motorista').value.trim();
         let nomeInput = document.getElementById('escala-nome-motorista');
@@ -1147,7 +1156,8 @@
                 if (String(e.chapa) === String(usuarioChapaAtivo)) encontrada = e;
             });
             if (encontrada) {
-                container.innerHTML = `<b>Data:</b> ${encontrada.data}<br><b>Pegada:</b> <span style="color:#60a5fa;">${encontrada.pegada || 'Garagem'}</span><br><b>Linha:</b> <span style="color:#34d399; font-size:15px; font-weight:700;">${encontrada.linha}</span><br><b>Horário:</b> ${encontrada.horario}`;
+                let dataBR = formatarDataBR(encontrada.data);
+                container.innerHTML = `<b>Data:</b> ${dataBR}<br><b>Pegada:</b> <span style="color:#60a5fa;">${encontrada.pegada || 'Garagem'}</span><br><b>Linha:</b> <span style="color:#34d399; font-size:15px; font-weight:700;">${encontrada.linha}</span><br><b>Horário:</b> ${encontrada.horario}`;
             } else {
                 container.innerHTML = `<span style="color:#fbbf24;">Nenhuma escala ativa cadastrada.</span>`;
             }
@@ -1161,7 +1171,8 @@
             let html = '<table class="painel-tabela"><tr><th>Motorista</th><th>Pegada</th><th>Linha</th><th>Data</th></tr>';
             snapshot.forEach((doc) => {
                 let e = doc.data();
-                html += `<tr><td><b>${e.motorista}</b></td><td>${e.pegada || 'Garagem'}</td><td>${e.linha}</td><td>${e.data}</td></tr>`;
+                let dataBR = formatarDataBR(e.data);
+                html += `<tr><td><b>${e.motorista}</b></td><td>${e.pegada || 'Garagem'}</td><td>${e.linha}</td><td>${dataBR}</td></tr>`;
             });
             listaDiv.innerHTML = html + '</table>';
         });
@@ -1184,14 +1195,12 @@
 
         const linhaCompleta = linhaNome ? linhaNome : linhaNum;
 
-        // Salva automaticamente o motorista na base para as próximas consultas automáticas
         db.collection("motoristas_cadastrados").doc(chapa).set({
             chapa,
             nome,
             whatsapp: ""
         });
 
-        // Salva a escala
         db.collection("escalas_motoristas").doc(`${chapa}_${data}`).set({ 
             chapa, 
             motorista: nome, 
