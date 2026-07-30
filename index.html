@@ -671,8 +671,24 @@
             </div>
 
             <div class="campo-login">
-                <label>Linha / Pegada</label>
-                <input type="text" id="escala-linha" placeholder="Ex: 073, 596">
+                <label>Local da Pegada (Início do Trabalho)</label>
+                <select id="escala-pegada">
+                    <option value="Garagem">Garagem</option>
+                    <option value="Vila Any">Vila Any</option>
+                    <option value="São Miguel">São Miguel</option>
+                    <option value="CECAP">CECAP</option>
+                    <option value="Dom Bosco">Dom Bosco</option>
+                </select>
+            </div>
+
+            <div class="campo-login">
+                <label>Número da Linha (Digite para autocompletar)</label>
+                <input type="text" id="escala-linha-num" placeholder="Ex: 077, 596, 139..." oninput="buscarNomeLinhaAutomatico()">
+            </div>
+
+            <div class="campo-login">
+                <label>Nome da Linha / Itinerário</label>
+                <input type="text" id="escala-linha-nome" placeholder="Preenchimento automático..." readonly style="background: rgba(255,255,255,0.03); color: #34d399;">
             </div>
 
             <div class="grupo-inputs-duplos">
@@ -722,7 +738,7 @@
                 </div>
                 <div class="info-campo">
                     <span>Linha:</span>
-                    <input type="text" id="txt-linha" placeholder="Ex: 073, 596" oninput="salvarChecklist()">
+                    <input type="text" id="txt-linha" placeholder="Ex: 077" oninput="salvarChecklist()">
                 </div>
                 <div class="info-campo">
                     <span>Km Inicial:</span>
@@ -911,6 +927,30 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // Dicionário de Linhas Vipol atualizado com base na imagem enviada
+    const dicionarioLinhas = {
+        "077": "077 - Vila Any X Metrô Brás",
+        "319": "319 - Tupinambá X Metrô Itaquera",
+        "596": "596 - Vila Any X São Miguel",
+        "139": "139 - São Miguel X Cecap",
+        "825": "825 - São Miguel X Guarulhos (Centro)",
+        "073": "073 - São Miguel X Bonsucesso",
+        "849": "849 - Parque das Nações X São Miguel",
+        "252": "252 - Jardim Cumbica X Metrô Carrão",
+        "499": "499 - Dom Bosco X Cecap"
+    };
+
+    function buscarNomeLinhaAutomatico() {
+        let inputNum = document.getElementById('escala-linha-num').value.trim();
+        let inputNome = document.getElementById('escala-linha-nome');
+        
+        if (dicionarioLinhas[inputNum]) {
+            inputNome.value = dicionarioLinhas[inputNum];
+        } else {
+            inputNome.value = inputNum ? "Linha personalizada / Outra" : "";
+        }
+    }
+
     let timeoutSalvar = null;
     let usuarioChapaAtivo = "";
     let usuarioNomeAtivo = "";
@@ -954,6 +994,7 @@
             document.getElementById('tab-escala').classList.add('ativo');
             document.getElementById('area-escala').classList.add('ativo-tela');
             carregarMinhaEscala();
+            carregarTodasAsEscalas();
         } else if (modo === 'motorista') {
             document.getElementById('tab-motorista').classList.add('ativo');
             document.getElementById('area-motorista').style.display = 'block';
@@ -1069,28 +1110,54 @@
                 if (String(e.chapa) === String(usuarioChapaAtivo)) encontrada = e;
             });
             if (encontrada) {
-                container.innerHTML = `<b>Data:</b> ${encontrada.data}<br><b>Linha:</b> <span style="color:#34d399; font-size:16px; font-weight:700;">${encontrada.linha}</span><br><b>Horário:</b> ${encontrada.horario}`;
+                container.innerHTML = `<b>Data:</b> ${encontrada.data}<br><b>Pegada:</b> <span style="color:#60a5fa;">${encontrada.pegada || 'Garagem'}</span><br><b>Linha:</b> <span style="color:#34d399; font-size:15px; font-weight:700;">${encontrada.linha}</span><br><b>Horário:</b> ${encontrada.horario}`;
             } else {
                 container.innerHTML = `<span style="color:#fbbf24;">Nenhuma escala ativa cadastrada.</span>`;
             }
         });
     }
 
+    function carregarTodasAsEscalas() {
+        const listaDiv = document.getElementById('lista-todas-escalas');
+        if(!listaDiv) return;
+        db.collection("escalas_motoristas").get().then((snapshot) => {
+            let html = '<table class="painel-tabela"><tr><th>Motorista</th><th>Pegada</th><th>Linha</th><th>Data</th></tr>';
+            snapshot.forEach((doc) => {
+                let e = doc.data();
+                html += `<tr><td><b>${e.motorista}</b></td><td>${e.pegada || 'Garagem'}</td><td>${e.linha}</td><td>${e.data}</td></tr>`;
+            });
+            listaDiv.innerHTML = html + '</table>';
+        });
+    }
+
     function salvarEscalaMotorista() {
         const chapa = document.getElementById('escala-chapa-motorista').value.trim();
         const nome = document.getElementById('escala-nome-motorista').value.trim();
-        const linha = document.getElementById('escala-linha').value.trim();
+        const pegada = document.getElementById('escala-pegada').value;
+        const linhaNum = document.getElementById('escala-linha-num').value.trim();
+        const linhaNome = document.getElementById('escala-linha-nome').value.trim();
         const data = document.getElementById('escala-data').value;
         const horario = document.getElementById('escala-horario').value.trim();
         const obs = document.getElementById('escala-obs').value.trim();
 
-        if (!chapa || !linha || !data) {
+        if (!chapa || !linhaNum || !data) {
             mostrarToast("Preencha os campos obrigatórios da escala!", "aviso");
             return;
         }
 
-        db.collection("escalas_motoristas").doc(`${chapa}_${data}`).set({ chapa, motorista: nome, linha, data, horario, obs }).then(() => {
+        const linhaCompleta = linhaNome ? linhaNome : linhaNum;
+
+        db.collection("escalas_motoristas").doc(`${chapa}_${data}`).set({ 
+            chapa, 
+            motorista: nome, 
+            pegada,
+            linha: linhaCompleta, 
+            data, 
+            horario, 
+            obs 
+        }).then(() => {
             mostrarToast("Escala salva com sucesso!", "sucesso");
+            carregarTodasAsEscalas();
         });
     }
 
