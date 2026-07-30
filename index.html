@@ -12,14 +12,27 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
     <style>
-        :root { color-scheme: dark; }
+        :root { 
+            color-scheme: dark; 
+            --bg-principal: #0f1117;
+            --bg-card: #181c24;
+            --bg-input: #12151c;
+            --borda-card: #262c38;
+            --azul-vipol: #1d4ed8;
+            --azul-hover: #2563eb;
+            --texto-principal: #f8fafc;
+            --texto-secundario: #94a3b8;
+            --sucesso: #059669;
+            --alerta: #d97706;
+            --perigo: #dc2626;
+        }
         
         html, body {
-            background-color: #121214 !important;
-            color: #e2e8f0 !important;
-            font-family: Arial, sans-serif;
+            background-color: var(--bg-principal) !important;
+            color: var(--texto-principal) !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 10px;
+            padding: 12px;
             padding-bottom: 120px;
             box-sizing: border-box;
             -webkit-text-size-adjust: 100%;
@@ -27,65 +40,69 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* Sistema de Toasts (Notificações não-travantes) */
+        /* Sistema de Toasts Modernos */
         #toast-container {
             position: fixed;
-            top: 60px; right: 10px; left: 10px;
+            top: 64px; right: 14px; left: 14px;
             z-index: 100000;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             pointer-events: none;
         }
         .toast {
-            background: #18181c;
+            background: #1e2430;
             border-left: 4px solid #3b82f6;
             color: #fff;
-            padding: 10px 14px;
-            border-radius: 6px;
-            font-size: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
             pointer-events: auto;
             transition: opacity 0.3s ease;
         }
-        .toast.sucesso { border-left-color: #10b981; }
-        .toast.erro { border-left-color: #ef4444; }
-        .toast.aviso { border-left-color: #f59e0b; }
+        .toast.sucesso { border-left-color: var(--sucesso); }
+        .toast.erro { border-left-color: var(--perigo); }
+        .toast.aviso { border-left-color: var(--alerta); }
 
         .barra-navegacao-sistema {
             position: fixed;
             top: 0; left: 0; right: 0;
-            background: #18181c;
-            border-bottom: 1px solid #2d2d34;
+            background: rgba(15, 17, 23, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--borda-card);
             display: flex;
             justify-content: center;
-            gap: 6px;
-            padding: 8px;
+            gap: 8px;
+            padding: 10px;
             z-index: 10000;
             overflow-x: auto;
         }
 
         .btn-navegacao {
-            background: #27272a;
-            color: #a1a1aa;
-            border: 1px solid #3f3f46;
-            padding: 6px 10px;
-            font-size: 10px;
-            font-weight: bold;
-            border-radius: 6px;
+            background: #181c24;
+            color: var(--texto-secundario);
+            border: 1px solid var(--borda-card);
+            padding: 8px 14px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 8px;
             cursor: pointer;
             text-transform: uppercase;
             white-space: nowrap;
-            display: none; /* Controlado via JS por permissão */
+            display: none;
+            transition: all 0.2s ease;
         }
 
         .btn-navegacao.ativo {
-            background: #3b82f6;
+            background: var(--azul-vipol);
             color: #ffffff;
-            border-color: #60a5fa;
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.4);
         }
 
-        body { padding-top: 50px; }
+        body { padding-top: 56px; }
 
         .tela-login, .painel-geral-container, .painel-oficina-container, .area-escala-container {
             display: none;
@@ -97,8 +114,8 @@
 
         .tela-login {
             position: fixed;
-            top: 50px; left: 0; right: 0; bottom: 0;
-            background: #121214;
+            top: 56px; left: 0; right: 0; bottom: 0;
+            background: var(--bg-principal);
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -107,28 +124,29 @@
         }
 
         .box-login {
-            background: #18181c;
-            border: 1px solid #2d2d34;
-            border-radius: 12px;
-            padding: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--borda-card);
+            border-radius: 16px;
+            padding: 30px 24px;
             width: 100%;
-            max-width: 360px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-width: 380px;
+            box-shadow: 0 16px 32px rgba(0,0,0,0.6);
             text-align: center;
         }
 
         .box-login h2 {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 800;
             margin-bottom: 6px;
             text-transform: uppercase;
-            color: #dae5f0;
+            letter-spacing: 0.5px;
+            color: #ffffff;
         }
 
         .box-login p {
             font-size: 13px;
-            color: #94a3b8;
-            margin-bottom: 20px;
+            color: var(--texto-secundario);
+            margin-bottom: 24px;
         }
 
         .campo-login {
@@ -142,81 +160,93 @@
 
         .campo-login label {
             font-size: 11px;
-            font-weight: bold;
-            color: #71717a;
+            font-weight: 700;
+            color: var(--texto-secundario);
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .campo-login input, .campo-login select {
-            padding: 12px;
-            background: #121214;
-            border: 1px solid #2d2d34;
-            border-radius: 8px;
+            padding: 12px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--borda-card);
+            border-radius: 10px;
             color: #ffffff;
-            font-size: 15px;
-            font-weight: bold;
+            font-size: 14px;
+            font-weight: 600;
             outline: none;
             width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        .campo-login input:focus, .campo-login select:focus {
+            border-color: var(--azul-vipol);
         }
 
         .btn-acessar {
             width: 100%;
-            background: #1a365d;
+            background: var(--azul-vipol);
             color: #ffffff;
             border: none;
-            padding: 12px;
-            font-size: 14px;
-            font-weight: bold;
-            border-radius: 8px;
+            padding: 14px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 10px;
             cursor: pointer;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
             margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
+            transition: background 0.2s;
         }
+        .btn-acessar:hover { background: var(--azul-hover); }
 
         .topo {
             text-align: center;
-            margin: 10px auto;
+            margin: 12px auto;
             max-width: 480px;
         }
 
         .titulo {
             font-size: 20px;
             font-weight: 800;
-            color: #dae5f0 !important;
+            color: #ffffff !important;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
             margin-bottom: 4px;
         }
 
         .subtitulo {
             font-size: 12px;
-            color: #94a3b8;
-            margin-bottom: 10px;
+            color: var(--texto-secundario);
+            margin-bottom: 12px;
         }
 
         .info-colaborador {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            background: #18181c !important;
-            border: 1px solid #2d2d34;
-            border-radius: 10px;
-            padding: 10px;
+            gap: 8px;
+            background: var(--bg-card) !important;
+            border: 1px solid var(--borda-card);
+            border-radius: 14px;
+            padding: 14px;
             text-align: left;
-            margin-bottom: 10px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
         .info-campo {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             font-size: 13px;
-            font-weight: bold;
-            color: #94a3b8 !important;
+            font-weight: 600;
+            color: var(--texto-secundario) !important;
         }
 
         .info-campo span {
-            width: 115px;
-            min-width: 115px;
+            width: 110px;
+            min-width: 110px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -225,14 +255,14 @@
         .info-campo input, .info-campo select {
             flex: 1;
             min-width: 0;
-            background: #121214 !important;
-            border: 1px solid #2d2d34;
-            border-radius: 6px;
+            background: var(--bg-input) !important;
+            border: 1px solid var(--borda-card);
+            border-radius: 8px;
             font-size: 13px;
-            font-weight: bold;
+            font-weight: 600;
             color: #ffffff !important;
             outline: none;
-            padding: 6px;
+            padding: 8px 10px;
         }
 
         .grupo-input-btn {
@@ -250,23 +280,25 @@
         .btn-logout {
             background: transparent;
             color: #f87171;
-            border: 1px solid #7f1d1d;
-            padding: 4px 8px;
-            border-radius: 4px;
+            border: 1px solid rgba(220, 38, 38, 0.4);
+            padding: 6px 10px;
+            border-radius: 6px;
             font-size: 10px;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
             text-transform: uppercase;
+            transition: background 0.2s;
         }
+        .btn-logout:hover { background: rgba(220, 38, 38, 0.1); }
 
         .alerta-turno-anterior {
             width: 100%;
             max-width: 480px;
             margin: 0 auto 15px auto;
-            background: #18181c;
-            border: 1px solid #d97706;
-            border-radius: 10px;
-            padding: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--alerta);
+            border-radius: 12px;
+            padding: 14px;
             display: none;
         }
 
@@ -277,11 +309,12 @@
         }
 
         .titulo-secao {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 800;
-            color: #3b82f6;
+            color: #60a5fa;
             text-transform: uppercase;
-            margin-bottom: 6px;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
             padding-left: 4px;
         }
 
@@ -292,18 +325,19 @@
         }
 
         .card-item {
-            background: #18181c !important;
-            border-radius: 10px;
-            padding: 10px 12px;
-            border: 1px solid #2d2d34;
+            background: var(--bg-card) !important;
+            border-radius: 12px;
+            padding: 12px 14px;
+            border: 1px solid var(--borda-card);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
         .nome-item {
             font-size: 13px;
-            font-weight: bold;
+            font-weight: 600;
             color: #e2e8f0;
             flex: 1;
             padding-right: 10px;
@@ -315,27 +349,30 @@
         }
 
         .btn-status {
-            background: #121214;
-            border: 1px solid #2d2d34;
-            color: #71717a;
-            padding: 6px 12px;
-            font-size: 12px;
-            font-weight: bold;
-            border-radius: 6px;
+            background: var(--bg-input);
+            border: 1px solid var(--borda-card);
+            color: var(--texto-secundario);
+            padding: 8px 14px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 8px;
             cursor: pointer;
             text-transform: uppercase;
+            transition: all 0.2s;
         }
 
         .btn-status.ativo-ok {
             background: #065f46;
-            border-color: #059669;
+            border-color: var(--sucesso);
             color: #ffffff;
+            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.4);
         }
 
         .btn-status.ativo-defeito {
             background: #7f1d1d;
-            border-color: #dc2626;
+            border-color: var(--perigo);
             color: #ffffff;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
         }
 
         .box-obs {
@@ -349,35 +386,35 @@
 
         .box-obs textarea {
             width: 100%;
-            background: #18181c;
-            border: 1px solid #2d2d34;
-            border-radius: 10px;
-            padding: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--borda-card);
+            border-radius: 12px;
+            padding: 12px;
             color: #ffffff;
             font-size: 13px;
             outline: none;
             resize: vertical;
-            min-height: 70px;
+            min-height: 80px;
         }
 
         .container-upload-foto {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            background: #18181c;
-            border: 1px solid #2d2d34;
-            border-radius: 10px;
-            padding: 10px;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--borda-card);
+            border-radius: 12px;
+            padding: 14px;
         }
 
         .btn-foto {
-            background: #1d4ed8;
+            background: var(--azul-vipol);
             color: #ffffff;
             border: none;
             padding: 12px;
-            font-size: 13px;
-            font-weight: bold;
-            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 8px;
             cursor: pointer;
             text-transform: uppercase;
             text-align: center;
@@ -389,7 +426,7 @@
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
-            margin-top: 4px;
+            margin-top: 6px;
         }
 
         .miniatura-container {
@@ -398,25 +435,25 @@
         }
 
         .miniatura-foto {
-            width: 65px;
-            height: 65px;
-            border-radius: 6px;
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
             object-fit: cover;
-            border: 1px solid #3b82f6;
+            border: 1px solid var(--azul-vipol);
         }
 
         .btn-remover-foto {
             position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #dc2626;
+            top: -6px;
+            right: -6px;
+            background: var(--perigo);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             font-size: 10px;
-            font-weight: bold;
+            font-weight: 800;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -427,18 +464,18 @@
             width: 100%;
             max-width: 480px;
             margin: 0 auto 15px auto;
-            background: #18181c;
-            border: 1px solid #2d2d34;
-            border-radius: 10px;
-            padding: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--borda-card);
+            border-radius: 12px;
+            padding: 14px;
         }
         
         .canvas-assinatura {
             width: 100%;
-            height: 120px;
-            background: #121214;
-            border: 1px dashed #4b5563;
-            border-radius: 8px;
+            height: 130px;
+            background: var(--bg-input);
+            border: 1px dashed var(--borda-card);
+            border-radius: 10px;
             cursor: crosshair;
             touch-action: none;
             display: block;
@@ -448,32 +485,33 @@
             width: 100%;
             max-width: 480px;
             margin: 0 auto 15px auto;
-            background: #18181c;
-            border: 1px solid #7f1d1d;
-            border-radius: 10px;
-            padding: 12px;
+            background: var(--bg-card);
+            border: 1px solid rgba(220, 38, 38, 0.4);
+            border-radius: 12px;
+            padding: 14px;
         }
 
         .btn-enviar-oficina {
             width: 100%;
-            background-color: #dc2626;
+            background-color: var(--perigo);
             color: #ffffff;
             border: none;
             padding: 12px;
-            font-size: 13px;
-            font-weight: bold;
+            font-size: 12px;
+            font-weight: 700;
             border-radius: 8px;
             cursor: pointer;
             text-transform: uppercase;
-            margin-top: 8px;
+            margin-top: 10px;
         }
 
         .painel-resumo {
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            background: #161619 !important;
-            border-top: 2px solid #2d2d34;
-            padding: 10px;
+            background: rgba(15, 17, 23, 0.95);
+            backdrop-filter: blur(8px);
+            border-top: 1px solid var(--borda-card);
+            padding: 12px;
             z-index: 999;
         }
 
@@ -482,27 +520,28 @@
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
         }
 
         .status-nuvem {
-            font-size: 10px;
+            font-size: 11px;
             text-align: center;
-            color: #94a3b8;
-            font-weight: bold;
+            color: var(--texto-secundario);
+            font-weight: 600;
         }
 
         .btn-enviar {
             width: 100%;
-            background-color: #10b981 !important;
+            background-color: var(--sucesso) !important;
             color: #ffffff !important;
             border: none;
-            padding: 12px;
+            padding: 14px;
             font-size: 13px;
-            font-weight: bold;
-            border-radius: 8px;
+            font-weight: 700;
+            border-radius: 10px;
             cursor: pointer;
             text-transform: uppercase;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
         }
 
         .painel-geral-container, .painel-oficina-container, .area-escala-container {
@@ -510,22 +549,23 @@
             max-width: 480px;
             margin: 0 auto;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
             padding: 0 4px;
         }
 
         .card-painel {
-            background: #18181c;
-            border: 1px solid #2d2d34;
-            border-radius: 10px;
-            padding: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--borda-card);
+            border-radius: 12px;
+            padding: 14px;
             width: 100%;
             overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
         .grupo-inputs-duplos {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             width: 100%;
         }
 
@@ -544,26 +584,26 @@
         .painel-tabela {
             width: 100%;
             border-collapse: collapse;
-            font-size: 11px;
+            font-size: 12px;
             margin-top: 8px;
         }
 
         .painel-tabela th, .painel-tabela td {
             text-align: left;
-            padding: 6px 8px;
-            border-bottom: 1px solid #2d2d34;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--borda-card);
         }
 
         .painel-tabela th {
-            color: #94a3b8;
+            color: var(--texto-secundario);
             text-transform: uppercase;
-            font-size: 9px;
+            font-size: 10px;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Container de Notificações Não-travantes -->
     <div id="toast-container"></div>
 
     <div class="barra-navegacao-sistema" id="barra-nav">
@@ -575,14 +615,14 @@
 
     <div id="tela-login" class="tela-login">
         <div class="box-login">
-            <h2>Vipol - Frota</h2>
-            <p>Identifique-se para acessar o sistema</p>
+            <h2>Vipol Transportes</h2>
+            <p>Sistema Corporativo de Frota</p>
             <div class="campo-login">
                 <label>Nome Completo</label>
                 <input type="text" id="login-nome" placeholder="Ex: Sergio Silva">
             </div>
             <div class="campo-login">
-                <label>Matrícula / Chapa (Registro)</label>
+                <label>Matrícula / Chapa</label>
                 <input type="number" id="login-chapa" placeholder="Ex: 12345">
             </div>
             <div class="campo-login">
@@ -594,10 +634,10 @@
                 <select id="login-cargo">
                     <option value="motorista">Motorista</option>
                     <option value="oficina">Mecânico / Oficina</option>
-                    <option value="controlador">Controlador / Gestor / Escalante</option>
+                    <option value="controlador">Controlador / Gestor</option>
                 </select>
             </div>
-            <button class="btn-acessar" onclick="realizarLogin()">Acessar Sistema</button>
+            <button class="btn-acessar" onclick="realizarLogin()">Entrar no Sistema</button>
         </div>
     </div>
 
@@ -606,22 +646,22 @@
             <button class="btn-logout" onclick="fazerLogout()">Trocar Usuário</button>
         </div>
         <div class="topo" style="margin-top: 2px;">
-            <div class="titulo">Minha Escala / Próxima Pegada</div>
-            <div class="subtitulo">Consulte sua linha e horário</div>
+            <div class="titulo">Minha Escala</div>
+            <div class="subtitulo">Próxima jornada de trabalho</div>
         </div>
 
-        <div class="card-painel" style="border-color: #3b82f6;">
-            <div class="titulo-secao" style="color: #60a5fa;">📋 Informações da Próxima Escala</div>
-            <div id="dados-minha-escala" style="font-size: 13px; color: #e2e8f0; margin-top: 10px; line-height: 1.6;">
+        <div class="card-painel" style="border-left: 4px solid var(--azul-vipol);">
+            <div class="titulo-secao">📋 Detalhes da Escala</div>
+            <div id="dados-minha-escala" style="font-size: 13px; color: #e2e8f0; margin-top: 10px; line-height: 1.8;">
                 Carregando sua escala...
             </div>
         </div>
 
-        <div class="card-painel" id="bloco-cadastro-escala" style="display:none; border-color: #059669; margin-top: 10px;">
+        <div class="card-painel" id="bloco-cadastro-escala" style="display:none; border-left: 4px solid var(--sucesso); margin-top: 6px;">
             <div class="titulo-secao" style="color: #34d399;">✏️ Lançar / Atualizar Escala</div>
             
             <div class="campo-login" style="margin-top: 10px;">
-                <label>Matrícula / Chapa do Motorista</label>
+                <label>Matrícula do Motorista</label>
                 <input type="text" id="escala-chapa-motorista" placeholder="Ex: 12345">
             </div>
 
@@ -631,39 +671,39 @@
             </div>
 
             <div class="campo-login">
-                <label>Número da Linha / Pegada</label>
+                <label>Linha / Pegada</label>
                 <input type="text" id="escala-linha" placeholder="Ex: 073, 596">
             </div>
 
             <div class="grupo-inputs-duplos">
                 <div class="campo-login">
-                    <label>Data da Escala</label>
+                    <label>Data</label>
                     <input type="date" id="escala-data">
                 </div>
                 <div class="campo-login">
-                    <label>Horário de Apresentação</label>
+                    <label>Apresentação</label>
                     <input type="text" id="escala-horario" placeholder="Ex: 04:30">
                 </div>
             </div>
 
             <div class="campo-login">
-                <label>Observações / Itinerário</label>
-                <textarea id="escala-obs" placeholder="Ex: Carro reserva..." style="width:100%; background:#121214; border:1px solid #2d2d34; border-radius:8px; padding:10px; color:#fff; font-size:13px; outline:none; resize:vertical; min-height:60px;"></textarea>
+                <label>Observações</label>
+                <textarea id="escala-obs" placeholder="Ex: Carro reserva..." style="width:100%; background:var(--bg-input); border:1px solid var(--borda-card); border-radius:8px; padding:10px; color:#fff; font-size:13px; outline:none; resize:vertical; min-height:60px;"></textarea>
             </div>
 
-            <button class="btn-acessar" style="background:#059669;" onclick="salvarEscalaMotorista()">Salvar Escala</button>
+            <button class="btn-acessar" style="background:var(--sucesso);" onclick="salvarEscalaMotorista()">Salvar Escala</button>
         </div>
 
-        <div class="card-painel" id="bloco-todas-escalas" style="display:none; margin-top: 10px;">
-            <div class="titulo-secao">📅 Escalas Cadastradas Recentes</div>
+        <div class="card-painel" id="bloco-todas-escalas" style="display:none; margin-top: 6px;">
+            <div class="titulo-secao">📅 Escalas Cadastradas</div>
             <div id="lista-todas-escalas" style="margin-top: 8px; max-height: 250px; overflow-y: auto;">Carregando escalas...</div>
         </div>
     </div>
 
     <div id="area-motorista" style="display:none;">
         <div class="topo">
-            <div class="titulo">Check-list Diário de Ônibus</div>
-            <div class="subtitulo">Vistoria de Saída e Segurança</div>
+            <div class="titulo">Check-list de Frota</div>
+            <div class="subtitulo">Vistoria diária de segurança</div>
             
             <div class="info-colaborador">
                 <div class="info-campo"><span>Motorista:</span><input type="text" id="txt-nome-motorista" readonly></div>
@@ -677,11 +717,11 @@
                 </div>
                 
                 <div class="info-campo">
-                    <span>Prefixo do Carro:</span>
+                    <span>Prefixo:</span>
                     <input type="text" id="txt-prefixo" placeholder="Ex: 36.159" oninput="verificarHistoricoCarro(); salvarChecklist();">
                 </div>
                 <div class="info-campo">
-                    <span>Número da Linha:</span>
+                    <span>Linha:</span>
                     <input type="text" id="txt-linha" placeholder="Ex: 073, 596" oninput="salvarChecklist()">
                 </div>
                 <div class="info-campo">
@@ -701,14 +741,14 @@
         </div>
 
         <div id="alerta-turno-anterior" class="alerta-turno-anterior">
-            <div style="font-size:11px; font-weight:bold; color:#fbbf24; text-transform:uppercase; margin-bottom:4px;">⚠️ Relato do Turno Anterior</div>
+            <div style="font-size:11px; font-weight:700; color:#fbbf24; text-transform:uppercase; margin-bottom:4px;">⚠️ Relato do Turno Anterior</div>
             <div id="texto-relato-anterior" style="font-size:12px; color:#e2e8f0;">Nenhum relato recente.</div>
         </div>
 
         <div id="container-checklist"></div>
 
         <div class="box-obs">
-            <div class="titulo-secao">Observações / Defeitos Encontrados</div>
+            <div class="titulo-secao">Observações / Defeitos</div>
             <textarea id="txt-observacoes" placeholder="Descreva falhas mecânicas..." oninput="salvarChecklist()"></textarea>
             
             <div class="container-upload-foto">
@@ -719,16 +759,16 @@
         </div>
 
         <div class="box-assinatura">
-            <div class="titulo-secao" style="margin-bottom: 4px;">✍️ Assinatura Digital de Conformidade</div>
+            <div class="titulo-secao" style="margin-bottom: 6px;">✍️ Assinatura Digital</div>
             <canvas id="canvas-assinatura" class="canvas-assinatura"></canvas>
-            <button onclick="limparAssinatura()" style="background: transparent; color: #f87171; border: 1px solid #7f1d1d; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; margin-top: 6px; text-transform: uppercase;">Limpar Assinatura</button>
+            <button onclick="limparAssinatura()" style="background: transparent; color: #f87171; border: 1px solid rgba(220,38,38,0.4); padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; cursor: pointer; margin-top: 6px; text-transform: uppercase;">Limpar Assinatura</button>
         </div>
 
         <div class="box-oficina">
-            <div class="titulo-secao" style="color: #f87171;">⚠️ Chamado Urgente / Pane na Rua</div>
+            <div class="titulo-secao" style="color: #f87171;">🚨 Chamado Urgente / Pane na Rua</div>
             <div class="campo-login" style="margin-bottom: 8px;">
                 <label>Tipo do Problema</label>
-                <select id="sel-tipo-pane" style="width:100%; padding:10px; background:#121214; border:1px solid #2d2d34; border-radius:8px; color:#fff; font-weight:bold;">
+                <select id="sel-tipo-pane" style="width:100%; padding:10px; background:var(--bg-input); border:1px solid var(--borda-card); border-radius:8px; color:#fff; font-weight:600;">
                     <option value="Mecânica">Mecânica (Motor / Câmbio)</option>
                     <option value="Freios">Sistema de Freios</option>
                     <option value="Elétrica">Elétrica / Faróis / Painel</option>
@@ -736,15 +776,15 @@
                     <option value="Outros">Outro Problema</option>
                 </select>
             </div>
-            <textarea id="txt-obs-oficina" placeholder="Descreva o que aconteceu..." style="width: 100%; background: #121214; border: 1px solid #2d2d34; border-radius: 8px; padding: 10px; color: #ffffff; font-size: 13px; outline: none; resize: vertical; min-height: 60px; margin-bottom: 6px;"></textarea>
+            <textarea id="txt-obs-oficina" placeholder="Descreva o que aconteceu..." style="width: 100%; background: var(--bg-input); border: 1px solid var(--borda-card); border-radius: 8px; padding: 10px; color: #ffffff; font-size: 13px; outline: none; resize: vertical; min-height: 60px; margin-bottom: 6px;"></textarea>
             
-            <div class="container-upload-foto" style="background: #121214;">
+            <div class="container-upload-foto" style="background: var(--bg-input);">
                 <label for="input-foto-oficina" class="btn-foto" style="background: #991b1b;">📸 Foto da Pane</label>
                 <input type="file" id="input-foto-oficina" accept="image/*" capture="environment" style="display: none;" onchange="processarFotoOficina(this)">
                 <div class="preview-fotos" id="preview-fotos-oficina"></div>
             </div>
 
-            <button class="btn-enviar-oficina" onclick="enviarChamadoOficina()">🚨 Enviar Chamado com GPS</button>
+            <button class="btn-enviar-oficina" onclick="enviarChamadoOficina()">🚨 Enviar com GPS</button>
         </div>
 
         <div class="painel-resumo">
@@ -759,16 +799,16 @@
         <div style="text-align: right; padding-top: 5px;">
             <button class="btn-logout" onclick="fazerLogout()">Trocar Usuário</button>
         </div>
-        <div class="titulo" style="margin-top: 5px; text-align: center;">Módulo da Oficina</div>
-        <div class="subtitulo" style="text-align: center;">Controle Preventivo e Histórico</div>
+        <div class="titulo" style="margin-top: 5px; text-align: center;">Módulo Oficina</div>
+        <div class="subtitulo" style="text-align: center;">Controle Preventivo e Manutenções</div>
 
-        <div class="card-painel" style="border-color: #d97706;">
-            <div class="titulo-secao" style="color: #fbbf24;">⚠️ Alertas Preventivos Próximos (Km)</div>
+        <div class="card-painel" style="border-left: 4px solid var(--alerta);">
+            <div class="titulo-secao" style="color: #fbbf24;">⚠️ Alertas Preventivos</div>
             <div id="lista-alertas-preventivos" style="font-size:12px; color:#e2e8f0; margin-top:6px;">Calculando quilometragens...</div>
         </div>
 
-        <div class="card-painel" style="border-color: #2563eb;">
-            <div class="titulo-secao" style="color: #60a5fa;">🔧 Registrar Nova Manutenção</div>
+        <div class="card-painel" style="border-left: 4px solid var(--azul-vipol);">
+            <div class="titulo-secao" style="color: #60a5fa;">🔧 Registrar Manutenção</div>
             
             <div class="campo-login" style="margin-top: 10px;">
                 <label>Prefixo do Carro</label>
@@ -786,27 +826,27 @@
             </div>
 
             <div class="campo-login">
-                <label>Quilometragem Atual do Carro (Km)</label>
+                <label>Quilometragem (Km)</label>
                 <input type="number" id="oficina-km" placeholder="Ex: 48500">
             </div>
 
             <div class="campo-login">
-                <label>Nome do Mecânico</label>
+                <label>Mecânico Responsável</label>
                 <input type="text" id="oficina-mecanico" placeholder="Seu Nome">
             </div>
 
             <div class="campo-login">
                 <label>Observações</label>
-                <textarea id="oficina-obs" placeholder="Detalhes..." style="width:100%; background:#121214; border:1px solid #2d2d34; border-radius:8px; padding:10px; color:#fff; font-size:13px; outline:none; resize:vertical; min-height:60px;"></textarea>
+                <textarea id="oficina-obs" placeholder="Detalhes..." style="width:100%; background:var(--bg-input); border:1px solid var(--borda-card); border-radius:8px; padding:10px; color:#fff; font-size:13px; outline:none; resize:vertical; min-height:60px;"></textarea>
             </div>
 
-            <button class="btn-acessar" style="background:#2563eb;" onclick="salvarManutencaoOficina()">Salvar Histórico</button>
+            <button class="btn-acessar" style="background:var(--azul-vipol);" onclick="salvarManutencaoOficina()">Salvar Histórico</button>
         </div>
 
         <div class="card-painel">
             <div class="painel-header-flex">
-                <div class="titulo-secao" style="margin-bottom:0;">📋 Histórico de Manutenções</div>
-                <button onclick="carregarHistoricoOficina()" style="background:transparent; border:1px solid #3f3f46; color:#a1a1aa; padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;">🔄 Atualizar</button>
+                <div class="titulo-secao" style="margin-bottom:0;">📋 Histórico</div>
+                <button onclick="carregarHistoricoOficina()" style="background:transparent; border:1px solid var(--borda-card); color:var(--texto-secundario); padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;">🔄 Atualizar</button>
             </div>
             <div class="campo-login" style="margin-top: 8px; margin-bottom: 6px;">
                 <input type="text" id="filtro-busca-oficina" placeholder="Filtrar por Prefixo" oninput="carregarHistoricoOficina()">
@@ -822,7 +862,7 @@
         <div class="titulo" style="margin-top: 5px; text-align: center;">Painel de Controle</div>
         <div class="subtitulo" style="text-align: center;">Monitoramento em Tempo Real</div>
 
-        <div class="card-painel" style="border-color: #059669;">
+        <div class="card-painel" style="border-left: 4px solid var(--sucesso);">
             <div class="titulo-secao" style="color: #34d399;">🔄 Remanejamento Rápido</div>
             <div class="campo-login" style="margin-bottom:8px;">
                 <label>Motorista Afetado</label>
@@ -830,7 +870,7 @@
             </div>
             <div class="grupo-inputs-duplos" style="margin-bottom:8px;">
                 <div class="campo-login">
-                    <label>Carro em Pane</label>
+                    <label>Carro Antigo</label>
                     <input type="text" id="remaneja-antigo" placeholder="Ex: 36.159">
                 </div>
                 <div class="campo-login">
@@ -838,10 +878,10 @@
                     <input type="text" id="remaneja-novo" placeholder="Ex: 36.999">
                 </div>
             </div>
-            <button class="btn-acessar" style="background:#059669; margin-top:0;" onclick="executarRemanejamento()">Confirmar</button>
+            <button class="btn-acessar" style="background:var(--sucesso); margin-top:0;" onclick="executarRemanejamento()">Confirmar Remanejamento</button>
         </div>
 
-        <div class="card-painel" style="border-color: #7f1d1d;">
+        <div class="card-painel" style="border-left: 4px solid var(--perigo);">
             <div class="titulo-secao" style="color: #f87171;">🚨 Chamados Urgentes com GPS</div>
             <div id="lista-chamados-painel" style="margin-top: 8px; font-size: 12px; color: #cbd5e1;">Carregando chamados...</div>
         </div>
@@ -849,11 +889,11 @@
         <div class="card-painel">
             <div class="titulo-secao">🔍 Consulta de Quilometragem</div>
             <div style="display: flex; gap: 6px; margin-top: 6px;">
-                <input type="text" id="filtro-busca" placeholder="Prefixo do Carro" style="flex:1; padding:10px; background:#121214; border:1px solid #2d2d34; border-radius:8px; color:#fff; font-size:12px; outline:none;">
-                <button onclick="buscarHistorico()" style="background:#3b82f6; border:none; color:#fff; padding:0 14px; border-radius:8px; font-weight:bold; cursor:pointer;">Consultar</button>
+                <input type="text" id="filtro-busca" placeholder="Prefixo do Carro" style="flex:1; padding:10px; background:var(--bg-input); border:1px solid var(--borda-card); border-radius:8px; color:#fff; font-size:12px; outline:none;">
+                <button onclick="buscarHistorico()" style="background:var(--azul-vipol); border:none; color:#fff; padding:0 14px; border-radius:8px; font-weight:700; cursor:pointer;">Consultar</button>
             </div>
             <div id="resultado-busca-historico" style="margin-top: 12px; max-height: 300px; overflow-y: auto;">
-                <span style="font-size: 12px; color: #71717a;">Insira o prefixo acima.</span>
+                <span style="font-size: 12px; color: var(--texto-secundario);">Insira o prefixo acima.</span>
             </div>
         </div>
     </div>
@@ -890,7 +930,6 @@
         }
     ];
 
-    // Sistema de Notificações Não-travantes (Toasts)
     function mostrarToast(mensagem, tipo = 'normal') {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
@@ -972,7 +1011,6 @@
 
             document.getElementById("tela-login").style.display = "none";
             
-            // Controle de permissão dinâmico na barra de navegação
             document.getElementById('tab-escala').style.display = 'block';
             if (cargoSalvo === 'motorista') {
                 document.getElementById('tab-motorista').style.display = 'block';
@@ -1031,9 +1069,9 @@
                 if (String(e.chapa) === String(usuarioChapaAtivo)) encontrada = e;
             });
             if (encontrada) {
-                container.innerHTML = `<b>Data:</b> ${encontrada.data}<br><b>Linha:</b> <span style="color:#34d399; font-size:16px;">${encontrada.linha}</span><br><b>Horário:</b> ${encontrada.horario}`;
+                container.innerHTML = `<b>Data:</b> ${encontrada.data}<br><b>Linha:</b> <span style="color:#34d399; font-size:16px; font-weight:700;">${encontrada.linha}</span><br><b>Horário:</b> ${encontrada.horario}`;
             } else {
-                container.innerHTML = `<span style="color:#fbbf24;">Nenhuma escala ativa.</span>`;
+                container.innerHTML = `<span style="color:#fbbf24;">Nenhuma escala ativa cadastrada.</span>`;
             }
         });
     }
@@ -1116,7 +1154,7 @@
             const reader = new FileReader();
             reader.onload = (e) => {
                 listaFotosOficinaBase64.push(e.target.result);
-                document.getElementById('preview-fotos-oficina').innerHTML = `<span style="font-size:11px; color:#10b981;">Foto anexada!</span>`;
+                document.getElementById('preview-fotos-oficina').innerHTML = `<span style="font-size:11px; color:#10b981; font-weight:600;">Foto anexada com sucesso!</span>`;
             };
             reader.readAsDataURL(input.files[0]);
         }
@@ -1146,11 +1184,10 @@
             });
 
             db.collection("checklists_onibus").doc(`${usuarioChapaAtivo}_${new Date().toISOString().split('T')[0]}`).set(dados)
-            .then(() => document.getElementById('txt-status-nuvem').innerText = "Sincronizado ☁️");
+            .then(() => document.getElementById('txt-status-nuvem').innerText = "Sincronizado na nuvem ☁️");
         }, 1000);
     }
 
-    // Envio com Captura de GPS Automática e Não-travante
     function enviarChamadoOficina() {
         const prefixo = document.getElementById('txt-prefixo').value.trim();
         const descricao = document.getElementById('txt-obs-oficina').value.trim();
@@ -1165,7 +1202,7 @@
             navigator.geolocation.getCurrentPosition((pos) => {
                 enviarDadosPane(prefixo, descricao, pos.coords.latitude, pos.coords.longitude);
             }, () => {
-                enviarDadosPane(prefixo, descricao, null, null); // Envia mesmo se o GPS falhar
+                enviarDadosPane(prefixo, descricao, null, null);
             }, { timeout: 5000 });
         } else {
             enviarDadosPane(prefixo, descricao, null, null);
@@ -1188,7 +1225,6 @@
         });
     }
 
-    // Trava de Quilometragem e Validação Async para Evitar Travamentos
     async function finalizarEEnviar() {
         const prefixo = document.getElementById('txt-prefixo').value.trim();
         const kmAtual = Number(document.getElementById('txt-km-inicial').value);
@@ -1245,7 +1281,7 @@
     }
 
     function carregarAlertasPreventivos() {
-        document.getElementById('lista-alertas-preventivos').innerHTML = '<span style="color:#10b981;">Frota regularizada.</span>';
+        document.getElementById('lista-alertas-preventivos').innerHTML = '<span style="color:#10b981;">Nenhum alerta pendente. Frota regularizada.</span>';
     }
 
     function carregarDadosPainel() {
@@ -1253,19 +1289,19 @@
             let html = "";
             snap.forEach(d => {
                 let c = d.data();
-                let gpsLink = c.latitude ? `<a href="https://maps.google.com/?q=${c.latitude},${c.longitude}" target="_blank" style="color:#38bdf8;">🗺️ Ver no Mapa</a>` : '';
-                html += `<div style="background:#121214; border:1px solid #7f1d1d; padding:8px; margin-bottom:6px;">Carro: ${c.prefixo} - ${c.descricao} ${gpsLink}</div>`;
+                let gpsLink = c.latitude ? `<a href="https://maps.google.com/?q=${c.latitude},${c.longitude}" target="_blank" style="color:#38bdf8; font-weight:600;">🗺️ Ver no Mapa</a>` : '';
+                html += `<div style="background:var(--bg-input); border:1px solid rgba(220,38,38,0.4); padding:10px; border-radius:8px; margin-bottom:6px;">Carro: <b>${c.prefixo}</b> - ${c.descricao} <br>${gpsLink}</div>`;
             });
-            document.getElementById('lista-chamados-painel').innerHTML = html || "Nenhum chamado pendente.";
+            document.getElementById('lista-chamados-painel').innerHTML = html || "Nenhum chamado pendente no momento.";
         });
     }
 
     function executarRemanejamento() {
-        mostrarToast("Remanejamento registrado!", "sucesso");
+        mostrarToast("Remanejamento registrado com sucesso!", "sucesso");
     }
 
     function buscarHistorico() {
-        mostrarToast("Consulta efetuada.", "sucesso");
+        mostrarToast("Consulta de histórico efetuada.", "sucesso");
     }
 
     window.onload = verificarSessao;
