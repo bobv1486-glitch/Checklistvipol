@@ -661,14 +661,15 @@
         <div class="card-painel" id="bloco-cadastro-escala" style="display:none; border-left: 4px solid var(--sucesso); margin-top: 6px;">
             <div class="titulo-secao" style="color: #34d399;">✏️ Lançar / Atualizar Escala</div>
             
-            <div class="campo-login" style="margin-top: 10px;">
-                <label>Matrícula do Motorista</label>
-                <input type="text" id="escala-chapa-motorista" placeholder="Ex: 12345">
-            </div>
-
-            <div class="campo-login">
-                <label>Nome do Motorista</label>
-                <input type="text" id="escala-nome-motorista" placeholder="Ex: Sergio Silva">
+            <div class="grupo-inputs-duplos" style="margin-top: 10px;">
+                <div class="campo-login" style="flex: 0.7;">
+                    <label>Matrícula (Chapa)</label>
+                    <input type="text" id="escala-chapa-motorista" placeholder="Ex: 12345" oninput="buscarMotoristaPorChapaEscala()">
+                </div>
+                <div class="campo-login" style="flex: 1.3;">
+                    <label>Nome do Motorista (Auto / Digite se novo)</label>
+                    <input type="text" id="escala-nome-motorista" placeholder="Digite o nome se for novo..." style="background: rgba(255,255,255,0.03); color: #34d399;">
+                </div>
             </div>
 
             <div class="campo-login">
@@ -1052,7 +1053,6 @@
 
             document.getElementById("tela-login").style.display = "none";
             
-            // Configurar abas e permissões por cargo
             if (cargoSalvo === 'motorista') {
                 document.getElementById('tab-escala').style.display = 'block';
                 document.getElementById('tab-motorista').style.display = 'block';
@@ -1102,6 +1102,10 @@
         localStorage.setItem("vipol_cargo_usuario", cargo);
         if(whatsapp) localStorage.setItem("vipol_whatsapp_usuario", whatsapp);
 
+        if(cargo === 'motorista') {
+            db.collection("motoristas_cadastrados").doc(chapa).set({ chapa, nome, whatsapp: whatsapp || "" });
+        }
+
         verificarSessao();
         mostrarToast("Login efetuado com sucesso!", "sucesso");
     }
@@ -1109,6 +1113,27 @@
     function fazerLogout() {
         localStorage.clear();
         location.reload();
+    }
+
+    // AUTO-APRENDIZADO: BUSCA OU SALVA O MOTORISTA DIRETAMENTE NA ESCALA
+    function buscarMotoristaPorChapaEscala() {
+        let chapaInput = document.getElementById('escala-chapa-motorista').value.trim();
+        let nomeInput = document.getElementById('escala-nome-motorista');
+
+        if (!chapaInput) {
+            nomeInput.value = "";
+            return;
+        }
+
+        db.collection("motoristas_cadastrados").doc(chapaInput).get().then((doc) => {
+            if (doc.exists) {
+                let dados = doc.data();
+                nomeInput.value = dados.nome;
+            } else {
+                nomeInput.value = "";
+                nomeInput.placeholder = "Motorista novo! Digite o nome aqui...";
+            }
+        });
     }
 
     function carregarMinhaEscala() {
@@ -1152,13 +1177,21 @@
         const horario = document.getElementById('escala-horario').value.trim();
         const obs = document.getElementById('escala-obs').value.trim();
 
-        if (!chapa || !linhaNum || !data) {
-            mostrarToast("Preencha os campos obrigatórios da escala!", "aviso");
+        if (!chapa || !nome || !linhaNum || !data) {
+            mostrarToast("Preencha a matrícula, nome, linha e data!", "aviso");
             return;
         }
 
         const linhaCompleta = linhaNome ? linhaNome : linhaNum;
 
+        // Salva automaticamente o motorista na base para as próximas consultas automáticas
+        db.collection("motoristas_cadastrados").doc(chapa).set({
+            chapa,
+            nome,
+            whatsapp: ""
+        });
+
+        // Salva a escala
         db.collection("escalas_motoristas").doc(`${chapa}_${data}`).set({ 
             chapa, 
             motorista: nome, 
@@ -1168,7 +1201,7 @@
             horario, 
             obs 
         }).then(() => {
-            mostrarToast("Escala salva com sucesso!", "sucesso");
+            mostrarToast("Escala salva e motorista memorizado com sucesso!", "sucesso");
             carregarTodasAsEscalas();
         });
     }
