@@ -652,14 +652,14 @@
         </div>
 
         <div class="card-painel" id="bloco-minha-escala" style="border-left: 4px solid var(--azul-vipol);">
-            <div class="titulo-secao">📋 Minha Próxima Escala</div>
-            <div id="dados-minha-escala" style="font-size: 13px; color: #e2e8f0; margin-top: 10px; line-height: 1.8;">
-                Carregando sua escala...
+            <div class="titulo-secao">📋 Minhas Próximas Escalas</div>
+            <div id="dados-minha-escala" style="font-size: 13px; color: #e2e8f0; margin-top: 10px; line-height: 1.6;">
+                Carregando suas escalas...
             </div>
         </div>
 
         <div class="card-painel" id="bloco-cadastro-escala" style="display:none; border-left: 4px solid var(--sucesso); margin-top: 6px;">
-            <div class="titulo-secao" style="color: #34d399;">✏️ Lançar / Atualizar Escala</div>
+            <div class="titulo-secao" style="color: #34d399;">✏️ Lançar Escala (Data Específica)</div>
             
             <div class="grupo-inputs-duplos" style="margin-top: 10px;">
                 <div class="campo-login" style="flex: 0.7;">
@@ -667,13 +667,13 @@
                     <input type="text" id="escala-chapa-motorista" placeholder="Ex: 12345" oninput="buscarMotoristaPorChapaEscala()">
                 </div>
                 <div class="campo-login" style="flex: 1.3;">
-                    <label>Nome do Motorista (Auto / Digite se novo)</label>
-                    <input type="text" id="escala-nome-motorista" placeholder="Digite o nome se for novo..." style="background: rgba(255,255,255,0.03); color: #34d399;">
+                    <label>Nome do Motorista</label>
+                    <input type="text" id="escala-nome-motorista" placeholder="Nome automático..." style="background: rgba(255,255,255,0.03); color: #34d399;">
                 </div>
             </div>
 
             <div class="campo-login">
-                <label>Local da Pegada (Início do Trabalho)</label>
+                <label>Local da Pegada</label>
                 <select id="escala-pegada">
                     <option value="Garagem">Garagem</option>
                     <option value="Vila Any">Vila Any</option>
@@ -684,8 +684,8 @@
             </div>
 
             <div class="campo-login">
-                <label>Número da Linha (Digite para autocompletar)</label>
-                <input type="text" id="escala-linha-num" placeholder="Ex: 077, 596, 139..." oninput="buscarNomeLinhaAutomatico()">
+                <label>Número da Linha</label>
+                <input type="text" id="escala-linha-num" placeholder="Ex: 596, 077..." oninput="buscarNomeLinhaAutomatico()">
             </div>
 
             <div class="campo-login">
@@ -693,23 +693,22 @@
                 <input type="text" id="escala-linha-nome" placeholder="Preenchimento automático..." readonly style="background: rgba(255,255,255,0.03); color: #34d399;">
             </div>
 
-            <div class="grupo-inputs-duplos">
-                <div class="campo-login">
-                    <label>Data</label>
-                    <input type="date" id="escala-data">
-                </div>
-                <div class="campo-login">
-                    <label>Apresentação</label>
-                    <input type="text" id="escala-horario" placeholder="Ex: 04:30">
-                </div>
+            <div class="campo-login">
+                <label>Data da Escala</label>
+                <input type="date" id="escala-data">
+            </div>
+
+            <div class="campo-login">
+                <label>Horário de Apresentação</label>
+                <input type="text" id="escala-horario" placeholder="Ex: 04:30">
             </div>
 
             <div class="campo-login">
                 <label>Observações</label>
-                <textarea id="escala-obs" placeholder="Ex: Carro reserva..." style="width:100%; background:var(--bg-input); border:1px solid var(--borda-card); border-radius:8px; padding:10px; color:#fff; font-size:13px; outline:none; resize:vertical; min-height:60px;"></textarea>
+                <textarea id="escala-obs" placeholder="Ex: Escala especial..." style="width:100%; background:var(--bg-input); border:1px solid var(--borda-card); border-radius:8px; padding:10px; color:#fff; font-size:13px; outline:none; resize:vertical; min-height:60px;"></textarea>
             </div>
 
-            <button class="btn-acessar" style="background:var(--sucesso);" onclick="salvarEscalaMotorista()">Salvar Escala</button>
+            <button class="btn-acessar" style="background:var(--sucesso);" onclick="salvarEscalaIndividual()">Salvar Escala</button>
         </div>
 
         <div class="card-painel" id="bloco-todas-escalas" style="display:none; margin-top: 6px;">
@@ -941,7 +940,6 @@
         "499": "499 - Dom Bosco X Cecap"
     };
 
-    // Função auxiliar para formatar a data de AAAA-MM-DD para DD/MM/AAAA
     function formatarDataBR(dataStr) {
         if (!dataStr) return "";
         let partes = dataStr.split('-');
@@ -1148,18 +1146,38 @@
     function carregarMinhaEscala() {
         const container = document.getElementById('dados-minha-escala');
         if(!container) return;
-        container.innerHTML = "Buscando escala...";
+        container.innerHTML = "Buscando escalas...";
+        
         db.collection("escalas_motoristas").get().then((snapshot) => {
-            let encontrada = null;
+            let minhasEscalas = [];
+            
+            // Pega a data de hoje no formato YYYY-MM-DD ajustada para o padrão do input date
+            let agora = new Date();
+            let hojeStr = agora.getFullYear() + '-' + String(agora.getMonth() + 1).padStart(2, '0') + '-' + String(agora.getDate()).padStart(2, '0');
+
             snapshot.forEach((doc) => {
                 let e = doc.data();
-                if (String(e.chapa) === String(usuarioChapaAtivo)) encontrada = e;
+                // Filtra apenas as escalas do motorista atual E que a data seja maior ou igual a hoje (remove dias passados automaticamente)
+                if (String(e.chapa) === String(usuarioChapaAtivo) && e.data >= hojeStr) {
+                    minhasEscalas.push(e);
+                }
             });
-            if (encontrada) {
-                let dataBR = formatarDataBR(encontrada.data);
-                container.innerHTML = `<b>Data:</b> ${dataBR}<br><b>Pegada:</b> <span style="color:#60a5fa;">${encontrada.pegada || 'Garagem'}</span><br><b>Linha:</b> <span style="color:#34d399; font-size:15px; font-weight:700;">${encontrada.linha}</span><br><b>Horário:</b> ${encontrada.horario}`;
+
+            minhasEscalas.sort((a, b) => a.data.localeCompare(b.data));
+
+            if (minhasEscalas.length > 0) {
+                let html = "";
+                minhasEscalas.forEach(e => {
+                    let dataBR = formatarDataBR(e.data);
+                    html += `<div style="background:var(--bg-input); border:1px solid var(--borda-card); padding:10px; border-radius:8px; margin-bottom:8px;">
+                        <b>Data:</b> ${dataBR} | <b>Horário:</b> ${e.horario}<br>
+                        <b>Pegada:</b> <span style="color:#60a5fa;">${e.pegada || 'Garagem'}</span><br>
+                        <b>Linha:</b> <span style="color:#34d399; font-weight:700;">${e.linha}</span>
+                    </div>`;
+                });
+                container.innerHTML = html;
             } else {
-                container.innerHTML = `<span style="color:#fbbf24;">Nenhuma escala ativa cadastrada.</span>`;
+                container.innerHTML = `<span style="color:#fbbf24;">Nenhuma escala ativa para hoje ou dias futuros.</span>`;
             }
         });
     }
@@ -1169,8 +1187,11 @@
         if(!listaDiv) return;
         db.collection("escalas_motoristas").get().then((snapshot) => {
             let html = '<table class="painel-tabela"><tr><th>Motorista</th><th>Pegada</th><th>Linha</th><th>Data</th></tr>';
-            snapshot.forEach((doc) => {
-                let e = doc.data();
+            let escalasArr = [];
+            snapshot.forEach(doc => escalasArr.push(doc.data()));
+            escalasArr.sort((a, b) => b.data.localeCompare(a.data));
+
+            escalasArr.forEach((e) => {
                 let dataBR = formatarDataBR(e.data);
                 html += `<tr><td><b>${e.motorista}</b></td><td>${e.pegada || 'Garagem'}</td><td>${e.linha}</td><td>${dataBR}</td></tr>`;
             });
@@ -1178,17 +1199,17 @@
         });
     }
 
-    function salvarEscalaMotorista() {
+    function salvarEscalaIndividual() {
         const chapa = document.getElementById('escala-chapa-motorista').value.trim();
         const nome = document.getElementById('escala-nome-motorista').value.trim();
         const pegada = document.getElementById('escala-pegada').value;
         const linhaNum = document.getElementById('escala-linha-num').value.trim();
         const linhaNome = document.getElementById('escala-linha-nome').value.trim();
-        const data = document.getElementById('escala-data').value;
+        const dataEscala = document.getElementById('escala-data').value;
         const horario = document.getElementById('escala-horario').value.trim();
         const obs = document.getElementById('escala-obs').value.trim();
 
-        if (!chapa || !nome || !linhaNum || !data) {
+        if (!chapa || !nome || !linhaNum || !dataEscala) {
             mostrarToast("Preencha a matrícula, nome, linha e data!", "aviso");
             return;
         }
@@ -1201,17 +1222,24 @@
             whatsapp: ""
         });
 
-        db.collection("escalas_motoristas").doc(`${chapa}_${data}`).set({ 
-            chapa, 
-            motorista: nome, 
+        const idDocumento = `${chapa}_${dataEscala}`;
+
+        db.collection("escalas_motoristas").doc(idDocumento).set({
+            chapa,
+            motorista: nome,
             pegada,
-            linha: linhaCompleta, 
-            data, 
-            horario, 
-            obs 
+            linha: linhaCompleta,
+            data: dataEscala,
+            horario,
+            obs
         }).then(() => {
-            mostrarToast("Escala salva e motorista memorizado com sucesso!", "sucesso");
+            mostrarToast(`Escala para o dia ${formatarDataBR(dataEscala)} salva com sucesso!`, "sucesso");
             carregarTodasAsEscalas();
+            document.getElementById('escala-linha-num').value = "";
+            document.getElementById('escala-linha-nome').value = "";
+            document.getElementById('escala-data').value = "";
+            document.getElementById('escala-horario').value = "";
+            document.getElementById('escala-obs').value = "";
         });
     }
 
