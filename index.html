@@ -633,6 +633,7 @@
                 <label>Cargo / Função</label>
                 <select id="login-cargo">
                     <option value="motorista">Motorista</option>
+                    <option value="escalante">Escalante</option>
                     <option value="oficina">Mecânico / Oficina</option>
                     <option value="controlador">Controlador / Gestor</option>
                 </select>
@@ -646,12 +647,12 @@
             <button class="btn-logout" onclick="fazerLogout()">Trocar Usuário</button>
         </div>
         <div class="topo" style="margin-top: 2px;">
-            <div class="titulo">Minha Escala</div>
-            <div class="subtitulo">Próxima jornada de trabalho</div>
+            <div class="titulo">Painel de Escalas</div>
+            <div class="subtitulo">Gestão e consulta de jornadas</div>
         </div>
 
-        <div class="card-painel" style="border-left: 4px solid var(--azul-vipol);">
-            <div class="titulo-secao">📋 Detalhes da Escala</div>
+        <div class="card-painel" id="bloco-minha-escala" style="border-left: 4px solid var(--azul-vipol);">
+            <div class="titulo-secao">📋 Minha Próxima Escala</div>
             <div id="dados-minha-escala" style="font-size: 13px; color: #e2e8f0; margin-top: 10px; line-height: 1.8;">
                 Carregando sua escala...
             </div>
@@ -711,7 +712,7 @@
         </div>
 
         <div class="card-painel" id="bloco-todas-escalas" style="display:none; margin-top: 6px;">
-            <div class="titulo-secao">📅 Escalas Cadastradas</div>
+            <div class="titulo-secao">📅 Escalas Cadastradas (Geral)</div>
             <div id="lista-todas-escalas" style="margin-top: 8px; max-height: 250px; overflow-y: auto;">Carregando escalas...</div>
         </div>
     </div>
@@ -927,7 +928,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Dicionário de Linhas Vipol atualizado com base na imagem enviada
     const dicionarioLinhas = {
         "077": "077 - Vila Any X Metrô Brás",
         "319": "319 - Tupinambá X Metrô Itaquera",
@@ -1052,11 +1052,21 @@
 
             document.getElementById("tela-login").style.display = "none";
             
-            document.getElementById('tab-escala').style.display = 'block';
+            // Configurar abas e permissões por cargo
             if (cargoSalvo === 'motorista') {
+                document.getElementById('tab-escala').style.display = 'block';
                 document.getElementById('tab-motorista').style.display = 'block';
+                document.getElementById('bloco-minha-escala').style.display = 'block';
+                document.getElementById('bloco-cadastro-escala').style.display = 'none';
+                document.getElementById('bloco-todas-escalas').style.display = 'none';
                 document.getElementById("txt-nome-motorista").value = usuarioNomeAtivo;
                 document.getElementById("txt-chapa-motorista").value = usuarioChapaAtivo;
+                mudarVisao('escala');
+            } else if (cargoSalvo === 'escalante') {
+                document.getElementById('tab-escala').style.display = 'block';
+                document.getElementById('bloco-minha-escala').style.display = 'none';
+                document.getElementById('bloco-cadastro-escala').style.display = 'block';
+                document.getElementById('bloco-todas-escalas').style.display = 'block';
                 mudarVisao('escala');
             } else if (cargoSalvo === 'oficina') {
                 document.getElementById('tab-oficina').style.display = 'block';
@@ -1066,8 +1076,9 @@
                 document.getElementById('tab-motorista').style.display = 'block';
                 document.getElementById('tab-oficina').style.display = 'block';
                 document.getElementById('tab-controlador').style.display = 'block';
-                document.getElementById("bloco-cadastro-escala").style.display = "block";
-                document.getElementById("bloco-todas-escalas").style.display = "block";
+                document.getElementById('bloco-minha-escala').style.display = 'block';
+                document.getElementById('bloco-cadastro-escala').style.display = 'block';
+                document.getElementById('bloco-todas-escalas').style.display = 'block';
                 mudarVisao('controlador');
             }
         } else {
@@ -1102,6 +1113,7 @@
 
     function carregarMinhaEscala() {
         const container = document.getElementById('dados-minha-escala');
+        if(!container) return;
         container.innerHTML = "Buscando escala...";
         db.collection("escalas_motoristas").get().then((snapshot) => {
             let encontrada = null;
