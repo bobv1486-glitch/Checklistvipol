@@ -1096,7 +1096,13 @@
                 mudarVisao('controlador');
             }
         } else {
+            // Se não houver dados salvos, exibe a tela de login e preenche automaticamente se houver algo cacheado anteriormente
             document.getElementById("tela-login").style.display = "flex";
+            if(chapaSalva) document.getElementById("login-chapa").value = chapaSalva;
+            if(nomeSalvo) document.getElementById("login-nome").value = nomeSalvo;
+            if(cargoSalvo) document.getElementById("login-cargo").value = cargoSalvo;
+            const whatsSalvo = localStorage.getItem("vipol_whatsapp_usuario");
+            if(whatsSalvo) document.getElementById("login-whatsapp").value = whatsSalvo;
         }
     }
 
