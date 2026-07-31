@@ -1002,6 +1002,7 @@
         if (modo === 'escala') {
             document.getElementById('tab-escala').classList.add('ativo');
             document.getElementById('area-escala').classList.add('ativo-tela');
+            limparEscalasAntigas(); // Executa a limpeza automática de escalas com mais de 5 dias
             carregarMinhaEscala();
             carregarTodasAsEscalas();
         } else if (modo === 'motorista') {
@@ -1019,6 +1020,22 @@
             document.getElementById('painel-geral').classList.add('ativo-tela');
             carregarDadosPainel();
         }
+    }
+
+    // Função que apaga automaticamente do Firebase as escalas com mais de 5 dias
+    function limparEscalasAntigas() {
+        let hoje = new Date();
+        hoje.setDate(hoje.getDate() - 5); // Subtrai 5 dias da data atual
+        let limiteStr = hoje.toISOString().split('T')[0];
+
+        db.collection("escalas_motoristas").get().then((snapshot) => {
+            snapshot.forEach((doc) => {
+                let dados = doc.data();
+                if (dados.data && dados.data < limiteStr) {
+                    db.collection("escalas_motoristas").doc(doc.id).delete();
+                }
+            });
+        });
     }
 
     function inicializarCanvasAssinatura() {
@@ -1222,11 +1239,6 @@
 
         const idDocumento = `${chapa}_${dataEscala}`;
 
-        // Calcula a data de expiração (30 dias após a data da escala selecionada para limpeza automática no Firebase)
-        let dataEscalaObj = new Date(dataEscala);
-        dataEscalaObj.setDate(dataEscalaObj.getDate() + 30);
-        let timestampExpiracao = firebase.firestore.Timestamp.fromDate(dataEscalaObj);
-
         db.collection("escalas_motoristas").doc(idDocumento).set({
             chapa,
             motorista: nome,
@@ -1234,8 +1246,7 @@
             linha: linhaCompleta,
             data: dataEscala,
             horario,
-            obs,
-            expirarEm: timestampExpiracao // Campo dedicado exclusivamente à limpeza das escalas
+            obs
         }).then(() => {
             mostrarToast(`Escala para o dia ${formatarDataBR(dataEscala)} salva com sucesso!`, "sucesso");
             carregarTodasAsEscalas();
