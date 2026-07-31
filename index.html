@@ -1002,7 +1002,7 @@
         if (modo === 'escala') {
             document.getElementById('tab-escala').classList.add('ativo');
             document.getElementById('area-escala').classList.add('ativo-tela');
-            limparEscalasAntigas(); // Executa a limpeza automática de escalas com mais de 5 dias
+            limparEscalasAntigas();
             carregarMinhaEscala();
             carregarTodasAsEscalas();
         } else if (modo === 'motorista') {
@@ -1022,10 +1022,9 @@
         }
     }
 
-    // Função que apaga automaticamente do Firebase as escalas com mais de 5 dias
     function limparEscalasAntigas() {
         let hoje = new Date();
-        hoje.setDate(hoje.getDate() - 5); // Subtrai 5 dias da data atual
+        hoje.setDate(hoje.getDate() - 5);
         let limiteStr = hoje.toISOString().split('T')[0];
 
         db.collection("escalas_motoristas").get().then((snapshot) => {
@@ -1405,17 +1404,22 @@
         mostrarToast("Validando quilometragem...", "aviso");
 
         try {
-            const snap = await db.collection("checklists_onibus").where("prefixo", "==", prefixo).orderBy("data", "desc").limit(1).get();
-            if (!snap.empty) {
-                let ultimoKm = Number(snap.docs[0].data().kmInicial || 0);
-                if (kmAtual < ultimoKm) {
-                    mostrarToast(`Erro: Km (${kmAtual}) é menor que o registro anterior (${ultimoKm} km)!`, "erro");
-                    return;
-                }
+            const snap = await db.collection("checklists_onibus").where("prefixo", "==", prefixo).get();
+            let ultimoKm = 0;
+            snap.forEach(doc => {
+                let val = Number(doc.data().kmInicial || 0);
+                if (val > ultimoKm) ultimoKm = val;
+            });
+
+            if (ultimoKm > 0 && kmAtual < ultimoKm) {
+                mostrarToast(`Erro: Km (${kmAtual}) é menor que o registro anterior (${ultimoKm} km)!`, "erro");
+                return;
             }
+
             salvarChecklist();
             mostrarToast("Check-list finalizado com sucesso!", "sucesso");
         } catch (e) {
+            salvarChecklist();
             mostrarToast("Check-list salvo com sucesso!", "sucesso");
         }
     }
