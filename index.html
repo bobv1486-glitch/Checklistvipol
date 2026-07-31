@@ -10,6 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 
     <style>
         :root { 
@@ -460,27 +461,6 @@
             justify-content: center;
         }
 
-        .box-assinatura {
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto 15px auto;
-            background: var(--bg-card);
-            border: 1px solid var(--borda-card);
-            border-radius: 12px;
-            padding: 14px;
-        }
-        
-        .canvas-assinatura {
-            width: 100%;
-            height: 130px;
-            background: var(--bg-input);
-            border: 1px dashed var(--borda-card);
-            border-radius: 10px;
-            cursor: crosshair;
-            touch-action: none;
-            display: block;
-        }
-
         .box-oficina {
             width: 100%;
             max-width: 480px;
@@ -775,12 +755,6 @@
             </div>
         </div>
 
-        <div class="box-assinatura">
-            <div class="titulo-secao" style="margin-bottom: 6px;">✍️ Assinatura Digital</div>
-            <canvas id="canvas-assinatura" class="canvas-assinatura"></canvas>
-            <button onclick="limparAssinatura()" style="background: transparent; color: #f87171; border: 1px solid rgba(220,38,38,0.4); padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; cursor: pointer; margin-top: 6px; text-transform: uppercase;">Limpar Assinatura</button>
-        </div>
-
         <div class="box-oficina">
             <div class="titulo-secao" style="color: #f87171;">🚨 Chamado Urgente / Pane na Rua</div>
             <div class="campo-login" style="margin-bottom: 8px;">
@@ -927,6 +901,7 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const messaging = firebase.messaging();
 
     const dicionarioLinhas = {
         "077": "077 - Vila Any X Metrô Brás",
@@ -966,7 +941,7 @@
     let usuarioCargoAtivo = "";
     let listaFotosBase64 = [];
     let listaFotosOficinaBase64 = [];
-    let canvasAssinatura, ctxAssinatura, desenhandoAssinatura = false, assinaturaFeita = false;
+    let totalChamadosAnterior = -1;
 
     const itensChecklist = [
         {
@@ -991,6 +966,48 @@
         }, 3500);
     }
 
+    function tocarAlertaSonoro() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime); 
+            
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.4); 
+        } catch (e) {
+            console.log("Áudio bloqueado pelo navegador até o primeiro clique.");
+        }
+    }
+
+    async function solicitarPermissaoNotificacao() {
+        try {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                const token = await messaging.getToken({
+                    vapidKey: ''
+                });
+                
+                if (token && usuarioChapaAtivo) {
+                    db.collection("tokens_notificacao").doc(usuarioChapaAtivo).set({
+                        token: token,
+                        cargo: usuarioCargoAtivo,
+                        atualizadoEm: new Date().toISOString()
+                    }, { merge: true });
+                }
+            }
+        } catch (error) {
+            console.error("Erro ao configurar notificações:", error);
+        }
+    }
+
     function mudarVisao(modo) {
         document.querySelectorAll('.btn-navegacao').forEach(b => b.classList.remove('ativo'));
         document.getElementById('tela-login').style.display = 'none';
@@ -1009,7 +1026,6 @@
             document.getElementById('tab-motorista').classList.add('ativo');
             document.getElementById('area-motorista').style.display = 'block';
             construirInterfaceChecklist();
-            inicializarCanvasAssinatura();
         } else if (modo === 'oficina') {
             document.getElementById('tab-oficina').classList.add('ativo');
             document.getElementById('painel-oficina').classList.add('ativo-tela');
@@ -1035,34 +1051,6 @@
                 }
             });
         });
-    }
-
-    function inicializarCanvasAssinatura() {
-        if (canvasAssinatura) return;
-        canvasAssinatura = document.getElementById('canvas-assinatura');
-        if (!canvasAssinatura) return;
-        ctxAssinatura = canvasAssinatura.getContext('2d');
-        const rect = canvasAssinatura.getBoundingClientRect();
-        canvasAssinatura.width = rect.width;
-        canvasAssinatura.height = rect.height;
-        ctxAssinatura.strokeStyle = '#ffffff';
-        ctxAssinatura.lineWidth = 2;
-        ctxAssinatura.lineCap = 'round';
-
-        canvasAssinatura.addEventListener('mousedown', (e) => { desenhandoAssinatura = true; assinaturaFeita = true; ctxAssinatura.beginPath(); ctxAssinatura.moveTo(e.clientX - rect.left, e.clientY - rect.top); });
-        canvasAssinatura.addEventListener('mousemove', (e) => { if (!desenhandoAssinatura) return; ctxAssinatura.lineTo(e.clientX - rect.left, e.clientY - rect.top); ctxAssinatura.stroke(); });
-        canvasAssinatura.addEventListener('mouseup', () => { desenhandoAssinatura = false; salvarChecklist(); });
-
-        canvasAssinatura.addEventListener('touchstart', (e) => { e.preventDefault(); desenhandoAssinatura = true; assinaturaFeita = true; let t = e.touches[0]; ctxAssinatura.beginPath(); ctxAssinatura.moveTo(t.clientX - rect.left, t.clientY - rect.top); });
-        canvasAssinatura.addEventListener('touchmove', (e) => { e.preventDefault(); if (!desenhandoAssinatura) return; let t = e.touches[0]; ctxAssinatura.lineTo(t.clientX - rect.left, t.clientY - rect.top); ctxAssinatura.stroke(); });
-        canvasAssinatura.addEventListener('touchend', () => { desenhandoAssinatura = false; salvarChecklist(); });
-    }
-
-    function limparAssinatura() {
-        if (!ctxAssinatura) return;
-        ctxAssinatura.clearRect(0, 0, canvasAssinatura.width, canvasAssinatura.height);
-        assinaturaFeita = false;
-        salvarChecklist();
     }
 
     function verificarSessao() {
@@ -1094,6 +1082,7 @@
                 mudarVisao('escala');
             } else if (cargoSalvo === 'oficina') {
                 document.getElementById('tab-oficina').style.display = 'block';
+                solicitarPermissaoNotificacao();
                 mudarVisao('oficina');
             } else if (cargoSalvo === 'controlador') {
                 document.getElementById('tab-escala').style.display = 'block';
@@ -1103,6 +1092,7 @@
                 document.getElementById('bloco-minha-escala').style.display = 'block';
                 document.getElementById('bloco-cadastro-escala').style.display = 'block';
                 document.getElementById('bloco-todas-escalas').style.display = 'block';
+                solicitarPermissaoNotificacao();
                 mudarVisao('controlador');
             }
         } else {
@@ -1339,7 +1329,6 @@
                 turno: document.getElementById('sel-turno').value,
                 observacoes: document.getElementById('txt-observacoes').value,
                 fotos: listaFotosBase64,
-                assinatura: assinaturaFeita ? canvasAssinatura.toDataURL() : "",
                 respostas: {}
             };
             document.querySelectorAll('.grupo-status').forEach(g => {
@@ -1394,10 +1383,6 @@
 
         if (!prefixo || !kmAtual) {
             mostrarToast("Informe o Prefixo e o Km Inicial!", "aviso");
-            return;
-        }
-        if (!assinaturaFeita) {
-            mostrarToast("Faça sua assinatura digital!", "aviso");
             return;
         }
 
@@ -1455,6 +1440,14 @@
     function carregarDadosPainel() {
         db.collection("chamados_oficina").where("status", "==", "PENDENTE").get().then((snap) => {
             let html = "";
+            let quantidadeAtual = snap.size;
+
+            if (totalChamadosAnterior !== -1 && quantidadeAtual > totalChamadosAnterior) {
+                tocarAlertaSonoro();
+                mostrarToast("🚨 Novo chamado urgente recebido!", "erro");
+            }
+            totalChamadosAnterior = quantidadeAtual;
+
             snap.forEach(d => {
                 let c = d.data();
                 let gpsLink = c.latitude ? `<a href="https://maps.google.com/?q=${c.latitude},${c.longitude}" target="_blank" style="color:#38bdf8; font-weight:600;">🗺️ Ver no Mapa</a>` : '';
@@ -1463,6 +1456,12 @@
             document.getElementById('lista-chamados-painel').innerHTML = html || "Nenhum chamado pendente no momento.";
         });
     }
+
+    setInterval(() => {
+        if (document.getElementById('painel-geral').classList.contains('ativo-tela')) {
+            carregarDadosPainel();
+        }
+    }, 15000);
 
     function executarRemanejamento() {
         mostrarToast("Remanejamento registrado com sucesso!", "sucesso");
