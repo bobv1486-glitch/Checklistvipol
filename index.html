@@ -1151,13 +1151,11 @@
         db.collection("escalas_motoristas").get().then((snapshot) => {
             let minhasEscalas = [];
             
-            // Pega a data de hoje no formato YYYY-MM-DD ajustada para o padrão do input date
             let agora = new Date();
             let hojeStr = agora.getFullYear() + '-' + String(agora.getMonth() + 1).padStart(2, '0') + '-' + String(agora.getDate()).padStart(2, '0');
 
             snapshot.forEach((doc) => {
                 let e = doc.data();
-                // Filtra apenas as escalas do motorista atual E que a data seja maior ou igual a hoje (remove dias passados automaticamente)
                 if (String(e.chapa) === String(usuarioChapaAtivo) && e.data >= hojeStr) {
                     minhasEscalas.push(e);
                 }
@@ -1224,6 +1222,11 @@
 
         const idDocumento = `${chapa}_${dataEscala}`;
 
+        // Calcula a data de expiração (30 dias após a data da escala selecionada para limpeza automática no Firebase)
+        let dataEscalaObj = new Date(dataEscala);
+        dataEscalaObj.setDate(dataEscalaObj.getDate() + 30);
+        let timestampExpiracao = firebase.firestore.Timestamp.fromDate(dataEscalaObj);
+
         db.collection("escalas_motoristas").doc(idDocumento).set({
             chapa,
             motorista: nome,
@@ -1231,7 +1234,8 @@
             linha: linhaCompleta,
             data: dataEscala,
             horario,
-            obs
+            obs,
+            expirarEm: timestampExpiracao // Campo dedicado exclusivamente à limpeza das escalas
         }).then(() => {
             mostrarToast(`Escala para o dia ${formatarDataBR(dataEscala)} salva com sucesso!`, "sucesso");
             carregarTodasAsEscalas();
