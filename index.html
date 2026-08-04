@@ -1912,7 +1912,6 @@
         }
     }
 
-    // RELATÓRIO GERAL EM PDF ATUALIZADO (DEFECTS, CHAMADOS URGENTES E MANUTENÇÕES DO MÊS)
     async function gerarRelatorioGeralPDF() {
         mostrarToast("Gerando relatório completo da frota em PDF...", "aviso");
         const { jsPDF } = window.jspdf;
@@ -1920,7 +1919,6 @@
 
         let y = 20;
 
-        // Cabeçalho
         doc.setFont("helvetica", "bold");
         doc.setFontSize(15);
         doc.text("VIPOL TRANSPORTES - RELATÓRIO GERAL DA FROTA", 14, y);
@@ -1938,7 +1936,6 @@
         y += 10;
 
         try {
-            // 1. SEÇÃO: CHECK-LISTS COM DEFEITOS
             doc.setFont("helvetica", "bold");
             doc.setFontSize(12);
             doc.setTextColor(220, 38, 38);
@@ -1992,7 +1989,6 @@
             y += 5;
             if (y > 260) { doc.addPage(); y = 20; }
 
-            // 2. SEÇÃO: CHAMADOS URGENTES (PANES NA RUA)
             doc.setFont("helvetica", "bold");
             doc.setFontSize(12);
             doc.setTextColor(217, 119, 6);
@@ -2028,7 +2024,6 @@
             y += 5;
             if (y > 260) { doc.addPage(); y = 20; }
 
-            // 3. SEÇÃO: MANUTENÇÕES DO MÊS ATUAL
             doc.setFont("helvetica", "bold");
             doc.setFontSize(12);
             doc.setTextColor(5, 150, 105);
@@ -2049,7 +2044,6 @@
                 let m = docSnap.data();
                 if (m.data) {
                     let dataManut = new Date(m.data);
-                    // Filtra apenas as manutenções do mês e ano correntes
                     if (dataManut.getMonth() === mesAtual && dataManut.getFullYear() === anoAtual) {
                         qtdManutencoesMes++;
                         custoTotalMes += Number(m.custo || 0);
