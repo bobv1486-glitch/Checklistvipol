@@ -1912,67 +1912,173 @@
         }
     }
 
-    // NOVAS FUNÇÕES DE RELATÓRIO PDF
+    // RELATÓRIO GERAL EM PDF ATUALIZADO (DEFECTS, CHAMADOS URGENTES E MANUTENÇÕES DO MÊS)
     async function gerarRelatorioGeralPDF() {
-        mostrarToast("Gerando relatório geral em PDF...", "aviso");
+        mostrarToast("Gerando relatório completo da frota em PDF...", "aviso");
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
+        let y = 20;
+
+        // Cabeçalho
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(16);
-        doc.text("VIPOL TRANSPORTES - RELATÓRIO GERAL DA FROTA", 14, 20);
+        doc.setFontSize(15);
+        doc.text("VIPOL TRANSPORTES - RELATÓRIO GERAL DA FROTA", 14, y);
+        y += 6;
         
         doc.setFont("helvetica", "normal");
-        doc.setFontSize(10);
-        doc.text(`Data de Emissão: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`, 14, 26);
-        doc.text(`Emitido por: ${usuarioNomeAtivo} (Chapa: ${usuarioChapaAtivo})`, 14, 32);
+        doc.setFontSize(9);
+        doc.text(`Data de Emissão: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`, 14, y);
+        y += 5;
+        doc.text(`Gestor / Emitente: ${usuarioNomeAtivo} (Chapa: ${usuarioChapaAtivo})`, 14, y);
+        y += 6;
 
-        doc.setLineWidth(0.5);
-        doc.line(14, 36, 196, 36);
+        doc.setLineWidth(0.4);
+        doc.line(14, y, 196, y);
+        y += 10;
 
         try {
-            const snapChecklists = await db.collection("checklists_onibus").get();
-            let y = 44;
-
+            // 1. SEÇÃO: CHECK-LISTS COM DEFEITOS
             doc.setFont("helvetica", "bold");
             doc.setFontSize(12);
-            doc.text("Resumo dos Últimos Check-lists:", 14, y);
-            y += 8;
+            doc.setTextColor(220, 38, 38);
+            doc.text("1. Check-lists com Defeitos Registrados", 14, y);
+            y += 6;
 
-            doc.setFontSize(9);
-            doc.setFillColor(240, 240, 240);
-            doc.rect(14, y, 182, 6, "F");
-            doc.text("Prefixo", 16, y + 4);
-            doc.text("Motorista", 45, y + 4);
-            doc.text("Km Inicial", 115, y + 4);
-            doc.text("Status", 150, y + 4);
-            y += 10;
+            const snapChecklists = await db.collection("checklists_onibus").get();
+            let qtdDefeitos = 0;
 
             doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor(0, 0, 0);
 
             snapChecklists.forEach((docSnap) => {
                 let c = docSnap.data();
                 let temDefeito = false;
+                let itensDefeituosos = [];
+
                 if (c.respostas) {
                     for (let k in c.respostas) {
-                        if (c.respostas[k] === "DEFEITO") temDefeito = true;
+                        if (c.respostas[k] === "DEFEITO") {
+                            temDefeito = true;
+                            itensDefeituosos.push(nomeAmigavelItens[k] || k);
+                        }
                     }
                 }
-                let statusStr = temDefeito ? "COM DEFEITO" : "OK";
 
-                if (y > 270) {
-                    doc.addPage();
-                    y = 20;
+                if (temDefeito) {
+                    qtdDefeitos++;
+                    if (y > 265) { doc.addPage(); y = 20; }
+
+                    doc.setFont("helvetica", "bold");
+                    doc.text(`Carro: ${c.prefixo || 'N/D'} | Motorista: ${c.motorista || 'N/D'} | Km: ${c.kmInicial || '-'}`, 14, y);
+                    y += 5;
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`Itens com Defeito: ${itensDefeituosos.join(', ')}`, 18, y, { maxWidth: 170 });
+                    y += 5;
+                    if (c.observacoes) {
+                        doc.text(`Obs: ${c.observacoes}`, 18, y, { maxWidth: 170 });
+                        y += 5;
+                    }
+                    y += 3;
                 }
+            });
 
-                doc.text(String(c.prefixo || "N/D"), 16, y);
-                doc.text(String(c.motorista || "N/D"), 45, y, { maxWidth: 65 });
-                doc.text(String(c.kmInicial || "-"), 115, y);
-                doc.text(statusStr, 150, y);
+            if (qtdDefeitos === 0) {
+                doc.text("Nenhum check-list com defeito registrado.", 14, y);
+                y += 8;
+            }
+
+            y += 5;
+            if (y > 260) { doc.addPage(); y = 20; }
+
+            // 2. SEÇÃO: CHAMADOS URGENTES (PANES NA RUA)
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(12);
+            doc.setTextColor(217, 119, 6);
+            doc.text("2. Chamados Urgentes e Panes na Rua", 14, y);
+            y += 6;
+
+            const snapChamados = await db.collection("chamados_oficina").get();
+            let qtdChamados = 0;
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor(0, 0, 0);
+
+            snapChamados.forEach((docSnap) => {
+                let ch = docSnap.data();
+                qtdChamados++;
+                if (y > 265) { doc.addPage(); y = 20; }
+
+                let dataCh = ch.dataHora ? new Date(ch.dataHora).toLocaleString('pt-BR') : '-';
+                doc.setFont("helvetica", "bold");
+                doc.text(`Carro: ${ch.prefixo} | Status: ${ch.status} | Data: ${dataCh}`, 14, y);
+                y += 5;
+                doc.setFont("helvetica", "normal");
+                doc.text(`Descrição: ${ch.descricao}`, 18, y, { maxWidth: 170 });
                 y += 8;
             });
 
-            doc.save(`Relatorio_Geral_Frota_${new Date().toISOString().split('T')[0]}.pdf`);
+            if (qtdChamados === 0) {
+                doc.text("Nenhum chamado urgente registrado.", 14, y);
+                y += 8;
+            }
+
+            y += 5;
+            if (y > 260) { doc.addPage(); y = 20; }
+
+            // 3. SEÇÃO: MANUTENÇÕES DO MÊS ATUAL
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(12);
+            doc.setTextColor(5, 150, 105);
+            doc.text("3. Manutenções Realizadas no Mês", 14, y);
+            y += 6;
+
+            const snapManutencoes = await db.collection("manutencoes_frota").get();
+            let mesAtual = new Date().getMonth();
+            let anoAtual = new Date().getFullYear();
+            let qtdManutencoesMes = 0;
+            let custoTotalMes = 0;
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor(0, 0, 0);
+
+            snapManutencoes.forEach((docSnap) => {
+                let m = docSnap.data();
+                if (m.data) {
+                    let dataManut = new Date(m.data);
+                    // Filtra apenas as manutenções do mês e ano correntes
+                    if (dataManut.getMonth() === mesAtual && dataManut.getFullYear() === anoAtual) {
+                        qtdManutencoesMes++;
+                        custoTotalMes += Number(m.custo || 0);
+
+                        if (y > 265) { doc.addPage(); y = 20; }
+
+                        let dataFmt = dataManut.toLocaleDateString('pt-BR');
+                        doc.setFont("helvetica", "bold");
+                        doc.text(`Carro: ${m.prefixo} | Tipo: ${m.servico} | Km: ${m.km} | Data: ${dataFmt}`, 14, y);
+                        y += 5;
+                        doc.setFont("helvetica", "normal");
+                        doc.text(`Serviço: ${m.descricao}`, 18, y, { maxWidth: 170 });
+                        y += 5;
+                        doc.text(`Peças: ${m.pecas} | Custo: R$ ${Number(m.custo || 0).toFixed(2)} | Resp: ${m.responsavel}`, 18, y, { maxWidth: 170 });
+                        y += 8;
+                    }
+                }
+            });
+
+            if (qtdManutencoesMes === 0) {
+                doc.text("Nenhuma manutenção registrada neste mês.", 14, y);
+                y += 8;
+            } else {
+                y += 2;
+                doc.setFont("helvetica", "bold");
+                doc.text(`Custo Total em Manutenções no Mês: R$ ${custoTotalMes.toFixed(2)}`, 14, y);
+            }
+
+            doc.save(`Relatorio_Gerencial_Frota_${new Date().toISOString().split('T')[0]}.pdf`);
             mostrarToast("Relatório Geral gerado com sucesso!", "sucesso");
         } catch (error) {
             console.error(error);
