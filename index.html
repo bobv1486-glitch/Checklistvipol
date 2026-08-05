@@ -1552,9 +1552,12 @@
     }
 
     function enviarDadosPane(prefixo, descricao, lat, lon) {
+        const whatsappMotorista = localStorage.getItem("vipol_whatsapp_usuario") || "";
+
         db.collection("chamados_oficina").add({
             motorista: usuarioNomeAtivo,
             chapa: usuarioChapaAtivo,
+            whatsapp: whatsappMotorista,
             prefixo,
             descricao,
             latitude: lat,
@@ -1876,8 +1879,23 @@
                 let docId = d.id;
                 let gpsLink = c.latitude ? `<a href="https://maps.google.com/?q=${c.latitude},${c.longitude}" target="_blank" style="color:#38bdf8; font-weight:600; margin-right:10px;">🗺️ Mapa</a>` : '';
                 
+                let whatsappBtn = '';
+                if (c.whatsapp) {
+                    let numeroLimpo = c.whatsapp.replace(/\D/g, '');
+                    whatsappBtn = `<a href="https://wa.me/55${numeroLimpo}?text=Olá%20${encodeURIComponent(c.motorista)},%20recebemos%20seu%20chamado%20referente%20ao%20carro%20${c.prefixo}." target="_blank" style="background:#059669; color:#fff; padding:4px 8px; border-radius:6px; font-size:10px; font-weight:700; text-decoration:none; margin-right:6px; display:inline-block;">💬 WhatsApp</a>`;
+                } else {
+                    whatsappBtn = `<span style="font-size:10px; color:var(--texto-secundario); margin-right:6px;">Sem WhatsApp</span>`;
+                }
+
                 html += `<div style="background:var(--bg-input); border:1px solid rgba(220,38,38,0.4); padding:10px; border-radius:8px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>Carro: <b>${c.prefixo}</b> - ${c.descricao}<br><div style="margin-top:4px;">${gpsLink}</div></div>
+                    <div>
+                        <b>${c.motorista}</b> (Carro: <b>${c.prefixo}</b>)<br>
+                        <span style="color:#cbd5e1; font-size:11px;">${c.descricao}</span><br>
+                        <div style="margin-top:6px; display:flex; align-items:center; flex-wrap:wrap; gap:4px;">
+                            ${gpsLink}
+                            ${whatsappBtn}
+                        </div>
+                    </div>
                     <button onclick="resolverChamado('${docId}')" style="background:var(--sucesso); border:none; color:#fff; padding:6px 10px; border-radius:6px; font-size:10px; font-weight:700; cursor:pointer; text-transform:uppercase;">Concluir</button>
                 </div>`;
             });
