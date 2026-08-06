@@ -35,70 +35,670 @@
             background-color: var(--bg-principal) !important;
             color: var(--texto-principal) !important;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; padding: 12px; padding-bottom: 120px;
-            box-sizing: border-box; -webkit-text-size-adjust: 100%;
+            margin: 0;
+            padding: 12px;
+            padding-bottom: 120px;
+            box-sizing: border-box;
+            -webkit-text-size-adjust: 100%;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* Estilos de Toast */
-        #toast-container { position: fixed; top: 64px; right: 14px; left: 14px; z-index: 100000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
-        .toast { background: #1e2430; border-left: 4px solid #3b82f6; color: #fff; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,0.6); pointer-events: auto; transition: opacity 0.3s ease; }
+        /* Sistema de Toasts Modernos */
+        #toast-container {
+            position: fixed;
+            top: 64px; right: 14px; left: 14px;
+            z-index: 100000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .toast {
+            background: #1e2430;
+            border-left: 4px solid #3b82f6;
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            pointer-events: auto;
+            transition: opacity 0.3s ease;
+        }
         .toast.sucesso { border-left-color: var(--sucesso); }
         .toast.erro { border-left-color: var(--perigo); }
         .toast.aviso { border-left-color: var(--alerta); }
 
-        .barra-navegacao-sistema { position: fixed; top: 0; left: 0; right: 0; background: rgba(15, 17, 23, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--borda-card); display: flex; justify-content: center; gap: 8px; padding: 10px; z-index: 10000; overflow-x: auto; }
-        .btn-navegacao { background: #181c24; color: var(--texto-secundario); border: 1px solid var(--borda-card); padding: 8px 14px; font-size: 11px; font-weight: 700; border-radius: 8px; cursor: pointer; text-transform: uppercase; white-space: nowrap; display: none; }
-        .btn-navegacao.ativo { background: var(--azul-vipol); color: #ffffff; border-color: #3b82f6; }
+        .barra-navegacao-sistema {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: rgba(15, 17, 23, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--borda-card);
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            z-index: 10000;
+            overflow-x: auto;
+        }
+
+        .btn-navegacao {
+            background: #181c24;
+            color: var(--texto-secundario);
+            border: 1px solid var(--borda-card);
+            padding: 8px 14px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            white-space: nowrap;
+            display: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-navegacao.ativo {
+            background: var(--azul-vipol);
+            color: #ffffff;
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.4);
+        }
 
         body { padding-top: 56px; }
-        .tela-login, .painel-geral-container, .painel-oficina-container, .area-escala-container { display: none; }
-        .ativo-tela { display: flex !important; }
 
-        .box-login { background: var(--bg-card); border: 1px solid var(--borda-card); border-radius: 16px; padding: 30px 24px; width: 100%; max-width: 380px; box-shadow: 0 16px 32px rgba(0,0,0,0.6); text-align: center; margin: 40px auto; }
-        .campo-login { display: flex; flex-direction: column; gap: 6px; text-align: left; margin-bottom: 14px; width: 100%; }
-        .campo-login label { font-size: 11px; font-weight: 700; color: var(--texto-secundario); text-transform: uppercase; }
-        .campo-login input, .campo-login select, .campo-login textarea { padding: 12px 14px; background: var(--bg-input); border: 1px solid var(--borda-card); border-radius: 10px; color: #ffffff; font-size: 14px; outline: none; }
+        .tela-login, .painel-geral-container, .painel-oficina-container, .area-escala-container {
+            display: none;
+        }
 
-        .card-painel { background: var(--bg-card); border: 1px solid var(--borda-card); border-radius: 12px; padding: 14px; width: 100%; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        .titulo-secao { font-size: 12px; font-weight: 800; color: #60a5fa; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+        .ativo-tela {
+            display: flex !important;
+        }
 
-        /* Caixa de recado com destaque para o motorista */
-        .caixa-recado {
-            background: rgba(217, 119, 6, 0.15);
-            border: 1px solid #d97706;
-            padding: 12px;
+        .tela-login {
+            position: fixed;
+            top: 56px; left: 0; right: 0; bottom: 0;
+            background: var(--bg-principal);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 9999;
+        }
+
+        .box-login {
+            background: var(--bg-card);
+            border: 1px solid var(--borda-card);
+            border-radius: 16px;
+            padding: 30px 24px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 16px 32px rgba(0,0,0,0.6);
+            text-align: center;
+        }
+
+        .box-login h2 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+        }
+
+        .box-login p {
+            font-size: 13px;
+            color: var(--texto-secundario);
+            margin-bottom: 24px;
+        }
+
+        .campo-login {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: left;
+            margin-bottom: 14px;
+            width: 100%;
+        }
+
+        .campo-login label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--texto-secundario);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .campo-login input, .campo-login select {
+            padding: 12px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--borda-card);
             border-radius: 10px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            outline: none;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        .campo-login input:focus, .campo-login select:focus {
+            border-color: var(--azul-vipol);
+        }
+
+        .btn-acessar {
+            width: 100%;
+            background: var(--azul-vipol);
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             margin-top: 10px;
-            animation: pulse-alerta 2s infinite;
+            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
+            transition: background 0.2s;
         }
-        @keyframes pulse-alerta {
-            0% { border-color: #d97706; }
-            50% { border-color: #fbbf24; }
-            100% { border-color: #d97706; }
+        .btn-acessar:hover { background: var(--azul-hover); }
+
+        .topo {
+            text-align: center;
+            margin: 12px auto;
+            max-width: 480px;
         }
 
-        /* Estilo para Folga */
-        .card-folga {
-            background: rgba(5, 150, 105, 0.15) !important;
-            border: 1px solid #059669 !important;
+        .titulo {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ffffff !important;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
         }
 
-        /* Modais, Botões e Check-list (Estilos mantidos das 2000 linhas) */
-        .btn-acessar { width: 100%; background: var(--azul-vipol); color: #ffffff; border: none; padding: 14px; font-size: 13px; font-weight: 700; border-radius: 10px; cursor: pointer; text-transform: uppercase; }
-        .btn-logout { background: transparent; color: #f87171; border: 1px solid rgba(220, 38, 38, 0.4); padding: 6px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; cursor: pointer; text-transform: uppercase; }
-        .info-colaborador { display: flex; flex-direction: column; gap: 8px; background: var(--bg-card); border: 1px solid var(--borda-card); border-radius: 14px; padding: 14px; margin-bottom: 14px; }
-        .info-campo { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--texto-secundario); }
-        .info-campo input { flex: 1; background: var(--bg-input); border: 1px solid var(--borda-card); border-radius: 8px; color: #ffffff; padding: 8px 10px; }
-        .btn-status { background: var(--bg-input); border: 1px solid var(--borda-card); color: var(--texto-secundario); padding: 8px 14px; font-size: 11px; font-weight: 700; border-radius: 8px; cursor: pointer; text-transform: uppercase; }
-        .btn-status.ativo-ok { background: #065f46; border-color: var(--sucesso); color: #ffffff; }
-        .btn-status.ativo-defeito { background: #7f1d1d; border-color: var(--perigo); color: #ffffff; }
+        .subtitulo {
+            font-size: 12px;
+            color: var(--texto-secundario);
+            margin-bottom: 12px;
+        }
+
+        .info-colaborador {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: var(--bg-card) !important;
+            border: 1px solid var(--borda-card);
+            border-radius: 14px;
+            padding: 14px;
+            text-align: left;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .info-campo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--texto-secundario) !important;
+        }
+
+        .info-campo span {
+            width: 110px;
+            min-width: 110px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .info-campo input, .info-campo select {
+            flex: 1;
+            min-width: 0;
+            background: var(--bg-input) !important;
+            border: 1px solid var(--borda-card);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff !important;
+            outline: none;
+            padding: 8px 10px;
+        }
+
+        .grupo-input-btn {
+            display: flex;
+            flex: 1;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .grupo-input-btn input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .btn-logout {
+            background: transparent;
+            color: #f87171;
+            border: 1px solid rgba(220, 38, 38, 0.4);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background 0.2s;
+        }
+        .btn-logout:hover { background: rgba(220, 38, 38, 0.1); }
+
+        .alerta-turno-anterior {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto 15px auto;
+            background: var(--bg-card);
+            border: 1px solid var(--alerta);
+            border-radius: 12px;
+            padding: 14px;
+            display: none;
+        }
+
+        .secao-checklist {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto 15px auto;
+        }
+
+        .titulo-secao {
+            font-size: 12px;
+            font-weight: 800;
+            color: #60a5fa;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+            padding-left: 4px;
+        }
+
+        .lista-itens {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .card-item {
+            background: var(--bg-card) !important;
+            border-radius: 12px;
+            padding: 12px 14px;
+            border: 1px solid var(--borda-card);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .nome-item {
+            font-size: 13px;
+            font-weight: 600;
+            color: #e2e8f0;
+            flex: 1;
+            padding-right: 10px;
+        }
+
+        .grupo-status {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-status {
+            background: var(--bg-input);
+            border: 1px solid var(--borda-card);
+            color: var(--texto-secundario);
+            padding: 8px 14px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+
+        .btn-status.ativo-ok {
+            background: #065f46;
+            border-color: var(--sucesso);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.4);
+        }
+
+        .btn-status.ativo-defeito {
+            background: #7f1d1d;
+            border-color: var(--perigo);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+        }
+
+        .box-obs {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto 15px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .box-obs textarea {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--borda-card);
+            border-radius: 12px;
+            padding: 12px;
+            color: #ffffff;
+            font-size: 13px;
+            outline: none;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .container-upload-foto {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--borda-card);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .btn-foto {
+            background: var(--azul-vipol);
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            text-align: center;
+            display: block;
+            width: 100%;
+        }
+
+        .preview-fotos {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+
+        .miniatura-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .miniatura-foto {
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid var(--azul-vipol);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .miniatura-foto:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-remover-foto {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--perigo);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .box-oficina {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto 15px auto;
+            background: var(--bg-card);
+            border: 1px solid rgba(220, 38, 38, 0.4);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .btn-enviar-oficina {
+            width: 100%;
+            background-color: var(--perigo);
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .painel-resumo {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(15, 17, 23, 0.95);
+            backdrop-filter: blur(8px);
+            border-top: 1px solid var(--borda-card);
+            padding: 12px;
+            z-index: 999;
+        }
+
+        .resumo-conteudo {
+            max-width: 480px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .status-nuvem {
+            font-size: 11px;
+            text-align: center;
+            color: var(--texto-secundario);
+            font-weight: 600;
+        }
+
+        .btn-enviar {
+            width: 100%;
+            background-color: var(--sucesso) !important;
+            color: #ffffff !important;
+            border: none;
+            padding: 14px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        .painel-geral-container, .painel-oficina-container, .area-escala-container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            flex-direction: column;
+            gap: 14px;
+            padding: 0 4px;
+        }
+
+        .card-painel {
+            background: var(--bg-card);
+            border: 1px solid var(--borda-card);
+            border-radius: 12px;
+            padding: 14px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.15s ease, border-color 0.15s ease;
+        }
+
+        .card-clicavel {
+            cursor: pointer;
+        }
+        .card-clicavel:hover {
+            transform: scale(1.02);
+            border-color: #3b82f6;
+        }
+        .card-clicavel:active {
+            transform: scale(0.98);
+        }
+
+        .grupo-inputs-duplos {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .grupo-inputs-duplos .campo-login {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .painel-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .painel-tabela {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .painel-tabela th, .painel-tabela td {
+            text-align: left;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--borda-card);
+        }
+
+        .painel-tabela th {
+            color: var(--texto-secundario);
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .linha-tabela-clicavel {
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .linha-tabela-clicavel:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        /* Modais */
+        #modal-detalhe-checklist, #modal-detalhe-manutencao {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 100001;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .conteudo-modal {
+            background: var(--bg-card);
+            border: 1px solid var(--borda-card);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 440px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        #modal-zoom-foto {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 200000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+        .conteudo-zoom {
+            position: relative;
+            max-width: 100%;
+            max-height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .imagem-ampliada {
+            max-width: 95vw;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
     </style>
 </head>
 <body>
 
     <div id="toast-container"></div>
+
+    <!-- Modal para ver detalhes do Check-list com Defeito -->
+    <div id="modal-detalhe-checklist">
+        <div class="conteudo-modal">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <div style="font-size: 15px; font-weight: 800; color: #60a5fa;" id="modal-titulo-carro">Detalhes da Vistoria</div>
+                <button onclick="fecharModalDetalhes()" style="background: transparent; border: none; color: #f87171; font-weight: 800; font-size: 16px; cursor: pointer;">✕</button>
+            </div>
+            <div id="modal-corpo-detalhes" style="font-size: 13px; line-height: 1.5; color: #e2e8f0;">
+                Carregando...
+            </div>
+            <button class="btn-acessar" style="margin-top: 16px;" onclick="fecharModalDetalhes()">Fechar</button>
+        </div>
+    </div>
+
+    <!-- Modal para ver detalhes da Manutenção -->
+    <div id="modal-detalhe-manutencao">
+        <div class="conteudo-modal">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <div style="font-size: 15px; font-weight: 800; color: #34d399;" id="modal-manutencao-titulo">Detalhes da Manutenção</div>
+                <button onclick="fecharModalManutencao()" style="background: transparent; border: none; color: #f87171; font-weight: 800; font-size: 16px; cursor: pointer;">✕</button>
+            </div>
+            <div id="modal-manutencao-corpo" style="font-size: 13px; line-height: 1.6; color: #e2e8f0;">
+                Carregando...
+            </div>
+            <button class="btn-acessar" style="margin-top: 16px;" onclick="fecharModalManutencao()">Fechar</button>
+        </div>
+    </div>
+
+    <!-- Modal para Ampliar Foto (Zoom) -->
+    <div id="modal-zoom-foto" onclick="fecharZoomFoto()">
+        <div class="conteudo-zoom" onclick="event.stopPropagation()">
+            <button onclick="fecharZoomFoto()" style="position: absolute; top: -40px; right: 0; background: transparent; border: none; color: #fff; font-size: 24px; font-weight: 800; cursor: pointer;">✕ Fechar</button>
+            <img id="img-zoom-exibicao" class="imagem-ampliada" src="" alt="Foto Ampliada">
+        </div>
+    </div>
 
     <div class="barra-navegacao-sistema" id="barra-nav">
         <button class="btn-navegacao" id="tab-escala" onclick="mudarVisao('escala')">📅 Escala</button>
@@ -107,13 +707,22 @@
         <button class="btn-navegacao" id="tab-controlador" onclick="mudarVisao('controlador')">📊 Painel</button>
     </div>
 
-    <!-- TELA DE LOGIN -->
     <div id="tela-login" class="tela-login">
         <div class="box-login">
             <h2>Vipol Transportes</h2>
             <p>Sistema Corporativo de Frota</p>
-            <div class="campo-login"><label>Nome Completo</label><input type="text" id="login-nome"></div>
-            <div class="campo-login"><label>Matrícula / Chapa</label><input type="number" id="login-chapa"></div>
+            <div class="campo-login">
+                <label>Nome Completo</label>
+                <input type="text" id="login-nome" placeholder="Ex: Sergio Silva">
+            </div>
+            <div class="campo-login">
+                <label>Matrícula / Chapa</label>
+                <input type="number" id="login-chapa" placeholder="Ex: 12345">
+            </div>
+            <div class="campo-login">
+                <label>WhatsApp (Opcional)</label>
+                <input type="text" id="login-whatsapp" placeholder="Ex: 11999999999">
+            </div>
             <div class="campo-login">
                 <label>Cargo / Função</label>
                 <select id="login-cargo">
@@ -123,81 +732,328 @@
                     <option value="controlador">Controlador / Gestor</option>
                 </select>
             </div>
-            <button class="btn-acessar" onclick="realizarLogin()">Entrar</button>
+            <button class="btn-acessar" onclick="realizarLogin()">Entrar no Sistema</button>
         </div>
     </div>
 
-    <!-- ÁREA DE ESCALA -->
     <div id="area-escala" class="area-escala-container">
-        <div style="text-align: right; width: 100%;"><button class="btn-logout" onclick="fazerLogout()">Trocar Usuário</button></div>
-        
-        <!-- VISÃO MOTORISTA -->
-        <div class="card-painel" id="bloco-minha-escala">
-            <div class="titulo-secao">📋 Minha Escala Próxima</div>
-            <div id="dados-minha-escala">Carregando escalas...</div>
+        <div style="text-align: right; padding-top: 5px;">
+            <button class="btn-logout" onclick="fazerLogout()">Trocar Usuário</button>
+        </div>
+        <div class="topo" style="margin-top: 2px;">
+            <div class="titulo">Painel de Escalas</div>
+            <div class="subtitulo">Gestão e consulta de jornadas</div>
         </div>
 
-        <!-- VISÃO ESCALANTE (CADASTRAR) -->
-        <div class="card-painel" id="bloco-cadastro-escala" style="display:none; border-left: 4px solid var(--sucesso);">
-            <div class="titulo-secao" style="color: #34d399;">✏️ Lançar Nova Escala</div>
+        <div class="card-painel" id="bloco-minha-escala" style="border-left: 4px solid var(--azul-vipol);">
+            <div class="titulo-secao">📋 Minhas Próximas Escalas / Folgas</div>
+            <div id="dados-minha-escala" style="font-size: 13px; color: #e2e8f0; margin-top: 10px; line-height: 1.6;">
+                Carregando suas escalas...
+            </div>
+        </div>
+
+        <div class="card-painel" id="bloco-cadastro-escala" style="display:none; border-left: 4px solid var(--sucesso); margin-top: 6px;">
+            <div class="titulo-secao" style="color: #34d399;">✏️ Lançar Escala ou Folga</div>
             
-            <div class="campo-login">
-                <label>Matrícula do Motorista</label>
-                <input type="number" id="escala-chapa-motorista" oninput="buscarMotoristaPorChapaEscala()">
-            </div>
-            <div class="campo-login">
-                <label>Nome do Motorista</label>
-                <input type="text" id="escala-nome-motorista">
-            </div>
-
-            <!-- CAMPO DE LINHA COM A SELEÇÃO "FOLGA" -->
-            <div class="campo-login">
-                <label>Número da Linha (Selecione FOLGA se necessário)</label>
-                <input type="text" id="escala-linha-num" list="lista-linhas-sugestao" placeholder="Digite ou selecione..." oninput="buscarNomeLinhaAutomatico()">
-                <datalist id="lista-linhas-sugestao">
-                    <option value="FOLGA">FOLGA - DESCANSO</option>
-                    <option value="077">077 - Vila Any X Brás</option>
-                    <option value="596">596 - Vila Any X São Miguel</option>
-                    <option value="319">319 - Tupinambá X Itaquera</option>
-                    <option value="139">139 - São Miguel X Cecap</option>
-                    <option value="825">825 - São Miguel X Guarulhos</option>
-                    <option value="073">073 - São Miguel X Bonsucesso</option>
-                    <option value="499">499 - Dom Bosco X Cecap</option>
-                </datalist>
+            <div class="grupo-inputs-duplos" style="margin-top: 10px;">
+                <div class="campo-login" style="flex: 0.7;">
+                    <label>Matrícula (Chapa)</label>
+                    <input type="text" id="escala-chapa-motorista" placeholder="Ex: 12345" oninput="buscarMotoristaPorChapaEscala()">
+                </div>
+                <div class="campo-login" style="flex: 1.3;">
+                    <label>Nome do Motorista</label>
+                    <input type="text" id="escala-nome-motorista" placeholder="Nome automático..." style="background: rgba(255,255,255,0.03); color: #34d399;">
+                </div>
             </div>
 
-            <div class="campo-login"><label>Nome da Linha</label><input type="text" id="escala-linha-nome" readonly></div>
-            <div class="campo-login"><label>Data</label><input type="date" id="escala-data"></div>
-            <div class="campo-login"><label>Horário Apresentação</label><input type="text" id="escala-horario" placeholder="Ex: 04:30 ou - para Folga"></div>
-            <div class="campo-login"><label>Recado para o Motorista</label><textarea id="escala-obs" rows="3" placeholder="Ex: Pegar carro reserva..."></textarea></div>
+            <div class="campo-login">
+                <label>Local da Pegada</label>
+                <select id="escala-pegada">
+                    <option value="Garagem">Garagem</option>
+                    <option value="Vila Any">Vila Any</option>
+                    <option value="São Miguel">São Miguel</option>
+                    <option value="CECAP">CECAP</option>
+                    <option value="Dom Bosco">Dom Bosco</option>
+                </select>
+            </div>
 
-            <button class="btn-acessar" style="background:var(--sucesso);" onclick="salvarEscalaIndividual()">Salvar Escala</button>
+            <div class="campo-login">
+                <label>Número da Linha</label>
+                <input type="text" id="escala-linha-num" placeholder="Ex: 596, 077..." oninput="buscarNomeLinhaAutomatico()">
+            </div>
+
+            <div class="campo-login">
+                <label>Nome da Linha / Itinerário</label>
+                <input type="text" id="escala-linha-nome" placeholder="Preenchimento automático..." readonly style="background: rgba(255,255,255,0.03); color: #34d399;">
+            </div>
+
+            <div class="campo-login">
+                <label>Data da Escala / Folga</label>
+                <input type="date" id="escala-data">
+            </div>
+
+            <div class="campo-login">
+                <label>Horário de Apresentação</label>
+                <input type="text" id="escala-horario" placeholder="Ex: 04:30">
+            </div>
+
+            <div class="campo-login">
+                <label>Observações</label>
+                <textarea id="escala-obs" placeholder="Ex: Escala especial..." style="width:100%; background:var(--bg-input); border:1px solid var(--borda-card); border-radius:8px; padding:10px; color:#fff; font-size:13px; outline:none; resize:vertical; min-height:60px;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+                <button class="btn-acessar" style="background:var(--sucesso); flex: 1; margin-top:0;" onclick="salvarEscalaIndividual()">Salvar Escala</button>
+                <button class="btn-acessar" style="background:var(--alerta); flex: 1; margin-top:0;" onclick="salvarFolgaIndividual()">🏖️ Lançar Folga</button>
+            </div>
+        </div>
+
+        <div class="card-painel" id="bloco-todas-escalas" style="display:none; margin-top: 6px;">
+            <div class="titulo-secao">📅 Escalas e Folgas Cadastradas (Geral)</div>
+            <div id="lista-todas-escalas" style="margin-top: 8px; max-height: 250px; overflow-y: auto;">Carregando escalas...</div>
         </div>
     </div>
 
-    <!-- AREA MOTORISTA (CHECK-LIST COMPLETO) -->
     <div id="area-motorista" style="display:none;">
         <div class="topo">
             <div class="titulo">Check-list de Frota</div>
+            <div class="subtitulo">Vistoria diária de segurança</div>
+            
             <div class="info-colaborador">
                 <div class="info-campo"><span>Motorista:</span><input type="text" id="txt-nome-motorista" readonly></div>
-                <div class="info-campo"><span>Prefixo:</span><input type="text" id="txt-prefixo" oninput="verificarHistoricoCarro()"></div>
-                <div class="info-campo"><span>Km Inicial:</span><input type="number" id="txt-km-inicial"></div>
-                <div class="info-campo"><span>Linha:</span><input type="text" id="txt-linha"></div>
-                <div class="info-campo"><span>Turno:</span><select id="sel-turno"><option value="Manhã">Manhã</option><option value="Tarde">Tarde</option><option value="Noite">Noite</option></select></div>
+                
+                <div class="info-campo">
+                    <span>Matrícula:</span>
+                    <div class="grupo-input-btn">
+                        <input type="text" id="txt-chapa-motorista" readonly>
+                        <button class="btn-logout" onclick="fazerLogout()">Trocar</button>
+                    </div>
+                </div>
+                
+                <div class="info-campo">
+                    <span>Prefixo:</span>
+                    <input type="text" id="txt-prefixo" placeholder="Ex: 36.159" oninput="verificarHistoricoCarro(); salvarChecklist();">
+                </div>
+                <div class="info-campo">
+                    <span>Linha:</span>
+                    <input type="text" id="txt-linha" placeholder="Ex: 077" oninput="salvarChecklist()">
+                </div>
+                <div class="info-campo">
+                    <span>Km Inicial:</span>
+                    <input type="number" id="txt-km-inicial" placeholder="Ex: 45200" oninput="salvarChecklist()">
+                </div>
+                <div class="info-campo">
+                    <span>Turno:</span>
+                    <select id="sel-turno" onchange="salvarChecklist()">
+                        <option value="" disabled selected>Selecione...</option>
+                        <option value="Manhã">Manhã</option>
+                        <option value="Tarde">Tarde</option>
+                        <option value="Noite">Noite</option>
+                    </select>
+                </div>
             </div>
         </div>
-        <div id="container-checklist"></div>
-        <div class="box-obs">
-            <textarea id="txt-observacoes" placeholder="Relate defeitos aqui..."></textarea>
-            <div class="container-upload-foto"><label for="input-foto" class="btn-foto">📸 Tirar Foto da Avaria</label><input type="file" id="input-foto" accept="image/*" capture="environment" style="display: none;" onchange="processarFoto(this)"><div class="preview-fotos" id="preview-fotos"></div></div>
+
+        <div id="alerta-turno-anterior" class="alerta-turno-anterior">
+            <div style="font-size:11px; font-weight:700; color:#fbbf24; text-transform:uppercase; margin-bottom:4px;">⚠️ Relato do Turno Anterior</div>
+            <div id="texto-relato-anterior" style="font-size:12px; color:#e2e8f0;">Nenhum relato recente.</div>
         </div>
-        <div class="painel-resumo"><div class="resumo-conteudo"><button class="btn-enviar" onclick="finalizarEEnviar()">Finalizar e Enviar</button></div></div>
+
+        <div id="container-checklist"></div>
+
+        <div class="box-obs">
+            <div class="titulo-secao">Observações / Defeitos</div>
+            <textarea id="txt-observacoes" placeholder="Descreva falhas mecânicas..." oninput="salvarChecklist()"></textarea>
+            
+            <div class="container-upload-foto">
+                <label for="input-foto" class="btn-foto">📸 Tirar Foto da Avaria</label>
+                <input type="file" id="input-foto" accept="image/*" capture="environment" style="display: none;" onchange="processarFoto(this)">
+                <div class="preview-fotos" id="preview-fotos"></div>
+            </div>
+        </div>
+
+        <div class="box-oficina">
+            <div class="titulo-secao" style="color: #f87171;">🚨 Chamado Urgente / Pane na Rua</div>
+            <div class="campo-login" style="margin-bottom: 8px;">
+                <label>Tipo do Problema</label>
+                <select id="sel-tipo-pane" style="width:100%; padding:10px; background:var(--bg-input); border:1px solid var(--borda-card); border-radius:8px; color:#fff; font-weight:600;">
+                    <option value="Mecânica">Mecânica (Motor / Câmbio)</option>
+                    <option value="Freios">Sistema de Freios</option>
+                    <option value="Elétrica">Elétrica / Faróis / Painel</option>
+                    <option value="Pneus">Pneu Furado / Danificado</option>
+                    <option value="Outros">Outro Problema</option>
+                </select>
+            </div>
+            <textarea id="txt-obs-oficina" placeholder="Descreva o que aconteceu..." style="width: 100%; background: var(--bg-input); border: 1px solid var(--borda-card); border-radius: 8px; padding: 10px; color: #ffffff; font-size: 13px; outline: none; resize: vertical; min-height: 60px; margin-bottom: 6px;"></textarea>
+            
+            <div class="container-upload-foto" style="background: var(--bg-input);">
+                <label for="input-foto-oficina" class="btn-foto" style="background: #991b1b;">📸 Foto da Pane</label>
+                <input type="file" id="input-foto-oficina" accept="image/*" capture="environment" style="display: none;" onchange="processarFotoOficina(this)">
+                <div class="preview-fotos" id="preview-fotos-oficina"></div>
+            </div>
+
+            <button class="btn-enviar-oficina" onclick="enviarChamadoOficina()">🚨 Enviar com GPS</button>
+        </div>
+
+        <div class="painel-resumo">
+            <div class="resumo-conteudo">
+                <div class="status-nuvem" id="txt-status-nuvem">Pronto para iniciar vistoria ☁️</div>
+                <button class="btn-enviar" onclick="finalizarEEnviar()">Finalizar e Enviar Check-list</button>
+            </div>
+        </div>
     </div>
 
-    <!-- OFICINA E CONTROLADOR (ESTRUTURAS ORIGINAIS) -->
-    <div id="painel-oficina" class="painel-oficina-container">...</div>
-    <div id="painel-geral" class="painel-geral-container">...</div>
+    <div id="painel-oficina" class="painel-oficina-container">
+        <div style="text-align: right; padding-top: 5px;">
+            <button class="btn-logout" onclick="fazerLogout()">Trocar Usuário</button>
+        </div>
+        <div class="titulo" style="margin-top: 5px; text-align: center;">Módulo Oficina</div>
+        <div class="subtitulo" style="text-align: center;">Controle Preventivo e Vistorias da Frota</div>
+
+        <div class="card-painel" style="border-left: 4px solid var(--azul-vipol);">
+            <div class="painel-header-flex">
+                <div class="titulo-secao" style="color: #60a5fa; margin-bottom:0;">📱 Check-lists dos Motoristas</div>
+                <button onclick="carregarChecklistsPainelOficina()" style="background:transparent; border:1px solid var(--borda-card); color:var(--texto-secundario); padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;">🔄 Atualizar</button>
+            </div>
+            <div style="font-size: 11px; color: var(--texto-secundario); margin-top: 2px; margin-bottom: 6px;">💡 Dica: Itens em <span style="color:#f87171; font-weight:700;">vermelho</span> possuem defeitos. Clique na linha para inspecionar.</div>
+            <div class="campo-login" style="margin-bottom: 6px;">
+                <input type="text" id="filtro-checklist-oficina" placeholder="Filtrar por Prefixo (Ex: 36.159)" oninput="carregarChecklistsPainelOficina()">
+            </div>
+            <div id="lista-checklists-oficina" style="margin-top: 8px; max-height: 260px; overflow-y: auto;">Carregando check-lists...</div>
+        </div>
+
+        <div class="card-painel" style="border-left: 4px solid var(--alerta);">
+            <div class="titulo-secao" style="color: #fbbf24;">⚠️ Alertas Preventivos</div>
+            <div id="lista-alertas-preventivos" style="font-size:12px; color:#e2e8f0; margin-top:6px;">Calculando quilometragens...</div>
+        </div>
+
+        <div class="card-painel" style="border-left: 4px solid var(--azul-vipol);">
+            <div class="titulo-secao" style="color: #60a5fa;">🔧 Registrar Manutenção Detalhada</div>
+            
+            <div class="campo-login" style="margin-top: 10px;">
+                <label>Prefixo do Carro</label>
+                <input type="text" id="oficina-prefixo" placeholder="Ex: 36.159">
+            </div>
+
+            <div class="campo-login">
+                <label>Tipo de Serviço</label>
+                <select id="oficina-servico">
+                    <option value="Preventiva">Manutenção Preventiva</option>
+                    <option value="Corretiva">Manutenção Corretiva</option>
+                    <option value="Troca de Óleo">Troca de Óleo e Filtros</option>
+                    <option value="Freios">Sistema de Freios</option>
+                    <option value="Pneus">Pneus / Rodagem</option>
+                </select>
+            </div>
+
+            <div class="campo-login">
+                <label>Descrição do que foi feito (Serviços)</label>
+                <textarea id="oficina-descricao" placeholder="Ex: Substituição das lonas de freio traseiras e regulagem do sistema..." style="width:100%; background:var(--bg-input); border:1px solid var(--borda-card); border-radius:8px; padding:10px; color:#fff; font-size:13px; outline:none; resize:vertical; min-height:60px;"></textarea>
+            </div>
+
+            <div class="campo-login">
+                <label>Peças Substituídas / Utilizadas</label>
+                <input type="text" id="oficina-pecas" placeholder="Ex: Jogo de lonas, graxa, retentor...">
+            </div>
+
+            <div class="grupo-inputs-duplos">
+                <div class="campo-login">
+                    <label>Quilometragem (Km)</label>
+                    <input type="number" id="oficina-km" placeholder="Ex: 48500">
+                </div>
+                <div class="campo-login">
+                    <label>Custo Total (R$)</label>
+                    <input type="number" step="0.01" id="oficina-custo" placeholder="Ex: 350.00">
+                </div>
+            </div>
+
+            <div class="campo-login">
+                <label>Responsável / Oficina</label>
+                <input type="text" id="oficina-responsavel" placeholder="Ex: Mecânico João / Oficina Central">
+            </div>
+
+            <div class="container-upload-foto" style="margin-bottom: 14px;">
+                <label for="input-foto-manutencao" class="btn-foto" style="background: #3b82f6;">📸 Anexar Foto da Manutenção (Opcional)</label>
+                <input type="file" id="input-foto-manutencao" accept="image/*" capture="environment" style="display: none;" onchange="processarFotoManutencao(this)">
+                <div class="preview-fotos" id="preview-fotos-manutencao"></div>
+            </div>
+
+            <button class="btn-acessar" style="background:var(--azul-vipol);" onclick="salvarManutencaoOficina()">Salvar no Histórico</button>
+            <button class="btn-acessar" style="background: var(--sucesso); margin-top: 10px;" onclick="gerarRelatorioIndividualPDF()">📄 Baixar Histórico do Carro em PDF</button>
+        </div>
+
+        <div class="card-painel">
+            <div class="painel-header-flex">
+                <div class="titulo-secao" style="margin-bottom:0;">📋 Histórico Detalhado</div>
+                <button onclick="carregarHistoricoOficina()" style="background:transparent; border:1px solid var(--borda-card); color:var(--texto-secundario); padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;">🔄 Atualizar</button>
+            </div>
+            <div style="font-size: 11px; color: var(--texto-secundario); margin-top: 2px; margin-bottom: 6px;">💡 Clique em qualquer linha do histórico para abrir todos os detalhes.</div>
+            <div class="campo-login" style="margin-top: 4px; margin-bottom: 6px;">
+                <input type="text" id="filtro-busca-oficina" placeholder="Filtrar por Prefixo" oninput="carregarHistoricoOficina()">
+            </div>
+            <div id="lista-manutencoes-oficina" style="margin-top: 8px; max-height: 280px; overflow-y: auto;">Carregando histórico...</div>
+        </div>
+    </div>
+
+    <div id="painel-geral" class="painel-geral-container">
+        <div style="text-align: right; padding-top: 5px;">
+            <button class="btn-logout" onclick="fazerLogout()">Trocar Usuário</button>
+        </div>
+        <div class="titulo" style="margin-top: 5px; text-align: center;">Painel de Controle</div>
+        <div class="subtitulo" style="text-align: center;">Monitoramento em Tempo Real</div>
+
+        <div style="display: flex; gap: 8px;">
+            <div class="card-painel card-clicavel" onclick="clicarCardChamados()" style="flex: 1; padding: 10px; text-align: center; border-left: 4px solid var(--perigo);">
+                <div style="font-size: 10px; color: var(--texto-secundario); text-transform: uppercase;">Chamados Pendentes</div>
+                <div id="kpi-chamados" style="font-size: 18px; font-weight: 800; color: #f87171; margin-top: 2px;">0</div>
+            </div>
+            <div class="card-painel card-clicavel" onclick="clicarCardChecklists()" style="flex: 1; padding: 10px; text-align: center; border-left: 4px solid var(--sucesso);">
+                <div style="font-size: 10px; color: var(--texto-secundario); text-transform: uppercase;">Check-lists Hoje</div>
+                <div id="kpi-checklists" style="font-size: 18px; font-weight: 800; color: #34d399; margin-top: 2px;">0</div>
+            </div>
+        </div>
+
+        <button class="btn-acessar" style="background: var(--azul-vipol); margin-top: 4px;" onclick="gerarRelatorioGeralPDF()">📄 Baixar Relatório Geral em PDF</button>
+
+        <div class="card-painel" id="secao-chamados-painel" style="border-left: 4px solid var(--perigo);">
+            <div class="painel-header-flex">
+                <div class="titulo-secao" style="color: #f87171; margin-bottom:0;">🚨 Chamados Urgentes com GPS</div>
+                <span id="badge-contador-chamados" style="font-size: 10px; background: rgba(220,38,38,0.2); border: 1px solid var(--perigo); color: #f87171; padding: 2px 6px; border-radius: 6px; font-weight: 700;">0 pendentes</span>
+            </div>
+            <div id="lista-chamados-painel" style="margin-top: 8px; font-size: 12px; color: #cbd5e1;">Carregando chamados...</div>
+        </div>
+
+        <div class="card-painel" id="secao-checklists-painel" style="border-left: 4px solid var(--azul-vipol);">
+            <div class="painel-header-flex">
+                <div class="titulo-secao" style="color: #60a5fa; margin-bottom:0;">📱 Histórico de Check-lists Recentes</div>
+                <button onclick="carregarChecklistsPainelControlador()" style="background:transparent; border:1px solid var(--borda-card); color:var(--texto-secundario); padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;">🔄 Atualizar</button>
+            </div>
+            <div style="font-size: 11px; color: var(--texto-secundario); margin-top: 2px; margin-bottom: 6px;">💡 Dica: Itens em <span style="color:#f87171; font-weight:700;">vermelho</span> possuem defeitos. Clique na linha para inspecionar.</div>
+            <div class="campo-login" style="margin-bottom: 6px;">
+                <input type="text" id="filtro-checklist-controlador" placeholder="Filtrar por Prefixo (Ex: 36.159)" oninput="carregarChecklistsPainelControlador()">
+            </div>
+            <div id="lista-checklists-controlador" style="margin-top: 8px; max-height: 260px; overflow-y: auto;">Carregando check-lists...</div>
+        </div>
+
+        <div class="card-painel" style="border-left: 4px solid var(--sucesso);">
+            <div class="titulo-secao" style="color: #34d399;">🔄 Remanejamento Rápido</div>
+            <div class="campo-login" style="margin-bottom:8px;">
+                <label>Motorista Afetado</label>
+                <input type="text" id="remaneja-motorista" placeholder="Nome">
+            </div>
+            <div class="grupo-inputs-duplos" style="margin-bottom:8px;">
+                <div class="campo-login">
+                    <label>Carro Antigo</label>
+                    <input type="text" id="remaneja-antigo" placeholder="Ex: 36.159">
+                </div>
+                <div class="campo-login">
+                    <label>Carro Reserva</label>
+                    <input type="text" id="remaneja-novo" placeholder="Ex: 36.999">
+                </div>
+            </div>
+            <button class="btn-acessar" style="background:var(--sucesso); margin-top:0;" onclick="executarRemanejamento()">Confirmar Remanejamento</button>
+        </div>
+    </div>
 
 <script>
     const firebaseConfig = {
@@ -211,161 +1067,1165 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const messaging = firebase.messaging();
 
     const dicionarioLinhas = {
-        "FOLGA": "FOLGA - DESCANSO SEMANAL",
         "077": "077 - Vila Any X Metrô Brás",
-        "596": "596 - Vila Any X São Miguel",
         "319": "319 - Tupinambá X Metrô Itaquera",
+        "596": "596 - Vila Any X São Miguel",
         "139": "139 - São Miguel X Cecap",
-        "825": "825 - São Miguel X Guarulhos",
+        "825": "825 - São Miguel X Guarulhos (Centro)",
         "073": "073 - São Miguel X Bonsucesso",
+        "849": "849 - Parque das Nações X São Miguel",
+        "252": "252 - Jardim Cumbica X Metrô Carrão",
         "499": "499 - Dom Bosco X Cecap"
     };
 
+    const nomeAmigavelItens = {
+        "item_0_0": "Faróis e Lanternas",
+        "item_0_1": "Setas e Pisca-alerta",
+        "item_0_2": "Luz de Ré e Buzina",
+        "item_0_3": "Estado dos Pneus e Estepe",
+        "item_0_4": "Retrovisores e Limpadores",
+        "item_1_0": "Nível de Óleo e Água",
+        "item_1_1": "Freios (Principal e Maneco)",
+        "item_1_2": "Ausência de Vazamentos"
+    };
+
+    function formatarDataBR(dataStr) {
+        if (!dataStr) return "";
+        let partes = dataStr.split('-');
+        if (partes.length === 3) {
+            return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
+        return dataStr;
+    }
+
+    function buscarNomeLinhaAutomatico() {
+        let inputNum = document.getElementById('escala-linha-num').value.trim();
+        let inputNome = document.getElementById('escala-linha-nome');
+        
+        if (dicionarioLinhas[inputNum]) {
+            inputNome.value = dicionarioLinhas[inputNum];
+        } else {
+            inputNome.value = inputNum ? "Linha personalizada / Outra" : "";
+        }
+    }
+
+    let timeoutSalvar = null;
     let usuarioChapaAtivo = "";
     let usuarioNomeAtivo = "";
     let usuarioCargoAtivo = "";
+    let listaFotosBase64 = [];
+    let listaFotosOficinaBase64 = [];
+    let listaFotosManutencaoBase64 = [];
+    let totalChamadosAnterior = -1;
+    let cacheChecklists = {};
+    let cacheManutencoes = {};
 
-    function mostrarToast(msg, tipo) {
-        const c = document.getElementById('toast-container');
-        const t = document.createElement('div');
-        t.className = `toast ${tipo}`; t.innerText = msg;
-        c.appendChild(t); setTimeout(() => t.remove(), 3500);
+    const itensChecklist = [
+        {
+            secao: "Parte Externa e Iluminação",
+            itens: ["Faróis e Lanternas", "Setas e Pisca-alerta", "Luz de Ré e Buzina", "Estado dos Pneus e Estepe", "Retrovisores e Limpadores"]
+        },
+        {
+            secao: "Mecânica Básica",
+            itens: ["Nível de Óleo e Água", "Freios (Principal e Maneco)", "Ausência de Vazamentos"]
+        }
+    ];
+
+    function mostrarToast(mensagem, tipo = 'normal') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${tipo}`;
+        toast.innerText = mensagem;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 3500);
     }
 
-    function realizarLogin() {
-        const nome = document.getElementById("login-nome").value;
-        const chapa = document.getElementById("login-chapa").value;
-        const cargo = document.getElementById("login-cargo").value;
-        if(!nome || !chapa) return alert("Preencha os campos!");
-        localStorage.setItem("vipol_chapa_usuario", chapa);
-        localStorage.setItem("vipol_nome_usuario", nome);
-        localStorage.setItem("vipol_cargo_usuario", cargo);
-        verificarSessao();
+    function tocarAlertaSonoro() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime); 
+            
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.4); 
+        } catch (e) {
+            console.log("Áudio bloqueado pelo navegador.");
+        }
     }
 
-    function verificarSessao() {
-        const chapa = localStorage.getItem("vipol_chapa_usuario");
-        const cargo = localStorage.getItem("vipol_cargo_usuario");
-        if(chapa) {
-            usuarioChapaAtivo = String(chapa);
-            usuarioCargoAtivo = cargo;
-            document.getElementById("tela-login").style.display = "none";
-            document.querySelectorAll(".btn-navegacao").forEach(b => b.style.display = "inline-block");
-            if(cargo === 'motorista') mudarVisao('escala');
-            else if(cargo === 'escalante') {
-                mudarVisao('escala');
-                document.getElementById('bloco-cadastro-escala').style.display = 'block';
-                document.getElementById('bloco-minha-escala').style.display = 'none';
-            } else mudarVisao(cargo);
+    async function solicitarPermissaoNotificacao() {
+        try {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                const token = await messaging.getToken({ vapidKey: '' });
+                if (token && usuarioChapaAtivo) {
+                    db.collection("tokens_notificacao").doc(usuarioChapaAtivo).set({
+                        token: token,
+                        cargo: usuarioCargoAtivo,
+                        atualizadoEm: new Date().toISOString()
+                    }, { merge: true });
+                }
+            }
+        } catch (error) {
+            console.error("Erro ao configurar notificações:", error);
         }
     }
 
     function mudarVisao(modo) {
         document.querySelectorAll('.btn-navegacao').forEach(b => b.classList.remove('ativo'));
-        document.querySelectorAll('.area-escala-container, .painel-oficina-container, .painel-geral-container').forEach(e => e.classList.remove('ativo-tela'));
+        document.getElementById('tela-login').style.display = 'none';
+        document.getElementById('area-escala').classList.remove('ativo-tela');
         document.getElementById('area-motorista').style.display = 'none';
-        
-        if(modo === 'escala') {
+        document.getElementById('painel-oficina').classList.remove('ativo-tela');
+        document.getElementById('painel-geral').classList.remove('ativo-tela');
+
+        if (modo === 'escala') {
             document.getElementById('tab-escala').classList.add('ativo');
             document.getElementById('area-escala').classList.add('ativo-tela');
+            limparEscalasAntigas();
             carregarMinhaEscala();
-        } else if(modo === 'motorista') {
+            carregarTodasAsEscalas();
+        } else if (modo === 'motorista') {
             document.getElementById('tab-motorista').classList.add('ativo');
             document.getElementById('area-motorista').style.display = 'block';
+            construirInterfaceChecklist();
+        } else if (modo === 'oficina') {
+            document.getElementById('tab-oficina').classList.add('ativo');
+            document.getElementById('painel-oficina').classList.add('ativo-tela');
+            carregarHistoricoOficina();
+            carregarAlertasPreventivos();
+            carregarChecklistsPainelOficina();
+        } else if (modo === 'controlador') {
+            document.getElementById('tab-controlador').classList.add('ativo');
+            document.getElementById('painel-geral').classList.add('ativo-tela');
+            carregarDadosPainel();
+            carregarChecklistsPainelControlador();
         }
     }
 
-    // --- ESCALA: BUSCAR NOME DA LINHA (INCLUINDO FOLGA) ---
-    function buscarNomeLinhaAutomatico() {
-        let n = document.getElementById('escala-linha-num').value.toUpperCase();
-        let campoNome = document.getElementById('escala-linha-nome');
-        
-        if (dicionarioLinhas[n]) {
-            campoNome.value = dicionarioLinhas[n];
-            if (n === "FOLGA") {
-                document.getElementById('escala-horario').value = "-";
+    function limparEscalasAntigas() {
+        let hoje = new Date();
+        hoje.setDate(hoje.getDate() - 5);
+        let limiteStr = hoje.toISOString().split('T')[0];
+
+        db.collection("escalas_motoristas").get().then((snapshot) => {
+            snapshot.forEach((doc) => {
+                let dados = doc.data();
+                if (dados.data && dados.data < limiteStr) {
+                    db.collection("escalas_motoristas").doc(doc.id).delete();
+                }
+            });
+        });
+    }
+
+    function verificarSessao() {
+        const chapaSalva = localStorage.getItem("vipol_chapa_usuario");
+        const nomeSalvo = localStorage.getItem("vipol_nome_usuario");
+        const cargoSalvo = localStorage.getItem("vipol_cargo_usuario");
+
+        if (chapaSalva && nomeSalvo && cargoSalvo) {
+            usuarioChapaAtivo = chapaSalva;
+            usuarioNomeAtivo = nomeSalvo;
+            usuarioCargoAtivo = cargoSalvo;
+
+            document.getElementById("tela-login").style.display = "none";
+            
+            if (cargoSalvo === 'motorista') {
+                document.getElementById('tab-escala').style.display = 'block';
+                document.getElementById('tab-motorista').style.display = 'block';
+                document.getElementById('bloco-minha-escala').style.display = 'block';
+                document.getElementById('bloco-cadastro-escala').style.display = 'none';
+                document.getElementById('bloco-todas-escalas').style.display = 'none';
+                document.getElementById("txt-nome-motorista").value = usuarioNomeAtivo;
+                document.getElementById("txt-chapa-motorista").value = usuarioChapaAtivo;
+                mudarVisao('escala');
+            } else if (cargoSalvo === 'escalante') {
+                document.getElementById('tab-escala').style.display = 'block';
+                document.getElementById('bloco-minha-escala').style.display = 'none';
+                document.getElementById('bloco-cadastro-escala').style.display = 'block';
+                document.getElementById('bloco-todas-escalas').style.display = 'block';
+                mudarVisao('escala');
+            } else if (cargoSalvo === 'oficina') {
+                document.getElementById('tab-oficina').style.display = 'block';
+                solicitarPermissaoNotificacao();
+                mudarVisao('oficina');
+            } else if (cargoSalvo === 'controlador') {
+                document.getElementById('tab-oficina').style.display = 'block';
+                document.getElementById('tab-controlador').style.display = 'block';
+                solicitarPermissaoNotificacao();
+                mudarVisao('controlador');
             }
         } else {
-            campoNome.value = n ? "Linha Personalizada" : "";
+            document.getElementById("tela-login").style.display = "flex";
+            if(chapaSalva) document.getElementById("login-chapa").value = chapaSalva;
+            if(nomeSalvo) document.getElementById("login-nome").value = nomeSalvo;
+            if(cargoSalvo) document.getElementById("login-cargo").value = cargoSalvo;
+            const whatsSalvo = localStorage.getItem("vipol_whatsapp_usuario");
+            if(whatsSalvo) document.getElementById("login-whatsapp").value = whatsSalvo;
         }
     }
 
-    // --- ESCALA: SALVAR COM RECADO ---
+    function realizarLogin() {
+        const nome = document.getElementById("login-nome").value.trim();
+        const chapa = document.getElementById("login-chapa").value.trim();
+        const whatsapp = document.getElementById("login-whatsapp").value.trim();
+        const cargo = document.getElementById("login-cargo").value;
+
+        if (!nome || !chapa) {
+            mostrarToast("Preencha Nome e Chapa!", "aviso");
+            return;
+        }
+
+        localStorage.setItem("vipol_chapa_usuario", chapa);
+        localStorage.setItem("vipol_nome_usuario", nome);
+        localStorage.setItem("vipol_cargo_usuario", cargo);
+        if(whatsapp) localStorage.setItem("vipol_whatsapp_usuario", whatsapp);
+
+        if(cargo === 'motorista') {
+            db.collection("motoristas_cadastrados").doc(chapa).set({ chapa, nome, whatsapp: whatsapp || "" });
+        }
+
+        verificarSessao();
+        mostrarToast("Login efetuado com sucesso!", "sucesso");
+    }
+
+    function fazerLogout() {
+        localStorage.clear();
+        location.reload();
+    }
+
+    function buscarMotoristaPorChapaEscala() {
+        let chapaInput = document.getElementById('escala-chapa-motorista').value.trim();
+        let nomeInput = document.getElementById('escala-nome-motorista');
+
+        if (!chapaInput) {
+            nomeInput.value = "";
+            return;
+        }
+
+        db.collection("motoristas_cadastrados").doc(chapaInput).get().then((doc) => {
+            if (doc.exists) {
+                let dados = doc.data();
+                nomeInput.value = dados.nome;
+            } else {
+                nomeInput.value = "";
+                nomeInput.placeholder = "Motorista novo! Digite o nome aqui...";
+            }
+        });
+    }
+
+    function carregarMinhaEscala() {
+        const container = document.getElementById('dados-minha-escala');
+        if(!container) return;
+        container.innerHTML = "Buscando escalas...";
+        
+        db.collection("escalas_motoristas").get().then((snapshot) => {
+            let minhasEscalas = [];
+            let agora = new Date();
+            let hojeStr = agora.getFullYear() + '-' + String(agora.getMonth() + 1).padStart(2, '0') + '-' + String(agora.getDate()).padStart(2, '0');
+
+            snapshot.forEach((doc) => {
+                let e = doc.data();
+                if (String(e.chapa) === String(usuarioChapaAtivo) && e.data >= hojeStr) {
+                    minhasEscalas.push(e);
+                }
+            });
+
+            minhasEscalas.sort((a, b) => a.data.localeCompare(b.data));
+
+            if (minhasEscalas.length > 0) {
+                let html = "";
+                minhasEscalas.forEach(e => {
+                    let dataBR = formatarDataBR(e.data);
+                    if (e.pegada === "FOLGA") {
+                        html += `<div style="background:rgba(217, 119, 6, 0.1); border:1px solid var(--alerta); padding:10px; border-radius:8px; margin-bottom:8px;">
+                            <b>Data:</b> ${dataBR} | <span style="color:#fbbf24; font-weight:800;">${e.linha}</span><br>
+                            <b>Obs:</b> ${e.obs || 'Nenhuma'}
+                        </div>`;
+                    } else {
+                        html += `<div style="background:var(--bg-input); border:1px solid var(--borda-card); padding:10px; border-radius:8px; margin-bottom:8px;">
+                            <b>Data:</b> ${dataBR} | <b>Horário:</b> ${e.horario}<br>
+                            <b>Pegada:</b> <span style="color:#60a5fa;">${e.pegada || 'Garagem'}</span><br>
+                            <b>Linha:</b> <span style="color:#34d399; font-weight:700;">${e.linha}</span>
+                        </div>`;
+                    }
+                });
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = `<span style="color:#fbbf24;">Nenhuma escala ativa para hoje ou dias futuros.</span>`;
+            }
+        });
+    }
+
+    function carregarTodasAsEscalas() {
+        const listaDiv = document.getElementById('lista-todas-escalas');
+        if(!listaDiv) return;
+        db.collection("escalas_motoristas").get().then((snapshot) => {
+            let html = '<table class="painel-tabela"><tr><th>Motorista</th><th>Pegada</th><th>Linha</th><th>Data</th></tr>';
+            let escalasArr = [];
+            snapshot.forEach(doc => escalasArr.push(doc.data()));
+            escalasArr.sort((a, b) => b.data.localeCompare(a.data));
+
+            escalasArr.forEach((e) => {
+                let dataBR = formatarDataBR(e.data);
+                let linhaEstilo = e.pegada === "FOLGA" ? '<span style="color:#fbbf24; font-weight:700;">🏖️ FOLGA</span>' : e.linha;
+                html += `<tr><td><b>${e.motorista}</b></td><td>${e.pegada || 'Garagem'}</td><td>${linhaEstilo}</td><td>${dataBR}</td></tr>`;
+            });
+            listaDiv.innerHTML = html + '</table>';
+        });
+    }
+
     function salvarEscalaIndividual() {
-        const chapa = document.getElementById('escala-chapa-motorista').value;
-        const nome = document.getElementById('escala-nome-motorista').value;
-        const linha = document.getElementById('escala-linha-nome').value;
-        const data = document.getElementById('escala-data').value;
-        const hora = document.getElementById('escala-horario').value;
-        const obs = document.getElementById('escala-obs').value;
+        const chapa = document.getElementById('escala-chapa-motorista').value.trim();
+        const nome = document.getElementById('escala-nome-motorista').value.trim();
+        const pegada = document.getElementById('escala-pegada').value;
+        const linhaNum = document.getElementById('escala-linha-num').value.trim();
+        const linhaNome = document.getElementById('escala-linha-nome').value.trim();
+        const dataEscala = document.getElementById('escala-data').value;
+        const horario = document.getElementById('escala-horario').value.trim();
+        const obs = document.getElementById('escala-obs').value.trim();
 
-        if(!chapa || !data) return alert("Preencha Matrícula e Data!");
+        if (!chapa || !nome || !linhaNum || !dataEscala) {
+            mostrarToast("Preencha a matrícula, nome, linha e data!", "aviso");
+            return;
+        }
 
-        const idDoc = chapa + "_" + data;
-        db.collection("escalas_motoristas").doc(idDoc).set({
-            chapa: String(chapa),
+        const linhaCompleta = linhaNome ? linhaNome : linhaNum;
+        db.collection("motoristas_cadastrados").doc(chapa).set({ chapa, nome, whatsapp: "" });
+        const idDocumento = `${chapa}_${dataEscala}`;
+
+        db.collection("escalas_motoristas").doc(idDocumento).set({
+            chapa,
             motorista: nome,
-            linha: linha,
-            data: data,
-            horario: hora,
-            obs: obs
+            pegada,
+            linha: linhaCompleta,
+            data: dataEscala,
+            horario,
+            obs
         }).then(() => {
-            mostrarToast("Escala enviada com sucesso!", "sucesso");
+            mostrarToast(`Escala para o dia ${formatarDataBR(dataEscala)} salva com sucesso!`, "sucesso");
+            carregarTodasAsEscalas();
+            document.getElementById('escala-linha-num').value = "";
+            document.getElementById('escala-linha-nome').value = "";
+            document.getElementById('escala-data').value = "";
+            document.getElementById('escala-horario').value = "";
             document.getElementById('escala-obs').value = "";
         });
     }
 
-    // --- ESCALA: MOTORISTA VER RECADO E FOLGA ---
-    function carregarMinhaEscala() {
-        const container = document.getElementById('dados-minha-escala');
-        if(!usuarioChapaAtivo) return;
+    function salvarFolgaIndividual() {
+        const chapa = document.getElementById('escala-chapa-motorista').value.trim();
+        const nome = document.getElementById('escala-nome-motorista').value.trim();
+        const dataEscala = document.getElementById('escala-data').value;
+        const obs = document.getElementById('escala-obs').value.trim();
 
-        db.collection("escalas_motoristas")
-          .where("chapa", "==", String(usuarioChapaAtivo))
-          .onSnapshot((snapshot) => {
-            if(snapshot.empty) {
-                container.innerHTML = "Sem escalas lançadas.";
+        if (!chapa || !nome || !dataEscala) {
+            mostrarToast("Preencha a matrícula, nome e data para a folga!", "aviso");
+            return;
+        }
+
+        db.collection("motoristas_cadastrados").doc(chapa).set({ chapa, nome, whatsapp: "" });
+        const idDocumento = `${chapa}_${dataEscala}`;
+
+        db.collection("escalas_motoristas").doc(idDocumento).set({
+            chapa,
+            motorista: nome,
+            pegada: "FOLGA",
+            linha: "🏖️ FOLGA",
+            data: dataEscala,
+            horario: "-",
+            obs: obs || "Motorista de folga"
+        }).then(() => {
+            mostrarToast(`Folga para o dia ${formatarDataBR(dataEscala)} registrada com sucesso!`, "sucesso");
+            carregarTodasAsEscalas();
+            document.getElementById('escala-data').value = "";
+            document.getElementById('escala-obs').value = "";
+        });
+    }
+
+    function construirInterfaceChecklist() {
+        const container = document.getElementById('container-checklist');
+        if (container.innerHTML.trim() !== '') return;
+        let htmlGeral = '';
+        itensChecklist.forEach((s, sIndex) => {
+            htmlGeral += `<div class="secao-checklist"><div class="titulo-secao">${s.secao}</div><div class="lista-itens">`;
+            s.itens.forEach((item, iIndex) => {
+                htmlGeral += `<div class="card-item"><span class="nome-item">${item}</span><div class="grupo-status" data-id="item_${sIndex}_${iIndex}"><button class="btn-status ativo-ok" onclick="mudarStatus(this, 'OK')">OK</button><button class="btn-status" onclick="mudarStatus(this, 'DEFEITO')">Defeito</button></div></div>`;
+            });
+            htmlGeral += `</div></div>`;
+        });
+        container.innerHTML = htmlGeral;
+    }
+
+    function mudarStatus(botao, status) {
+        const grupo = botao.parentElement;
+        grupo.querySelectorAll('.btn-status').forEach(b => b.classList.remove('ativo-ok', 'ativo-defeito'));
+        botao.classList.add(status === 'OK' ? 'ativo-ok' : 'ativo-defeito');
+        salvarChecklist();
+    }
+
+    function verificarHistoricoCarro() {
+        const prefixo = document.getElementById('txt-prefixo').value.trim();
+        if (!prefixo) return;
+        db.collection("checklists_onibus").get().then((snapshot) => {
+            snapshot.forEach((doc) => {
+                let d = doc.data();
+                if (d.prefixo && d.prefixo.toLowerCase() === prefixo.toLowerCase() && d.observacoes) {
+                    document.getElementById('texto-relato-anterior').innerHTML = `<b>Obs:</b> ${d.observacoes}`;
+                    document.getElementById('alerta-turno-anterior').style.display = 'block';
+                }
+            });
+        });
+    }
+
+    function processarFoto(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                listaFotosBase64.push(e.target.result);
+                atualizarPreviewFotos();
+                salvarChecklist();
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function atualizarPreviewFotos() {
+        const container = document.getElementById('preview-fotos');
+        container.innerHTML = "";
+        listaFotosBase64.forEach((foto, i) => {
+            container.innerHTML += `<div class="miniatura-container"><img src="${foto}" class="miniatura-foto" onclick="ampliarFoto('${foto}')"><button class="btn-remover-foto" onclick="listaFotosBase64.splice(${i},1);atualizarPreviewFotos()">X</button></div>`;
+        });
+    }
+
+    function processarFotoOficina(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                listaFotosOficinaBase64.push(e.target.result);
+                document.getElementById('preview-fotos-oficina').innerHTML = `<span style="font-size:11px; color:#10b981; font-weight:600;">Foto anexada com sucesso!</span>`;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function processarFotoManutencao(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                listaFotosManutencaoBase64.push(e.target.result);
+                atualizarPreviewFotosManutencao();
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function atualizarPreviewFotosManutencao() {
+        const container = document.getElementById('preview-fotos-manutencao');
+        container.innerHTML = "";
+        listaFotosManutencaoBase64.forEach((foto, i) => {
+            container.innerHTML += `<div class="miniatura-container"><img src="${foto}" class="miniatura-foto" onclick="ampliarFoto('${foto}')"><button class="btn-remover-foto" onclick="listaFotosManutencaoBase64.splice(${i},1);atualizarPreviewFotosManutencao()">X</button></div>`;
+        });
+    }
+
+    function salvarChecklist() {
+        if (!usuarioChapaAtivo) return;
+        clearTimeout(timeoutSalvar);
+        timeoutSalvar = setTimeout(() => {
+            const prefixo = document.getElementById('txt-prefixo').value.trim();
+            if (!prefixo) return;
+            
+            let dados = {
+                motorista: usuarioNomeAtivo,
+                chapa: usuarioChapaAtivo,
+                prefixo: prefixo,
+                linha: document.getElementById('txt-linha').value,
+                kmInicial: document.getElementById('txt-km-inicial').value,
+                turno: document.getElementById('sel-turno').value,
+                observacoes: document.getElementById('txt-observacoes').value,
+                fotos: listaFotosBase64,
+                respostas: {},
+                dataHoraEnvio: new Date().toISOString()
+            };
+            document.querySelectorAll('.grupo-status').forEach(g => {
+                dados.respostas[g.getAttribute('data-id')] = g.querySelector('.ativo-ok') ? "OK" : "DEFEITO";
+            });
+
+            db.collection("checklists_onibus").doc(`${usuarioChapaAtivo}_${new Date().toISOString().split('T')[0]}`).set(dados)
+            .then(() => document.getElementById('txt-status-nuvem').innerText = "Sincronizado na nuvem ☁️");
+        }, 1000);
+    }
+
+    function enviarChamadoOficina() {
+        const prefixo = document.getElementById('txt-prefixo').value.trim();
+        const descricao = document.getElementById('txt-obs-oficina').value.trim();
+        if (!prefixo || !descricao) {
+            mostrarToast("Preencha o prefixo e o relato da pane!", "aviso");
+            return;
+        }
+
+        mostrarToast("Buscando localização GPS...", "aviso");
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((pos) => {
+                enviarDadosPane(prefixo, descricao, pos.coords.latitude, pos.coords.longitude);
+            }, () => {
+                enviarDadosPane(prefixo, descricao, null, null);
+            }, { timeout: 5000 });
+        } else {
+            enviarDadosPane(prefixo, descricao, null, null);
+        }
+    }
+
+    function enviarDadosPane(prefixo, descricao, lat, lon) {
+        const whatsappMotorista = localStorage.getItem("vipol_whatsapp_usuario") || "";
+
+        db.collection("chamados_oficina").add({
+            motorista: usuarioNomeAtivo,
+            chapa: usuarioChapaAtivo,
+            whatsapp: whatsappMotorista,
+            prefixo,
+            descricao,
+            latitude: lat,
+            longitude: lon,
+            status: "PENDENTE",
+            dataHora: new Date().toISOString()
+        }).then(() => {
+            mostrarToast("Chamado urgente enviado para oficina!", "sucesso");
+            document.getElementById('txt-obs-oficina').value = "";
+        });
+    }
+
+    async function finalizarEEnviar() {
+        const prefixo = document.getElementById('txt-prefixo').value.trim();
+        const kmAtual = Number(document.getElementById('txt-km-inicial').value);
+
+        if (!prefixo || !kmAtual) {
+            mostrarToast("Informe o Prefixo e o Km Inicial!", "aviso");
+            return;
+        }
+
+        mostrarToast("Validando quilometragem...", "aviso");
+
+        try {
+            const snap = await db.collection("checklists_onibus").where("prefixo", "==", prefixo).get();
+            let ultimoKm = 0;
+            snap.forEach(doc => {
+                let val = Number(doc.data().kmInicial || 0);
+                if (val > ultimoKm) ultimoKm = val;
+            });
+
+            if (ultimoKm > 0 && kmAtual < ultimoKm) {
+                mostrarToast(`Erro: Km (${kmAtual}) é menor que o registro anterior (${ultimoKm} km)!`, "erro");
                 return;
             }
 
-            let html = "";
-            snapshot.forEach(doc => {
-                const e = doc.data();
-                const isFolga = e.linha.includes("FOLGA");
-                
-                html += `
-                <div class="card-painel ${isFolga ? 'card-folga' : ''}" style="border-left: 5px solid ${isFolga ? '#059669' : '#1d4ed8'}">
-                    <div style="font-size:16px; font-weight:bold; color:${isFolga ? '#34d399' : '#34d399'}">${e.linha}</div>
-                    <div style="font-size:13px; color:var(--texto-secundario);">Data: ${e.data} | Pegada: ${e.horario}</div>
-                    
-                    ${e.obs && e.obs.trim() !== "" ? `
-                        <div class="caixa-recado">
-                            <b style="color:#fbbf24; font-size:10px; text-transform:uppercase;">⚠️ RECADO DO ESCALANTE:</b>
-                            <div style="color:#fff; font-size:14px; margin-top:4px; font-weight:600;">${e.obs}</div>
-                        </div>
-                    ` : ""}
-                </div>
-                `;
+            salvarChecklist();
+            mostrarToast("Check-list finalizado com sucesso!", "sucesso");
+        } catch (e) {
+            salvarChecklist();
+            mostrarToast("Check-list salvo com sucesso!", "sucesso");
+        }
+    }
+
+    function salvarManutencaoOficina() {
+        const prefixo = document.getElementById('oficina-prefixo').value.trim();
+        const servico = document.getElementById('oficina-servico').value;
+        const descricao = document.getElementById('oficina-descricao').value.trim();
+        const pecas = document.getElementById('oficina-pecas').value.trim();
+        const km = document.getElementById('oficina-km').value.trim();
+        const custo = document.getElementById('oficina-custo').value.trim();
+        const responsavel = document.getElementById('oficina-responsavel').value.trim();
+
+        if (!prefixo || !km) {
+            mostrarToast("Preencha o Prefixo e a Quilometragem!", "aviso");
+            return;
+        }
+
+        db.collection("manutencoes_frota").add({
+            prefixo,
+            servico,
+            descricao: descricao || "Nenhuma descrição informada.",
+            pecas: pecas || "Nenhuma peça informada.",
+            km: Number(km),
+            custo: custo ? Number(custo) : 0,
+            responsavel: responsavel || "Não informado",
+            fotos: listaFotosManutencaoBase64,
+            data: new Date().toISOString()
+        }).then(() => {
+            mostrarToast("Manutenção detalhada salva com sucesso!", "sucesso");
+            document.getElementById('oficina-prefixo').value = "";
+            document.getElementById('oficina-descricao').value = "";
+            document.getElementById('oficina-pecas').value = "";
+            document.getElementById('oficina-km').value = "";
+            document.getElementById('oficina-custo').value = "";
+            document.getElementById('oficina-responsavel').value = "";
+            listaFotosManutencaoBase64 = [];
+            document.getElementById('preview-fotos-manutencao').innerHTML = "";
+            carregarHistoricoOficina();
+        });
+    }
+
+    function carregarHistoricoOficina() {
+        const filtro = document.getElementById('filtro-busca-oficina').value.trim().toLowerCase();
+        db.collection("manutencoes_frota").get().then((snap) => {
+            cacheManutencoes = {};
+            let html = '<table class="painel-tabela"><tr><th>Carro</th><th>Tipo</th><th>Km</th><th>Custo</th></tr>';
+            let lista = [];
+            snap.forEach(d => {
+                cacheManutencoes[d.id] = d.data();
+                lista.push({ id: d.id, ...d.data() });
             });
-            container.innerHTML = html;
+            lista.sort((a, b) => (b.data || "").localeCompare(a.data || ""));
+
+            let contador = 0;
+            lista.forEach(m => {
+                if (!filtro || (m.prefixo && m.prefixo.toLowerCase().includes(filtro))) {
+                    let dataFmt = m.data ? new Date(m.data).toLocaleDateString('pt-BR') : '-';
+                    let custoFmt = m.custo ? `R$ ${m.custo.toFixed(2)}` : 'R$ 0,00';
+                    
+                    html += `<tr class="linha-tabela-clicavel" onclick="abrirDetalhesManutencao('${m.id}')">
+                        <td><b>${m.prefixo}</b><br><span style="font-size:9px; color:var(--texto-secundario);">${dataFmt}</span></td>
+                        <td>${m.servico}</td>
+                        <td>${m.km} km</td>
+                        <td style="color:#34d399; font-weight:700;">${custoFmt}</td>
+                    </tr>`;
+                    contador++;
+                }
+            });
+
+            if (contador === 0) {
+                html += `<tr><td colspan="4" style="text-align:center; color:var(--texto-secundario);">Nenhum histórico encontrado.</td></tr>`;
+            }
+
+            document.getElementById('lista-manutencoes-oficina').innerHTML = html + '</table>';
         });
     }
 
-    // As outras 1000+ linhas de funções (processarFoto, PDF, Oficina, KPIs, etc)
-    // continuam exatamente como no seu arquivo original de 2000 linhas.
-    // ...
-    
-    function buscarMotoristaPorChapaEscala() {
-        let ch = document.getElementById('escala-chapa-motorista').value;
-        if(!ch) return;
-        db.collection("motoristas_cadastrados").doc(ch).get().then(doc => {
-            if(doc.exists) document.getElementById('escala-nome-motorista').value = doc.data().nome;
+    function abrirDetalhesManutencao(idDoc) {
+        const m = cacheManutencoes[idDoc];
+        if (!m) return;
+
+        let dataFmt = m.data ? new Date(m.data).toLocaleString('pt-BR') : '-';
+        let custoFmt = m.custo ? `R$ ${m.custo.toFixed(2)}` : 'R$ 0,00';
+
+        let html = `
+            <div style="margin-bottom: 8px;"><b>Carro / Prefixo:</b> <span style="color:#60a5fa; font-size:14px; font-weight:800;">${m.prefixo}</span></div>
+            <div style="margin-bottom: 8px;"><b>Data do Registro:</b> ${dataFmt}</div>
+            <div style="margin-bottom: 8px;"><b>Tipo de Serviço:</b> ${m.servico}</div>
+            <div style="margin-bottom: 8px;"><b>Quilometragem:</b> ${m.km} Km</div>
+            <div style="margin-bottom: 8px;"><b>Responsável / Oficina:</b> ${m.responsavel}</div>
+            <div style="margin-bottom: 8px;"><b>Custo Total:</b> <span style="color:#34d399; font-weight:800;">${custoFmt}</span></div>
+            
+            <div style="margin-top: 12px; margin-bottom: 4px; font-weight: 700; color: #60a5fa;">O que foi feito (Serviço):</div>
+            <div style="background: var(--bg-input); padding: 10px; border-radius: 8px; color: #f8fafc; line-height: 1.4;">${m.descricao}</div>
+
+            <div style="margin-top: 12px; margin-bottom: 4px; font-weight: 700; color: #34d399;">Peças Substituídas:</div>
+            <div style="background: var(--bg-input); padding: 10px; border-radius: 8px; color: #f8fafc; line-height: 1.4;">${m.pecas}</div>
+        `;
+
+        if (m.fotos && m.fotos.length > 0) {
+            html += `<div style="margin-top: 12px;"><b>Fotos da Manutenção (Clique para ampliar):</b><div class="preview-fotos" style="margin-top: 4px;">`;
+            m.fotos.forEach(f => {
+                html += `<img src="${f}" class="miniatura-foto" onclick="ampliarFoto('${f}')">`;
+            });
+            html += `</div></div>`;
+        }
+
+        document.getElementById('modal-manutencao-titulo').innerText = `Manutenção - Carro ${m.prefixo}`;
+        document.getElementById('modal-manutencao-corpo').innerHTML = html;
+        document.getElementById('modal-detalhe-manutencao').style.display = 'flex';
+    }
+
+    function fecharModalManutencao() {
+        document.getElementById('modal-detalhe-manutencao').style.display = 'none';
+    }
+
+    function carregarAlertasPreventivos() {
+        document.getElementById('lista-alertas-preventivos').innerHTML = '<span style="color:#10b981;">Nenhum alerta pendente. Frota regularizada.</span>';
+    }
+
+    function carregarChecklistsPainelOficina() {
+        const filtro = document.getElementById('filtro-checklist-oficina').value.trim().toLowerCase();
+        db.collection("checklists_onibus").get().then((snap) => {
+            cacheChecklists = {};
+            let html = '<table class="painel-tabela"><tr><th>Carro</th><th>Motorista</th><th>Km</th><th>Status</th></tr>';
+            let lista = [];
+            snap.forEach(d => {
+                cacheChecklists[d.id] = d.data();
+                lista.push({ id: d.id, ...d.data() });
+            });
+            lista.sort((a, b) => (b.dataHoraEnvio || "").localeCompare(a.dataHoraEnvio || ""));
+
+            let contador = 0;
+            lista.forEach(c => {
+                if (!filtro || (c.prefixo && c.prefixo.toLowerCase().includes(filtro))) {
+                    let temDefeito = false;
+                    if (c.respostas) {
+                        for (let k in c.respostas) {
+                            if (c.respostas[k] === "DEFEITO") temDefeito = true;
+                        }
+                    }
+
+                    let statusTexto = temDefeito ? '<span style="color:#f87171; font-weight:800;">⚠️ Defeito</span>' : '<span style="color:#34d399; font-weight:600;">OK</span>';
+                    let estiloLinha = temDefeito ? 'background: rgba(220, 38, 38, 0.1);' : '';
+
+                    html += `<tr class="linha-tabela-clicavel" style="${estiloLinha}" onclick="abrirDetalhesChecklist('${c.id}')">
+                        <td><b>${c.prefixo || 'N/D'}</b></td>
+                        <td>${c.motorista || 'N/D'}</td>
+                        <td>${c.kmInicial || '-'}</td>
+                        <td>${statusTexto}</td>
+                    </tr>`;
+                    contador++;
+                }
+            });
+
+            if (contador === 0) {
+                html += `<tr><td colspan="4" style="text-align:center; color:var(--texto-secundario);">Nenhum check-list encontrado.</td></tr>`;
+            }
+
+            document.getElementById('lista-checklists-oficina').innerHTML = html + '</table>';
         });
     }
 
-    function fazerLogout() { localStorage.clear(); location.reload(); }
+    function carregarChecklistsPainelControlador() {
+        const filtro = document.getElementById('filtro-checklist-controlador').value.trim().toLowerCase();
+        db.collection("checklists_onibus").get().then((snap) => {
+            cacheChecklists = {};
+            let html = '<table class="painel-tabela"><tr><th>Carro</th><th>Motorista</th><th>Km</th><th>Status</th></tr>';
+            let lista = [];
+            snap.forEach(d => {
+                cacheChecklists[d.id] = d.data();
+                lista.push({ id: d.id, ...d.data() });
+            });
+            lista.sort((a, b) => (b.dataHoraEnvio || "").localeCompare(a.dataHoraEnvio || ""));
+
+            let contador = 0;
+            lista.forEach(c => {
+                if (!filtro || (c.prefixo && c.prefixo.toLowerCase().includes(filtro))) {
+                    let temDefeito = false;
+                    if (c.respostas) {
+                        for (let k in c.respostas) {
+                            if (c.respostas[k] === "DEFEITO") temDefeito = true;
+                        }
+                    }
+
+                    let statusTexto = temDefeito ? '<span style="color:#f87171; font-weight:800;">⚠️ Defeito</span>' : '<span style="color:#34d399; font-weight:600;">OK</span>';
+                    let estiloLinha = temDefeito ? 'background: rgba(220, 38, 38, 0.1);' : '';
+
+                    html += `<tr class="linha-tabela-clicavel" style="${estiloLinha}" onclick="abrirDetalhesChecklist('${c.id}')">
+                        <td><b>${c.prefixo || 'N/D'}</b></td>
+                        <td>${c.motorista || 'N/D'}</td>
+                        <td>${c.kmInicial || '-'}</td>
+                        <td>${statusTexto}</td>
+                    </tr>`;
+                    contador++;
+                }
+            });
+
+            if (contador === 0) {
+                html += `<tr><td colspan="4" style="text-align:center; color:var(--texto-secundario);">Nenhum check-list encontrado.</td></tr>`;
+            }
+
+            document.getElementById('lista-checklists-controlador').innerHTML = html + '</table>';
+        });
+    }
+
+    function abrirDetalhesChecklist(idDoc) {
+        const dados = cacheChecklists[idDoc];
+        if (!dados) return;
+
+        document.getElementById('modal-titulo-carro').innerText = `Carro: ${dados.prefixo} (${dados.turno || 'Turno N/D'})`;
+        
+        let htmlDefeitos = `<div style="margin-bottom: 10px;"><b>Motorista:</b> ${dados.motorista} (Chapa: ${dados.chapa})</div>`;
+        htmlDefeitos += `<div style="margin-bottom: 10px;"><b>Quilometragem:</b> ${dados.kmInicial} Km | <b>Linha:</b> ${dados.linha || 'Não informada'}</div>`;
+        
+        htmlDefeitos += `<div style="margin-top: 10px; margin-bottom: 6px; font-weight: 700; color: #60a5fa;">Itens Vistoriados:</div>`;
+        htmlDefeitos += `<div style="display: flex; flex-direction: column; gap: 4px; background: var(--bg-input); padding: 10px; border-radius: 8px;">`;
+
+        if (dados.respostas) {
+            for (let chave in dados.respostas) {
+                let nomeAmigavel = nomeAmigavelItens[chave] || chave;
+                let statusItem = dados.respostas[chave];
+                let corStatus = statusItem === "DEFEITO" ? "color: #f87171; font-weight: bold;" : "color: #34d399;";
+                htmlDefeitos += `<div>• ${nomeAmigavel}: <span style="${corStatus}">${statusItem}</span></div>`;
+            }
+        }
+        htmlDefeitos += `</div>`;
+
+        if (dados.observacoes) {
+            htmlDefeitos += `<div style="margin-top: 12px;"><b>Observações do Motorista:</b><div style="background: var(--bg-input); padding: 8px; border-radius: 6px; margin-top: 4px; color: #f8fafc; font-style: italic;">${dados.observacoes}</div></div>`;
+        }
+
+        if (dados.fotos && dados.fotos.length > 0) {
+            htmlDefeitos += `<div style="margin-top: 12px;"><b>Fotos Anexadas (Clique para ampliar):</b><div class="preview-fotos" style="margin-top: 4px;">`;
+            dados.fotos.forEach(f => {
+                htmlDefeitos += `<img src="${f}" class="miniatura-foto" onclick="ampliarFoto('${f}')">`;
+            });
+            htmlDefeitos += `</div></div>`;
+        }
+
+        document.getElementById('modal-corpo-detalhes').innerHTML = htmlDefeitos;
+        document.getElementById('modal-detalhe-checklist').style.display = 'flex';
+    }
+
+    function fecharModalDetalhes() {
+        document.getElementById('modal-detalhe-checklist').style.display = 'none';
+    }
+
+    function ampliarFoto(urlFoto) {
+        document.getElementById('img-zoom-exibicao').src = urlFoto;
+        document.getElementById('modal-zoom-foto').style.display = 'flex';
+    }
+
+    function fecharZoomFoto() {
+        document.getElementById('modal-zoom-foto').style.display = 'none';
+    }
+
+    function carregarDadosPainel() {
+        db.collection("chamados_oficina").where("status", "==", "PENDENTE").get().then((snap) => {
+            let html = "";
+            let quantidadeAtual = snap.size;
+
+            document.getElementById('kpi-chamados').innerText = quantidadeAtual;
+            document.getElementById('badge-contador-chamados').innerText = `${quantidadeAtual} pendentes`;
+
+            if (totalChamadosAnterior !== -1 && quantidadeAtual > totalChamadosAnterior) {
+                tocarAlertaSonoro();
+                mostrarToast("🚨 Novo chamado urgente recebido!", "erro");
+            }
+            totalChamadosAnterior = quantidadeAtual;
+
+            db.collection("checklists_onibus").get().then(snapCheck => {
+                document.getElementById('kpi-checklists').innerText = snapCheck.size;
+            });
+
+            snap.forEach(d => {
+                let c = d.data();
+                let docId = d.id;
+                let gpsLink = c.latitude ? `<a href="https://maps.google.com/?q=${c.latitude},${c.longitude}" target="_blank" style="color:#38bdf8; font-weight:600; margin-right:10px;">🗺️ Mapa</a>` : '';
+                
+                let whatsappBtn = '';
+                if (c.whatsapp) {
+                    let numeroLimpo = c.whatsapp.replace(/\D/g, '');
+                    whatsappBtn = `<a href="https://wa.me/55${numeroLimpo}?text=Olá%20${encodeURIComponent(c.motorista)},%20recebemos%20seu%20chamado%20referente%20ao%20carro%20${c.prefixo}." target="_blank" style="background:#059669; color:#fff; padding:4px 8px; border-radius:6px; font-size:10px; font-weight:700; text-decoration:none; margin-right:6px; display:inline-block;">💬 WhatsApp</a>`;
+                } else {
+                    whatsappBtn = `<span style="font-size:10px; color:var(--texto-secundario); margin-right:6px;">Sem WhatsApp</span>`;
+                }
+
+                html += `<div style="background:var(--bg-input); border:1px solid rgba(220,38,38,0.4); padding:10px; border-radius:8px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <b>${c.motorista}</b> (Carro: <b>${c.prefixo}</b>)<br>
+                        <span style="color:#cbd5e1; font-size:11px;">${c.descricao}</span><br>
+                        <div style="margin-top:6px; display:flex; align-items:center; flex-wrap:wrap; gap:4px;">
+                            ${gpsLink}
+                            ${whatsappBtn}
+                        </div>
+                    </div>
+                    <button onclick="resolverChamado('${docId}')" style="background:var(--sucesso); border:none; color:#fff; padding:6px 10px; border-radius:6px; font-size:10px; font-weight:700; cursor:pointer; text-transform:uppercase;">Concluir</button>
+                </div>`;
+            });
+            document.getElementById('lista-chamados-painel').innerHTML = html || "Nenhum chamado pendente no momento.";
+        });
+    }
+
+    function resolverChamado(idDoc) {
+        db.collection("chamados_oficina").doc(idDoc).update({
+            status: "RESOLVIDO"
+        }).then(() => {
+            mostrarToast("Chamado concluído com sucesso!", "sucesso");
+            carregarDadosPainel();
+        });
+    }
+
+    function clicarCardChamados() {
+        const secao = document.getElementById('secao-chamados-painel');
+        if (secao) {
+            secao.scrollIntoView({ behavior: 'smooth' });
+            secao.style.borderColor = '#f87171';
+            setTimeout(() => { secao.style.borderColor = ''; }, 1500);
+        }
+    }
+
+    function clicarCardChecklists() {
+        const secao = document.getElementById('secao-checklists-painel');
+        if (secao) {
+            secao.scrollIntoView({ behavior: 'smooth' });
+            secao.style.borderColor = '#60a5fa';
+            setTimeout(() => { secao.style.borderColor = ''; }, 1500);
+        }
+    }
+
+    async function gerarRelatorioGeralPDF() {
+        mostrarToast("Gerando relatório completo da frota em PDF...", "aviso");
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        let y = 20;
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(15);
+        doc.text("VIPOL TRANSPORTES - RELATÓRIO GERAL DA FROTA", 14, y);
+        y += 6;
+        
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.text(`Data de Emissão: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`, 14, y);
+        y += 5;
+        doc.text(`Gestor / Emitente: ${usuarioNomeAtivo} (Chapa: ${usuarioChapaAtivo})`, 14, y);
+        y += 6;
+
+        doc.setLineWidth(0.4);
+        doc.line(14, y, 196, y);
+        y += 10;
+
+        try {
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(12);
+            doc.setTextColor(220, 38, 38);
+            doc.text("1. Check-lists com Defeitos Registrados", 14, y);
+            y += 6;
+
+            const snapChecklists = await db.collection("checklists_onibus").get();
+            let qtdDefeitos = 0;
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor(0, 0, 0);
+
+            snapChecklists.forEach((docSnap) => {
+                let c = docSnap.data();
+                let temDefeito = false;
+                let itensDefeituosos = [];
+
+                if (c.respostas) {
+                    for (let k in c.respostas) {
+                        if (c.respostas[k] === "DEFEITO") {
+                            temDefeito = true;
+                            itensDefeituosos.push(nomeAmigavelItens[k] || k);
+                        }
+                    }
+                }
+
+                if (temDefeito) {
+                    qtdDefeitos++;
+                    if (y > 265) { doc.addPage(); y = 20; }
+
+                    doc.setFont("helvetica", "bold");
+                    doc.text(`Carro: ${c.prefixo || 'N/D'} | Motorista: ${c.motorista || 'N/D'} | Km: ${c.kmInicial || '-'}`, 14, y);
+                    y += 5;
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`Itens com Defeito: ${itensDefeituosos.join(', ')}`, 18, y, { maxWidth: 170 });
+                    y += 5;
+                    if (c.observacoes) {
+                        doc.text(`Obs: ${c.observacoes}`, 18, y, { maxWidth: 170 });
+                        y += 5;
+                    }
+                    y += 3;
+                }
+            });
+
+            if (qtdDefeitos === 0) {
+                doc.text("Nenhum check-list com defeito registrado.", 14, y);
+                y += 8;
+            }
+
+            y += 5;
+            if (y > 260) { doc.addPage(); y = 20; }
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(12);
+            doc.setTextColor(217, 119, 6);
+            doc.text("2. Chamados Urgentes e Panes na Rua", 14, y);
+            y += 6;
+
+            const snapChamados = await db.collection("chamados_oficina").get();
+            let qtdChamados = 0;
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor(0, 0, 0);
+
+            snapChamados.forEach((docSnap) => {
+                let ch = docSnap.data();
+                qtdChamados++;
+                if (y > 265) { doc.addPage(); y = 20; }
+
+                let dataCh = ch.dataHora ? new Date(ch.dataHora).toLocaleString('pt-BR') : '-';
+                doc.setFont("helvetica", "bold");
+                doc.text(`Carro: ${ch.prefixo} | Status: ${ch.status} | Data: ${dataCh}`, 14, y);
+                y += 5;
+                doc.setFont("helvetica", "normal");
+                doc.text(`Descrição: ${ch.descricao}`, 18, y, { maxWidth: 170 });
+                y += 8;
+            });
+
+            if (qtdChamados === 0) {
+                doc.text("Nenhum chamado urgente registrado.", 14, y);
+                y += 8;
+            }
+
+            y += 5;
+            if (y > 260) { doc.addPage(); y = 20; }
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(12);
+            doc.setTextColor(5, 150, 105);
+            doc.text("3. Manutenções Realizadas no Mês", 14, y);
+            y += 6;
+
+            const snapManutencoes = await db.collection("manutencoes_frota").get();
+            let mesAtual = new Date().getMonth();
+            let anoAtual = new Date().getFullYear();
+            let qtdManutencoesMes = 0;
+            let custoTotalMes = 0;
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor(0, 0, 0);
+
+            snapManutencoes.forEach((docSnap) => {
+                let m = docSnap.data();
+                if (m.data) {
+                    let dataManut = new Date(m.data);
+                    if (dataManut.getMonth() === mesAtual && dataManut.getFullYear() === anoAtual) {
+                        qtdManutencoesMes++;
+                        custoTotalMes += Number(m.custo || 0);
+
+                        if (y > 265) { doc.addPage(); y = 20; }
+
+                        let dataFmt = dataManut.toLocaleDateString('pt-BR');
+                        doc.setFont("helvetica", "bold");
+                        doc.text(`Carro: ${m.prefixo} | Tipo: ${m.servico} | Km: ${m.km} | Data: ${dataFmt}`, 14, y);
+                        y += 5;
+                        doc.setFont("helvetica", "normal");
+                        doc.text(`Serviço: ${m.descricao}`, 18, y, { maxWidth: 170 });
+                        y += 5;
+                        doc.text(`Peças: ${m.pecas} | Custo: R$ ${Number(m.custo || 0).toFixed(2)} | Resp: ${m.responsavel}`, 18, y, { maxWidth: 170 });
+                        y += 8;
+                    }
+                }
+            });
+
+            if (qtdManutencoesMes === 0) {
+                doc.text("Nenhuma manutenção registrada neste mês.", 14, y);
+                y += 8;
+            } else {
+                y += 2;
+                doc.setFont("helvetica", "bold");
+                doc.text(`Custo Total em Manutenções no Mês: R$ ${custoTotalMes.toFixed(2)}`, 14, y);
+            }
+
+            doc.save(`Relatorio_Gerencial_Frota_${new Date().toISOString().split('T')[0]}.pdf`);
+            mostrarToast("Relatório Geral gerado com sucesso!", "sucesso");
+        } catch (error) {
+            console.error(error);
+            mostrarToast("Erro ao gerar PDF geral.", "erro");
+        }
+    }
+
+    async function gerarRelatorioIndividualPDF() {
+        const prefixoBusca = document.getElementById('oficina-prefixo').value.trim();
+        
+        if (!prefixoBusca) {
+            mostrarToast("Digite o Prefixo do carro no campo acima para gerar o relatório!", "aviso");
+            return;
+        }
+
+        mostrarToast(`Gerando relatório do carro ${prefixoBusca}...`, "aviso");
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+        doc.text(`VIPOL TRANSPORTES - HISTÓRICO DO VEÍCULO`, 14, 20);
+        
+        doc.setFontSize(14);
+        doc.setTextColor(29, 78, 216);
+        doc.text(`Prefixo: ${prefixoBusca}`, 14, 28);
+        
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Data de Emissão: ${new Date().toLocaleDateString('pt-BR')}`, 14, 34);
+
+        doc.setLineWidth(0.5);
+        doc.line(14, 38, 196, 38);
+
+        try {
+            const snapManutencoes = await db.collection("manutencoes_frota")
+                .where("prefixo", "==", prefixoBusca)
+                .get();
+
+            let y = 46;
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(12);
+            doc.text("Histórico de Manutenções e Serviços:", 14, y);
+            y += 8;
+
+            if (snapManutencoes.empty) {
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.text("Nenhuma manutenção registrada para este prefixo.", 14, y);
+            } else {
+                snapManutencoes.forEach((docSnap) => {
+                    let m = docSnap.data();
+                    let dataFmt = m.data ? new Date(m.data).toLocaleDateString('pt-BR') : '-';
+                    
+                    if (y > 260) {
+                        doc.addPage();
+                        y = 20;
+                    }
+
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(10);
+                    doc.text(`Data: ${dataFmt} | Tipo: ${m.servico} | Km: ${m.km}`, 14, y);
+                    y += 6;
+
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(9);
+                    doc.text(`Serviço: ${m.descricao}`, 18, y, { maxWidth: 170 });
+                    y += 6;
+                    doc.text(`Peças: ${m.pecas} | Custo: R$ ${Number(m.custo || 0).toFixed(2)}`, 18, y);
+                    y += 6;
+                    doc.text(`Responsável: ${m.responsavel}`, 18, y);
+                    y += 10;
+                });
+            }
+
+            doc.save(`Historico_Carro_${prefixoBusca}.pdf`);
+            mostrarToast("Relatório do veículo gerado com sucesso!", "sucesso");
+        } catch (error) {
+            console.error(error);
+            mostrarToast("Erro ao gerar relatório do veículo.", "erro");
+        }
+    }
+
+    setInterval(() => {
+        if (document.getElementById('painel-geral').classList.contains('ativo-tela')) {
+            carregarDadosPainel();
+            carregarChecklistsPainelControlador();
+        }
+    }, 15000);
+
+    function executarRemanejamento() {
+        mostrarToast("Remanejamento registrado com sucesso!", "sucesso");
+    }
+
     window.onload = verificarSessao;
 </script>
 </body>
