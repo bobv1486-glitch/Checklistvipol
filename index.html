@@ -12,9 +12,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 
-    <!-- Biblioteca jsPDF para geração de relatórios em PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
     <style>
         :root { 
             color-scheme: dark; 
@@ -39,12 +36,10 @@
             padding: 12px;
             padding-bottom: 120px;
             box-sizing: border-box;
-            -webkit-text-size-adjust: 100%;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* Sistema de Toasts Modernos */
         #toast-container {
             position: fixed;
             top: 64px; right: 14px; left: 14px;
@@ -61,14 +56,9 @@
             padding: 12px 16px;
             border-radius: 8px;
             font-size: 13px;
-            font-weight: 500;
             box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-            pointer-events: auto;
             transition: opacity 0.3s ease;
         }
-        .toast.sucesso { border-left-color: var(--sucesso); }
-        .toast.erro { border-left-color: var(--perigo); }
-        .toast.aviso { border-left-color: var(--alerta); }
 
         .barra-navegacao-sistema {
             position: fixed;
@@ -81,7 +71,6 @@
             gap: 8px;
             padding: 10px;
             z-index: 10000;
-            overflow-x: auto;
         }
 
         .btn-navegacao {
@@ -94,38 +83,22 @@
             border-radius: 8px;
             cursor: pointer;
             text-transform: uppercase;
-            white-space: nowrap;
             display: none;
-            transition: all 0.2s ease;
         }
 
         .btn-navegacao.ativo {
             background: var(--azul-vipol);
             color: #ffffff;
             border-color: #3b82f6;
-            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.4);
         }
 
-        body { padding-top: 56px; }
+        body { padding-top: 60px; }
 
         .tela-login, .painel-geral-container, .painel-oficina-container, .area-escala-container {
             display: none;
         }
 
-        .ativo-tela {
-            display: flex !important;
-        }
-
-        .tela-login {
-            position: fixed;
-            top: 56px; left: 0; right: 0; bottom: 0;
-            background: var(--bg-principal);
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            z-index: 9999;
-        }
+        .ativo-tela { display: flex !important; flex-direction: column; }
 
         .box-login {
             background: var(--bg-card);
@@ -134,23 +107,8 @@
             padding: 30px 24px;
             width: 100%;
             max-width: 380px;
-            box-shadow: 0 16px 32px rgba(0,0,0,0.6);
+            margin: 50px auto;
             text-align: center;
-        }
-
-        .box-login h2 {
-            font-size: 22px;
-            font-weight: 800;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #ffffff;
-        }
-
-        .box-login p {
-            font-size: 13px;
-            color: var(--texto-secundario);
-            margin-bottom: 24px;
         }
 
         .campo-login {
@@ -159,32 +117,17 @@
             gap: 6px;
             text-align: left;
             margin-bottom: 14px;
-            width: 100%;
         }
 
-        .campo-login label {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--texto-secundario);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .campo-login label { font-size: 11px; font-weight: 700; color: var(--texto-secundario); text-transform: uppercase; }
 
-        .campo-login input, .campo-login select {
-            padding: 12px 14px;
+        .campo-login input, .campo-login select, .campo-login textarea {
+            padding: 12px;
             background: var(--bg-input);
             border: 1px solid var(--borda-card);
             border-radius: 10px;
             color: #ffffff;
-            font-size: 14px;
-            font-weight: 600;
             outline: none;
-            width: 100%;
-            transition: border-color 0.2s;
-        }
-
-        .campo-login input:focus, .campo-login select:focus {
-            border-color: var(--azul-vipol);
         }
 
         .btn-acessar {
@@ -198,347 +141,6 @@
             border-radius: 10px;
             cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 10px;
-            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
-            transition: background 0.2s;
-        }
-        .btn-acessar:hover { background: var(--azul-hover); }
-
-        .topo {
-            text-align: center;
-            margin: 12px auto;
-            max-width: 480px;
-        }
-
-        .titulo {
-            font-size: 20px;
-            font-weight: 800;
-            color: #ffffff !important;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .subtitulo {
-            font-size: 12px;
-            color: var(--texto-secundario);
-            margin-bottom: 12px;
-        }
-
-        .info-colaborador {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: var(--bg-card) !important;
-            border: 1px solid var(--borda-card);
-            border-radius: 14px;
-            padding: 14px;
-            text-align: left;
-            margin-bottom: 14px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .info-campo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--texto-secundario) !important;
-        }
-
-        .info-campo span {
-            width: 110px;
-            min-width: 110px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .info-campo input, .info-campo select {
-            flex: 1;
-            min-width: 0;
-            background: var(--bg-input) !important;
-            border: 1px solid var(--borda-card);
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #ffffff !important;
-            outline: none;
-            padding: 8px 10px;
-        }
-
-        .grupo-input-btn {
-            display: flex;
-            flex: 1;
-            gap: 6px;
-            min-width: 0;
-        }
-
-        .grupo-input-btn input {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .btn-logout {
-            background: transparent;
-            color: #f87171;
-            border: 1px solid rgba(220, 38, 38, 0.4);
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: background 0.2s;
-        }
-        .btn-logout:hover { background: rgba(220, 38, 38, 0.1); }
-
-        .alerta-turno-anterior {
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto 15px auto;
-            background: var(--bg-card);
-            border: 1px solid var(--alerta);
-            border-radius: 12px;
-            padding: 14px;
-            display: none;
-        }
-
-        .secao-checklist {
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto 15px auto;
-        }
-
-        .titulo-secao {
-            font-size: 12px;
-            font-weight: 800;
-            color: #60a5fa;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-bottom: 8px;
-            padding-left: 4px;
-        }
-
-        .lista-itens {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .card-item {
-            background: var(--bg-card) !important;
-            border-radius: 12px;
-            padding: 12px 14px;
-            border: 1px solid var(--borda-card);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-
-        .nome-item {
-            font-size: 13px;
-            font-weight: 600;
-            color: #e2e8f0;
-            flex: 1;
-            padding-right: 10px;
-        }
-
-        .grupo-status {
-            display: flex;
-            gap: 6px;
-        }
-
-        .btn-status {
-            background: var(--bg-input);
-            border: 1px solid var(--borda-card);
-            color: var(--texto-secundario);
-            padding: 8px 14px;
-            font-size: 11px;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: all 0.2s;
-        }
-
-        .btn-status.ativo-ok {
-            background: #065f46;
-            border-color: var(--sucesso);
-            color: #ffffff;
-            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.4);
-        }
-
-        .btn-status.ativo-defeito {
-            background: #7f1d1d;
-            border-color: var(--perigo);
-            color: #ffffff;
-            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
-        }
-
-        .box-obs {
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto 15px auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .box-obs textarea {
-            width: 100%;
-            background: var(--bg-card);
-            border: 1px solid var(--borda-card);
-            border-radius: 12px;
-            padding: 12px;
-            color: #ffffff;
-            font-size: 13px;
-            outline: none;
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .container-upload-foto {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: var(--bg-card);
-            border: 1px solid var(--borda-card);
-            border-radius: 12px;
-            padding: 14px;
-        }
-
-        .btn-foto {
-            background: var(--azul-vipol);
-            color: #ffffff;
-            border: none;
-            padding: 12px;
-            font-size: 12px;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            text-transform: uppercase;
-            text-align: center;
-            display: block;
-            width: 100%;
-        }
-
-        .preview-fotos {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 6px;
-        }
-
-        .miniatura-container {
-            position: relative;
-            display: inline-block;
-        }
-
-        .miniatura-foto {
-            width: 70px;
-            height: 70px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: 1px solid var(--azul-vipol);
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .miniatura-foto:hover {
-            transform: scale(1.05);
-        }
-
-        .btn-remover-foto {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background: var(--perigo);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            font-size: 10px;
-            font-weight: 800;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .box-oficina {
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto 15px auto;
-            background: var(--bg-card);
-            border: 1px solid rgba(220, 38, 38, 0.4);
-            border-radius: 12px;
-            padding: 14px;
-        }
-
-        .btn-enviar-oficina {
-            width: 100%;
-            background-color: var(--perigo);
-            color: #ffffff;
-            border: none;
-            padding: 12px;
-            font-size: 12px;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            text-transform: uppercase;
-            margin-top: 10px;
-        }
-
-        .painel-resumo {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: rgba(15, 17, 23, 0.95);
-            backdrop-filter: blur(8px);
-            border-top: 1px solid var(--borda-card);
-            padding: 12px;
-            z-index: 999;
-        }
-
-        .resumo-conteudo {
-            max-width: 480px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .status-nuvem {
-            font-size: 11px;
-            text-align: center;
-            color: var(--texto-secundario);
-            font-weight: 600;
-        }
-
-        .btn-enviar {
-            width: 100%;
-            background-color: var(--sucesso) !important;
-            color: #ffffff !important;
-            border: none;
-            padding: 14px;
-            font-size: 13px;
-            font-weight: 700;
-            border-radius: 10px;
-            cursor: pointer;
-            text-transform: uppercase;
-            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
-        }
-
-        .painel-geral-container, .painel-oficina-container, .area-escala-container {
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto;
-            flex-direction: column;
-            gap: 14px;
-            padding: 0 4px;
         }
 
         .card-painel {
@@ -546,117 +148,25 @@
             border: 1px solid var(--borda-card);
             border-radius: 12px;
             padding: 14px;
-            width: 100%;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            transition: transform 0.15s ease, border-color 0.15s ease;
+            margin-bottom: 12px;
         }
 
-        .card-clicavel {
-            cursor: pointer;
-        }
-        .card-clicavel:hover {
-            transform: scale(1.02);
-            border-color: #3b82f6;
-        }
-        .card-clicavel:active {
-            transform: scale(0.98);
-        }
-
-        .grupo-inputs-duplos {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-        }
-
-        .grupo-inputs-duplos .campo-login {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .painel-header-flex {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .titulo-secao {
+            font-size: 12px;
+            font-weight: 800;
+            color: #60a5fa;
+            text-transform: uppercase;
             margin-bottom: 10px;
         }
 
-        .painel-tabela {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-            margin-top: 8px;
-        }
-
-        .painel-tabela th, .painel-tabela td {
-            text-align: left;
-            padding: 8px 10px;
-            border-bottom: 1px solid var(--borda-card);
-        }
-
-        .painel-tabela th {
-            color: var(--texto-secundario);
-            text-transform: uppercase;
-            font-size: 10px;
-            letter-spacing: 0.5px;
-        }
-
-        .linha-tabela-clicavel {
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-        .linha-tabela-clicavel:hover {
-            background: rgba(255, 255, 255, 0.04);
-        }
-
-        /* Modais */
-        #modal-detalhe-checklist, #modal-detalhe-manutencao {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(4px);
-            z-index: 100001;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .conteudo-modal {
-            background: var(--bg-card);
-            border: 1px solid var(--borda-card);
-            border-radius: 16px;
-            width: 100%;
-            max-width: 440px;
-            max-height: 85vh;
-            overflow-y: auto;
-            padding: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
-        }
-
-        #modal-zoom-foto {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.92);
-            z-index: 200000;
-            display: none;
-            justify-content: center;
-            align-items: center;
+        /* Estilo da Observação na Escala do Motorista */
+        .alerta-obs-motorista {
+            margin-top: 12px;
+            background: rgba(217, 119, 6, 0.15);
+            border: 1px solid #d97706;
             padding: 10px;
-        }
-        .conteudo-zoom {
-            position: relative;
-            max-width: 100%;
-            max-height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .imagem-ampliada {
-            max-width: 95vw;
-            max-height: 85vh;
-            object-fit: contain;
             border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            position: relative;
         }
     </style>
 </head>
@@ -664,18 +174,206 @@
 
     <div id="toast-container"></div>
 
-    <!-- Modais omitidos aqui por brevidade, permanecem iguais -->
-    <div id="modal-detalhe-checklist">
-        <div class="conteudo-modal">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-                <div style="font-size: 15px; font-weight: 800; color: #60a5fa;" id="modal-titulo-carro">Detalhes da Vistoria</div>
-                <button onclick="fecharModalDetalhes()" style="background: transparent; border: none; color: #f87171; font-weight: 800; font-size: 16px; cursor: pointer;">✕</button>
+    <div class="barra-navegacao-sistema" id="barra-nav">
+        <button class="btn-navegacao" id="tab-escala" onclick="mudarVisao('escala')">📅 Escala</button>
+        <button class="btn-navegacao" id="tab-motorista" onclick="mudarVisao('motorista')">📱 Check-list</button>
+        <button class="btn-navegacao" id="tab-oficina" onclick="mudarVisao('oficina')">🔧 Oficina</button>
+        <button class="btn-navegacao" id="tab-controlador" onclick="mudarVisao('controlador')">📊 Painel</button>
+    </div>
+
+    <!-- TELA LOGIN -->
+    <div id="tela-login" class="tela-login" style="display: flex;">
+        <div class="box-login">
+            <h2>Vipol Transportes</h2>
+            <p>Acesse sua conta</p>
+            <div class="campo-login">
+                <label>Nome</label>
+                <input type="text" id="login-nome">
             </div>
-            <div id="modal-corpo-detalhes" style="font-size: 13px; line-height: 1.5; color: #e2e8f0;">
-                Carregando...
+            <div class="campo-login">
+                <label>Matrícula</label>
+                <input type="number" id="login-chapa">
             </div>
-            <button class="btn-acessar" style="margin-top: 16px;" onclick="fecharModalDetalhes()">Fechar</button>
+            <div class="campo-login">
+                <label>Cargo</label>
+                <select id="login-cargo">
+                    <option value="motorista">Motorista</option>
+                    <option value="escalante">Escalante</option>
+                    <option value="oficina">Oficina</option>
+                    <option value="controlador">Controlador</option>
+                </select>
+            </div>
+            <button class="btn-acessar" onclick="realizarLogin()">Entrar</button>
         </div>
     </div>
 
-    <div id="modal-
+    <!-- AREA ESCALA -->
+    <div id="area-escala" class="area-escala-container">
+        <div style="text-align: right;"><button class="btn-logout" onclick="fazerLogout()">Sair</button></div>
+        
+        <div class="card-painel" id="bloco-minha-escala">
+            <div class="titulo-secao">📋 Minha Próxima Escala</div>
+            <div id="dados-minha-escala">Carregando...</div>
+            <button onclick="carregarMinhaEscala()" style="margin-top:10px; background:transparent; border:1px solid #333; color:#aaa; font-size:10px; padding:5px; border-radius:5px;">🔄 Atualizar</button>
+        </div>
+
+        <div class="card-painel" id="bloco-cadastro-escala" style="display:none;">
+            <div class="titulo-secao">✏️ Lançar Nova Escala</div>
+            <div class="campo-login"><label>Matrícula Motorista</label><input type="number" id="escala-chapa"></div>
+            <div class="campo-login"><label>Nome Motorista</label><input type="text" id="escala-nome"></div>
+            <div class="campo-login"><label>Número da Linha</label><input type="text" id="escala-linha"></div>
+            <div class="campo-login"><label>Data</label><input type="date" id="escala-data"></div>
+            <div class="campo-login"><label>Horário</label><input type="text" id="escala-horario" placeholder="Ex: 04:30"></div>
+            <div class="campo-login">
+                <label>Observações para o Motorista</label>
+                <textarea id="escala-obs" placeholder="Ex: Pegar carro reserva, Trocar no Brás, etc."></textarea>
+            </div>
+            <button class="btn-acessar" style="background:var(--sucesso)" onclick="salvarEscalaIndividual()">Salvar Escala</button>
+        </div>
+    </div>
+
+    <!-- AREA MOTORISTA (CHECKLIST) -->
+    <div id="area-motorista" style="display:none; padding:10px;">
+        <div class="titulo-secao">✅ Realizar Check-list</div>
+        <p>Selecione os itens e envie no final do turno.</p>
+        <!-- Conteudo simplificado para teste -->
+        <button class="btn-acessar" onclick="mostrarToast('Função em manutenção', 'aviso')">Iniciar Vistoria</button>
+    </div>
+
+<script>
+    // CONFIGURAÇÃO FIREBASE
+    const firebaseConfig = {
+      apiKey: "AIzaSyAcnlxdhZbAt9wtpVBhtSYGfMmvXBBMkRE",
+      authDomain: "checklistvipol.firebaseapp.com",
+      projectId: "checklistvipol",
+      storageBucket: "checklistvipol.firebasestorage.app",
+      messagingSenderId: "1083183148599",
+      appId: "1:1083183148599:web:c3f6fcc48a72a8f03719b2"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let usuarioChapaAtivo = "";
+    let usuarioNomeAtivo = "";
+
+    function mostrarToast(msg, tipo) {
+        const c = document.getElementById('toast-container');
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.style.borderLeftColor = tipo === 'sucesso' ? '#059669' : '#d97706';
+        t.innerText = msg;
+        c.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+    }
+
+    function realizarLogin() {
+        const nome = document.getElementById('login-nome').value;
+        const chapa = document.getElementById('login-chapa').value;
+        const cargo = document.getElementById('login-cargo').value;
+
+        if(!nome || !chapa) return alert("Preencha tudo");
+
+        localStorage.setItem("vipol_chapa", chapa);
+        localStorage.setItem("vipol_nome", nome);
+        localStorage.setItem("vipol_cargo", cargo);
+        verificarSessao();
+    }
+
+    function verificarSessao() {
+        const chapa = localStorage.getItem("vipol_chapa");
+        const cargo = localStorage.getItem("vipol_cargo");
+        if(chapa) {
+            usuarioChapaAtivo = chapa;
+            document.getElementById('tela-login').style.display = 'none';
+            document.querySelectorAll('.btn-navegacao').forEach(b => b.style.display = 'inline-block');
+            
+            if(cargo === 'motorista') {
+                mudarVisao('escala');
+            } else if(cargo === 'escalante') {
+                mudarVisao('escala');
+                document.getElementById('bloco-cadastro-escala').style.display = 'block';
+                document.getElementById('bloco-minha-escala').style.display = 'none';
+            }
+        }
+    }
+
+    function mudarVisao(modo) {
+        document.querySelectorAll('.area-escala-container, #area-motorista').forEach(e => e.style.display = 'none');
+        if(modo === 'escala') {
+            document.getElementById('area-escala').style.display = 'block';
+            carregarMinhaEscala();
+        } else if(modo === 'motorista') {
+            document.getElementById('area-motorista').style.display = 'block';
+        }
+    }
+
+    function fazerLogout() { localStorage.clear(); location.reload(); }
+
+    // --- SALVAR ESCALA (ESCALANTE) ---
+    function salvarEscalaIndividual() {
+        const chapa = document.getElementById('escala-chapa').value;
+        const nome = document.getElementById('escala-nome').value;
+        const linha = document.getElementById('escala-linha').value;
+        const data = document.getElementById('escala-data').value;
+        const horario = document.getElementById('escala-horario').value;
+        const observacaoTexto = document.getElementById('escala-obs').value; // Captura a OBS
+
+        if(!chapa || !data) return alert("Dados incompletos");
+
+        const docID = chapa + "_" + data;
+
+        db.collection("escalas_motoristas").doc(docID).set({
+            chapa: String(chapa),
+            motorista: nome,
+            linha: linha,
+            data: data,
+            horario: horario,
+            obs: observacaoTexto // SALVA NO FIREBASE
+        }).then(() => {
+            mostrarToast("Escala enviada com sucesso!", "sucesso");
+            document.getElementById('escala-obs').value = "";
+        }).catch(e => console.error(e));
+    }
+
+    // --- CARREGAR ESCALA (MOTORISTA) ---
+    function carregarMinhaEscala() {
+        const container = document.getElementById('dados-minha-escala');
+        if(!usuarioChapaAtivo) return;
+
+        db.collection("escalas_motoristas")
+          .where("chapa", "==", String(usuarioChapaAtivo))
+          .get()
+          .then((snapshot) => {
+            if(snapshot.empty) {
+                container.innerHTML = "Nenhuma escala encontrada.";
+                return;
+            }
+
+            let html = "";
+            snapshot.forEach(doc => {
+                const e = doc.data();
+                
+                html += `
+                <div style="border:1px solid #333; padding:15px; border-radius:10px; margin-bottom:15px; background:#12151c">
+                    <div style="font-size:16px; font-weight:bold; color:#34d399">Linha: ${e.linha}</div>
+                    <div style="color:#aaa">Data: ${e.data} | Hora: ${e.horario}</div>
+                    
+                    <!-- LOGICA DA OBSERVAÇÃO -->
+                    ${e.obs && e.obs.trim() !== "" ? `
+                        <div class="alerta-obs-motorista">
+                            <b style="color:#fbbf24; font-size:11px; text-transform:uppercase">⚠️ Recado do Escalante:</b><br>
+                            <span style="font-size:14px; color:#fff">${e.obs}</span>
+                        </div>
+                    ` : ""}
+                </div>
+                `;
+            });
+            container.innerHTML = html;
+          });
+    }
+
+    window.onload = verificarSessao;
+</script>
+</body>
+</html>
