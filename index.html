@@ -746,14 +746,14 @@
         </div>
 
         <div class="card-painel" id="bloco-minha-escala" style="border-left: 4px solid var(--azul-vipol);">
-            <div class="titulo-secao">📋 Minhas Próximas Escalas / Folgas</div>
+            <div class="titulo-secao">📋 Minhas Próximas Escalas</div>
             <div id="dados-minha-escala" style="font-size: 13px; color: #e2e8f0; margin-top: 10px; line-height: 1.6;">
                 Carregando suas escalas...
             </div>
         </div>
 
         <div class="card-painel" id="bloco-cadastro-escala" style="display:none; border-left: 4px solid var(--sucesso); margin-top: 6px;">
-            <div class="titulo-secao" style="color: #34d399;">✏️ Lançar Escala ou Folga</div>
+            <div class="titulo-secao" style="color: #34d399;">✏️ Lançar Escala (Data Específica)</div>
             
             <div class="grupo-inputs-duplos" style="margin-top: 10px;">
                 <div class="campo-login" style="flex: 0.7;">
@@ -788,7 +788,7 @@
             </div>
 
             <div class="campo-login">
-                <label>Data da Escala / Folga</label>
+                <label>Data da Escala</label>
                 <input type="date" id="escala-data">
             </div>
 
@@ -802,14 +802,11 @@
                 <textarea id="escala-obs" placeholder="Ex: Escala especial..." style="width:100%; background:var(--bg-input); border:1px solid var(--borda-card); border-radius:8px; padding:10px; color:#fff; font-size:13px; outline:none; resize:vertical; min-height:60px;"></textarea>
             </div>
 
-            <div style="display: flex; gap: 8px; margin-top: 10px;">
-                <button class="btn-acessar" style="background:var(--sucesso); flex: 1; margin-top:0;" onclick="salvarEscalaIndividual()">Salvar Escala</button>
-                <button class="btn-acessar" style="background:var(--alerta); flex: 1; margin-top:0;" onclick="salvarFolgaIndividual()">🏖️ Lançar Folga</button>
-            </div>
+            <button class="btn-acessar" style="background:var(--sucesso);" onclick="salvarEscalaIndividual()">Salvar Escala</button>
         </div>
 
         <div class="card-painel" id="bloco-todas-escalas" style="display:none; margin-top: 6px;">
-            <div class="titulo-secao">📅 Escalas e Folgas Cadastradas (Geral)</div>
+            <div class="titulo-secao">📅 Escalas Cadastradas (Geral)</div>
             <div id="lista-todas-escalas" style="margin-top: 8px; max-height: 250px; overflow-y: auto;">Carregando escalas...</div>
         </div>
     </div>
@@ -927,6 +924,7 @@
             <div id="lista-alertas-preventivos" style="font-size:12px; color:#e2e8f0; margin-top:6px;">Calculando quilometragens...</div>
         </div>
 
+        <!-- FORMULÁRIO DE MANUTENÇÃO COM SUPORTE A FOTOS -->
         <div class="card-painel" style="border-left: 4px solid var(--azul-vipol);">
             <div class="titulo-secao" style="color: #60a5fa;">🔧 Registrar Manutenção Detalhada</div>
             
@@ -1351,18 +1349,11 @@
                 let html = "";
                 minhasEscalas.forEach(e => {
                     let dataBR = formatarDataBR(e.data);
-                    if (e.pegada === "FOLGA") {
-                        html += `<div style="background:rgba(217, 119, 6, 0.1); border:1px solid var(--alerta); padding:10px; border-radius:8px; margin-bottom:8px;">
-                            <b>Data:</b> ${dataBR} | <span style="color:#fbbf24; font-weight:800;">${e.linha}</span><br>
-                            <b>Obs:</b> ${e.obs || 'Nenhuma'}
-                        </div>`;
-                    } else {
-                        html += `<div style="background:var(--bg-input); border:1px solid var(--borda-card); padding:10px; border-radius:8px; margin-bottom:8px;">
-                            <b>Data:</b> ${dataBR} | <b>Horário:</b> ${e.horario}<br>
-                            <b>Pegada:</b> <span style="color:#60a5fa;">${e.pegada || 'Garagem'}</span><br>
-                            <b>Linha:</b> <span style="color:#34d399; font-weight:700;">${e.linha}</span>
-                        </div>`;
-                    }
+                    html += `<div style="background:var(--bg-input); border:1px solid var(--borda-card); padding:10px; border-radius:8px; margin-bottom:8px;">
+                        <b>Data:</b> ${dataBR} | <b>Horário:</b> ${e.horario}<br>
+                        <b>Pegada:</b> <span style="color:#60a5fa;">${e.pegada || 'Garagem'}</span><br>
+                        <b>Linha:</b> <span style="color:#34d399; font-weight:700;">${e.linha}</span>
+                    </div>`;
                 });
                 container.innerHTML = html;
             } else {
@@ -1382,8 +1373,7 @@
 
             escalasArr.forEach((e) => {
                 let dataBR = formatarDataBR(e.data);
-                let linhaEstilo = e.pegada === "FOLGA" ? '<span style="color:#fbbf24; font-weight:700;">🏖️ FOLGA</span>' : e.linha;
-                html += `<tr><td><b>${e.motorista}</b></td><td>${e.pegada || 'Garagem'}</td><td>${linhaEstilo}</td><td>${dataBR}</td></tr>`;
+                html += `<tr><td><b>${e.motorista}</b></td><td>${e.pegada || 'Garagem'}</td><td>${e.linha}</td><td>${dataBR}</td></tr>`;
             });
             listaDiv.innerHTML = html + '</table>';
         });
@@ -1423,36 +1413,6 @@
             document.getElementById('escala-linha-nome').value = "";
             document.getElementById('escala-data').value = "";
             document.getElementById('escala-horario').value = "";
-            document.getElementById('escala-obs').value = "";
-        });
-    }
-
-    function salvarFolgaIndividual() {
-        const chapa = document.getElementById('escala-chapa-motorista').value.trim();
-        const nome = document.getElementById('escala-nome-motorista').value.trim();
-        const dataEscala = document.getElementById('escala-data').value;
-        const obs = document.getElementById('escala-obs').value.trim();
-
-        if (!chapa || !nome || !dataEscala) {
-            mostrarToast("Preencha a matrícula, nome e data para a folga!", "aviso");
-            return;
-        }
-
-        db.collection("motoristas_cadastrados").doc(chapa).set({ chapa, nome, whatsapp: "" });
-        const idDocumento = `${chapa}_${dataEscala}`;
-
-        db.collection("escalas_motoristas").doc(idDocumento).set({
-            chapa,
-            motorista: nome,
-            pegada: "FOLGA",
-            linha: "🏖️ FOLGA",
-            data: dataEscala,
-            horario: "-",
-            obs: obs || "Motorista de folga"
-        }).then(() => {
-            mostrarToast(`Folga para o dia ${formatarDataBR(dataEscala)} registrada com sucesso!`, "sucesso");
-            carregarTodasAsEscalas();
-            document.getElementById('escala-data').value = "";
             document.getElementById('escala-obs').value = "";
         });
     }
