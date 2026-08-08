@@ -752,7 +752,7 @@
             </div>
         </div>
 
-        <!-- BLOCO DE LANÇAR ESCALA (Movido para CIMA) -->
+        <!-- BLOCO DE LANÇAR ESCALA -->
         <div class="card-painel" id="bloco-cadastro-escala" style="display:none; border-left: 4px solid var(--sucesso); margin-top: 6px;">
             <div class="titulo-secao" style="color: #34d399;">✏️ Lançar Escala (Data Específica)</div>
             
@@ -806,7 +806,7 @@
             <button class="btn-acessar" style="background:var(--sucesso);" onclick="salvarEscalaIndividual()">Salvar Escala</button>
         </div>
 
-        <!-- BLOCO DE CADASTRAR ITINERÁRIO / LINHA (Movido para BAIXO) -->
+        <!-- BLOCO DE CADASTRAR ITINERÁRIO / LINHA -->
         <div class="card-painel" id="bloco-cadastro-linha" style="display:none; border-left: 4px solid var(--alerta); margin-top: 6px;">
             <div class="titulo-secao" style="color: #fbbf24;">🗺️ Cadastrar Novo Itinerário / Linha</div>
             
@@ -1097,7 +1097,6 @@
         "499": "499 - Dom Bosco X Cecap"
     };
 
-    // Função para carregar as linhas cadastradas no Firebase
     function carregarDicionarioLinhas() {
         db.collection("dicionario_linhas").get().then((snapshot) => {
             snapshot.forEach((doc) => {
@@ -1109,7 +1108,6 @@
         }).catch(e => console.log("Erro ao carregar linhas:", e));
     }
 
-    // Função do Escalante para salvar nova linha/itinerário
     function salvarNovoItinerario() {
         const num = document.getElementById('nova-linha-num').value.trim();
         const nome = document.getElementById('nova-linha-nome').value.trim();
@@ -1289,7 +1287,7 @@
         const nomeSalvo = localStorage.getItem("vipol_nome_usuario");
         const cargoSalvo = localStorage.getItem("vipol_cargo_usuario");
 
-        carregarDicionarioLinhas(); // Carregar linhas do banco ao iniciar sessão
+        carregarDicionarioLinhas();
 
         if (chapaSalva && nomeSalvo && cargoSalvo) {
             usuarioChapaAtivo = chapaSalva;
@@ -1407,10 +1405,12 @@
                 let html = "";
                 minhasEscalas.forEach(e => {
                     let dataBR = formatarDataBR(e.data);
+                    let blocoObs = e.obs ? `<br><b>Obs:</b> <span style="color:#fbbf24; font-style:italic;">${e.obs}</span>` : '';
                     html += `<div style="background:var(--bg-input); border:1px solid var(--borda-card); padding:10px; border-radius:8px; margin-bottom:8px;">
                         <b>Data:</b> ${dataBR} | <b>Horário:</b> ${e.horario}<br>
                         <b>Pegada:</b> <span style="color:#60a5fa;">${e.pegada || 'Garagem'}</span><br>
                         <b>Linha:</b> <span style="color:#34d399; font-weight:700;">${e.linha}</span>
+                        ${blocoObs}
                     </div>`;
                 });
                 container.innerHTML = html;
@@ -1431,7 +1431,8 @@
 
             escalasArr.forEach((e) => {
                 let dataBR = formatarDataBR(e.data);
-                html += `<tr><td><b>${e.motorista}</b></td><td>${e.pegada || 'Garagem'}</td><td>${e.linha}</td><td>${dataBR}</td></tr>`;
+                let obsResumo = e.obs ? `<br><span style="font-size:10px; color:#fbbf24;">Obs: ${e.obs}</span>` : '';
+                html += `<tr><td><b>${e.motorista}</b>${obsResumo}</td><td>${e.pegada || 'Garagem'}</td><td>${e.linha}</td><td>${dataBR}</td></tr>`;
             });
             listaDiv.innerHTML = html + '</table>';
         });
