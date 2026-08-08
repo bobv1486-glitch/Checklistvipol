@@ -752,23 +752,7 @@
             </div>
         </div>
 
-        <!-- NOVO BLOCO: CADASTRAR ITINERÁRIO / LINHA (Exclusivo para Escalante) -->
-        <div class="card-painel" id="bloco-cadastro-linha" style="display:none; border-left: 4px solid var(--alerta); margin-top: 6px;">
-            <div class="titulo-secao" style="color: #fbbf24;">🗺️ Cadastrar Novo Itinerário / Linha</div>
-            
-            <div class="campo-login" style="margin-top: 10px;">
-                <label>Número da Linha</label>
-                <input type="text" id="nova-linha-num" placeholder="Ex: 888">
-            </div>
-
-            <div class="campo-login">
-                <label>Nome Completo / Descrição do Itinerário</label>
-                <input type="text" id="nova-linha-nome" placeholder="Ex: 888 - Terminal X Bairro">
-            </div>
-
-            <button class="btn-acessar" style="background:var(--alerta);" onclick="salvarNovoItinerario()">Salvar Nova Linha</button>
-        </div>
-
+        <!-- BLOCO DE LANÇAR ESCALA (Movido para CIMA) -->
         <div class="card-painel" id="bloco-cadastro-escala" style="display:none; border-left: 4px solid var(--sucesso); margin-top: 6px;">
             <div class="titulo-secao" style="color: #34d399;">✏️ Lançar Escala (Data Específica)</div>
             
@@ -820,6 +804,23 @@
             </div>
 
             <button class="btn-acessar" style="background:var(--sucesso);" onclick="salvarEscalaIndividual()">Salvar Escala</button>
+        </div>
+
+        <!-- BLOCO DE CADASTRAR ITINERÁRIO / LINHA (Movido para BAIXO) -->
+        <div class="card-painel" id="bloco-cadastro-linha" style="display:none; border-left: 4px solid var(--alerta); margin-top: 6px;">
+            <div class="titulo-secao" style="color: #fbbf24;">🗺️ Cadastrar Novo Itinerário / Linha</div>
+            
+            <div class="campo-login" style="margin-top: 10px;">
+                <label>Número da Linha</label>
+                <input type="text" id="nova-linha-num" placeholder="Ex: 888">
+            </div>
+
+            <div class="campo-login">
+                <label>Nome Completo / Descrição do Itinerário</label>
+                <input type="text" id="nova-linha-nome" placeholder="Ex: 888 - Terminal X Bairro">
+            </div>
+
+            <button class="btn-acessar" style="background:var(--alerta);" onclick="salvarNovoItinerario()">Salvar Nova Linha</button>
         </div>
 
         <div class="card-painel" id="bloco-todas-escalas" style="display:none; margin-top: 6px;">
