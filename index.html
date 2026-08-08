@@ -752,6 +752,23 @@
             </div>
         </div>
 
+        <!-- NOVO BLOCO: CADASTRAR ITINERÁRIO / LINHA (Exclusivo para Escalante) -->
+        <div class="card-painel" id="bloco-cadastro-linha" style="display:none; border-left: 4px solid var(--alerta); margin-top: 6px;">
+            <div class="titulo-secao" style="color: #fbbf24;">🗺️ Cadastrar Novo Itinerário / Linha</div>
+            
+            <div class="campo-login" style="margin-top: 10px;">
+                <label>Número da Linha</label>
+                <input type="text" id="nova-linha-num" placeholder="Ex: 888">
+            </div>
+
+            <div class="campo-login">
+                <label>Nome Completo / Descrição do Itinerário</label>
+                <input type="text" id="nova-linha-nome" placeholder="Ex: 888 - Terminal X Bairro">
+            </div>
+
+            <button class="btn-acessar" style="background:var(--alerta);" onclick="salvarNovoItinerario()">Salvar Nova Linha</button>
+        </div>
+
         <div class="card-painel" id="bloco-cadastro-escala" style="display:none; border-left: 4px solid var(--sucesso); margin-top: 6px;">
             <div class="titulo-secao" style="color: #34d399;">✏️ Lançar Escala (Data Específica)</div>
             
@@ -1067,7 +1084,7 @@
     const db = firebase.firestore();
     const messaging = firebase.messaging();
 
-    const dicionarioLinhas = {
+    let dicionarioLinhas = {
         "077": "077 - Vila Any X Metrô Brás",
         "319": "319 - Tupinambá X Metrô Itaquera",
         "596": "596 - Vila Any X São Miguel",
@@ -1078,6 +1095,42 @@
         "252": "252 - Jardim Cumbica X Metrô Carrão",
         "499": "499 - Dom Bosco X Cecap"
     };
+
+    // Função para carregar as linhas cadastradas no Firebase
+    function carregarDicionarioLinhas() {
+        db.collection("dicionario_linhas").get().then((snapshot) => {
+            snapshot.forEach((doc) => {
+                let d = doc.data();
+                if (d.numero && d.nome) {
+                    dicionarioLinhas[d.numero] = d.nome;
+                }
+            });
+        }).catch(e => console.log("Erro ao carregar linhas:", e));
+    }
+
+    // Função do Escalante para salvar nova linha/itinerário
+    function salvarNovoItinerario() {
+        const num = document.getElementById('nova-linha-num').value.trim();
+        const nome = document.getElementById('nova-linha-nome').value.trim();
+
+        if (!num || !nome) {
+            mostrarToast("Preencha o número e o nome da linha!", "aviso");
+            return;
+        }
+
+        db.collection("dicionario_linhas").doc(num).set({
+            numero: num,
+            nome: nome
+        }).then(() => {
+            dicionarioLinhas[num] = nome;
+            mostrarToast("Itinerário cadastrado com sucesso!", "sucesso");
+            document.getElementById('nova-linha-num').value = "";
+            document.getElementById('nova-linha-nome').value = "";
+        }).catch(error => {
+            console.error(error);
+            mostrarToast("Erro ao salvar novo itinerário.", "erro");
+        });
+    }
 
     const nomeAmigavelItens = {
         "item_0_0": "Faróis e Lanternas",
@@ -1235,6 +1288,8 @@
         const nomeSalvo = localStorage.getItem("vipol_nome_usuario");
         const cargoSalvo = localStorage.getItem("vipol_cargo_usuario");
 
+        carregarDicionarioLinhas(); // Carregar linhas do banco ao iniciar sessão
+
         if (chapaSalva && nomeSalvo && cargoSalvo) {
             usuarioChapaAtivo = chapaSalva;
             usuarioNomeAtivo = nomeSalvo;
@@ -1246,6 +1301,7 @@
                 document.getElementById('tab-escala').style.display = 'block';
                 document.getElementById('tab-motorista').style.display = 'block';
                 document.getElementById('bloco-minha-escala').style.display = 'block';
+                document.getElementById('bloco-cadastro-linha').style.display = 'none';
                 document.getElementById('bloco-cadastro-escala').style.display = 'none';
                 document.getElementById('bloco-todas-escalas').style.display = 'none';
                 document.getElementById("txt-nome-motorista").value = usuarioNomeAtivo;
@@ -1254,6 +1310,7 @@
             } else if (cargoSalvo === 'escalante') {
                 document.getElementById('tab-escala').style.display = 'block';
                 document.getElementById('bloco-minha-escala').style.display = 'none';
+                document.getElementById('bloco-cadastro-linha').style.display = 'block';
                 document.getElementById('bloco-cadastro-escala').style.display = 'block';
                 document.getElementById('bloco-todas-escalas').style.display = 'block';
                 mudarVisao('escala');
