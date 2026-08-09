@@ -674,7 +674,13 @@
             <div id="modal-corpo-detalhes" style="font-size: 13px; line-height: 1.5; color: #e2e8f0;">
                 Carregando...
             </div>
-            <button class="btn-acessar" style="margin-top: 16px;" onclick="fecharModalDetalhes()">Fechar</button>
+            
+            <!-- Botão Adicionado para o Mecânico Concluir/Resolver o Defeito -->
+            <div id="container-btn-concluir-reparo" style="margin-top: 14px; display: none;">
+                <button id="btn-concluir-reparo-modal" class="btn-acessar" style="background: var(--sucesso);" onclick="concluirReparoChecklist()">✅ CONCLUIR REPARO / MARCAR COMO OK</button>
+            </div>
+
+            <button class="btn-acessar" style="margin-top: 10px;" onclick="fecharModalDetalhes()">Fechar</button>
         </div>
     </div>
 
@@ -1173,6 +1179,7 @@
     let totalChamadosAnterior = -1;
     let cacheChecklists = {};
     let cacheManutencoes = {};
+    let idChecklistAtualAberto = null; // Variável para controlar qual check-list está aberto no modal
 
     const itensChecklist = [
         {
@@ -1870,6 +1877,7 @@
     }
 
     function abrirDetalhesChecklist(idDoc) {
+        idChecklistAtualAberto = idDoc; // Salva o ID atual no escopo global
         const dados = cacheChecklists[idDoc];
         if (!dados) return;
 
@@ -1881,10 +1889,12 @@
         htmlDefeitos += `<div style="margin-top: 10px; margin-bottom: 6px; font-weight: 700; color: #60a5fa;">Itens Vistoriados:</div>`;
         htmlDefeitos += `<div style="display: flex; flex-direction: column; gap: 4px; background: var(--bg-input); padding: 10px; border-radius: 8px;">`;
 
+        let temAlgumDefeito = false;
         if (dados.respostas) {
             for (let chave in dados.respostas) {
                 let nomeAmigavel = nomeAmigavelItens[chave] || chave;
                 let statusItem = dados.respostas[chave];
+                if (statusItem === "DEFEITO") temAlgumDefeito = true;
                 let corStatus = statusItem === "DEFEITO" ? "color: #f87171; font-weight: bold;" : "color: #34d399;";
                 htmlDefeitos += `<div>• ${nomeAmigavel}: <span style="${corStatus}">${statusItem}</span></div>`;
             }
@@ -1904,11 +1914,53 @@
         }
 
         document.getElementById('modal-corpo-detalhes').innerHTML = htmlDefeitos;
+
+        // Mostra ou esconde o botão de concluir reparo dependendo se tem defeito ou não
+        const containerBtnConcluir = document.getElementById('container-btn-concluir-reparo');
+        if (temAlgumDefeito) {
+            containerBtnConcluir.style.display = 'block';
+        } else {
+            containerBtnConcluir.style.display = 'none';
+        }
+
         document.getElementById('modal-detalhe-checklist').style.display = 'flex';
+    }
+
+    // Função para concluir o reparo do veículo diretamente pelo modal
+    function concluirReparoChecklist() {
+        if (!idChecklistAtualAberto) return;
+        const dados = cacheChecklists[idChecklistAtualAberto];
+        if (!dados) return;
+
+        // Altera todos os itens que eram defeito para OK
+        if (dados.respostas) {
+            for (let chave in dados.respostas) {
+                dados.respostas[chave] = "OK";
+            }
+        }
+
+        // Adiciona um aviso na observação indicando que a oficina concluiu
+        let obsAtual = dados.observacoes || "";
+        dados.observacoes = obsAtual + " [REPARO CONCLUÍDO PELA OFICINA]";
+
+        // Atualiza no Firebase
+        db.collection("checklists_onibus").doc(idChecklistAtualAberto).set(dados, { merge: true })
+        .then(() => {
+            mostrarToast("Reparo concluído! Veículo marcado como OK.", "sucesso");
+            fecharModalDetalhes();
+            // Atualiza as telas de oficina e painel do controlador
+            carregarChecklistsPainelOficina();
+            carregarChecklistsPainelControlador();
+        })
+        .catch((error) => {
+            console.error("Erro ao concluir reparo: ", error);
+            mostrarToast("Erro ao atualizar o registro no sistema.", "erro");
+        });
     }
 
     function fecharModalDetalhes() {
         document.getElementById('modal-detalhe-checklist').style.display = 'none';
+        idChecklistAtualAberto = null;
     }
 
     function ampliarFoto(urlFoto) {
